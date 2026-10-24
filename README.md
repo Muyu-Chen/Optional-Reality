@@ -89,4 +89,4 @@ React + TypeScript + Vite 管理界面；Matter.js + Canvas 2D 运行、绘制�
 
 面包店绘图改编自 yihanzhao231 的 `temp/1024-zyh@30d802f`，物理和指令统一使用本项目运行层。旧关卡 ID `reality-breakdown` 保留。
 
-静态介绍页位于 `site/`，线上地址为 [muuyyy.cfd](https://muuyyy.cfd/)。本轮仅更新本地游戏及仓库，线上部署未改动；备份和切换说明见 [deploy/README.md](./deploy/README.md)。
+静态介绍页位于 `site/`，线上游戏为 [muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，已发布八关及兼容 API 后端。版本、备份与回退见 [线上游戏部署记录](./deploy/live-game.md)；早期介绍页备份见 [deploy/README.md](./deploy/README.md)。
