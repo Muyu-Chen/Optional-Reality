@@ -2,6 +2,7 @@ import { applyRules, gravityState, GRAVITY_CONTEXT, OperationSchema, type Operat
 import { surfaceTarget } from './surface-target';
 import { normalizeCommand } from './command-language';
 import { parseAcceleration } from './acceleration-command';
+import { PHYSICS_CAPABILITIES } from './physics-capabilities';
 export { Acceleration, OperationSchema, type Operation } from './rules';
 export type ParsedCommand = { operation: Operation; error?: never } | { operation?: never; error: string };
 
@@ -26,14 +27,15 @@ export function parseCommand(input: string, context?: RuleContext): ParsedComman
   if (acceleration) return acceleration;
   if (/gravity|重力/.test(text) && value !== undefined) return { operation: { type: 'set_gravity', acceleration: /upward|向上/.test(text) ? -Math.abs(value) : value } };
   const options = [
-    [/conveyor|belt|传送带/, 'conveyor_speed', device('conveyor')],
-    [/spring|toaster|弹簧|面包机/, 'spring_power', device('spring')],
-    [/fan|wind|风扇/, 'fan_power', device('fan')],
-    [/wheel|rotor|rotation|转轮|转盘/, 'angular_speed', device('rotor')],
-    [/bounce|elastic|restitution|弹性/, 'restitution', 'world'],
-    [/friction|摩擦/, 'friction', 'world'],
+    ['conveyor_speed', device('conveyor')],
+    ['spring_power', device('spring')],
+    ['fan_power', device('fan')],
+    ['angular_speed', device('rotor')],
+    ['restitution', 'world'],
+    ['friction', 'world'],
   ] as const;
-  for (const [pattern, property, defaultTarget] of options) {
+  for (const [property, defaultTarget] of options) {
+    const pattern = PHYSICS_CAPABILITIES[property].commandPattern;
     if (!pattern.test(text)) continue;
     const resolved = property === 'restitution' || property === 'friction' ? surfaceTarget(raw, context) : { target: defaultTarget };
     if ('error' in resolved && resolved.error) return { error: resolved.error };

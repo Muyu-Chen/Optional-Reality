@@ -3,7 +3,7 @@ export function normalizeCommand(input: string): string {
   let text = input.trim();
   const replacements: readonly [RegExp, string][] = [
     [/\bgrav(?:tiy|itiy|ty)\b/gi, 'gravity'],
-    [/\baccel(?:aration|eraton|leration)\b/gi, 'acceleration'],
+    [/\baccel(?:aration|eraton|leration|ation)\b/gi, 'acceleration'],
     [/\bfricton\b/gi, 'friction'],
     [/\brest(?:ituion|itutionn)\b/gi, 'restitution'],
     [/\bbouce\b/gi, 'bounce'],

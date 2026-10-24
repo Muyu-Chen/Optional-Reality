@@ -1,4 +1,5 @@
 import { ENVIRONMENT_PROPERTIES, type RuleContext, type RuleState } from '../../../shared/rules';
+import { propertiesForTarget } from '../../../shared/physics-capabilities';
 import type { LevelDefinition } from './types';
 import { tierFor } from './progression';
 
@@ -6,17 +7,13 @@ export function ruleContext(level: LevelDefinition): RuleContext {
   const tier=tierFor(level);
   const context: RuleContext = {
     targets: [
-      { id: 'world', kind: 'environment', label: 'World', properties: { gravity: [-10, 10], acceleration_x: [-10, 10], restitution: [0, 1.5], friction: [0, 1] }, editableProperties: [...ENVIRONMENT_PROPERTIES] },
+      { id: 'world', kind: 'environment', label: 'World', properties: propertiesForTarget('environment'), editableProperties: [...ENVIRONMENT_PROPERTIES] },
       // Preset structural walls remain protected; active surfaces share material controls.
-      ...level.tracks.map(track => ({ id: track.id, kind: 'surface', label: track.label || track.id, aliases: track.aliases, properties: { restitution: [0, 1.5] as const, friction: [0, 1] as const }, editableProperties: track.preset ? [] : ['restitution', 'friction'] as const })),
+      ...level.tracks.map(track => ({ id: track.id, kind: 'surface', label: track.label || track.id, aliases: track.aliases, properties: propertiesForTarget('surface'), editableProperties: track.preset ? [] : ['restitution', 'friction'] as const })),
       ...(level.devices || []).flatMap<RuleContext['targets'][number]>(device => {
-        switch (device.kind) {
-          case 'conveyor': return [{ id: device.id, kind: device.kind, properties: { conveyor_speed: [-3, 3] as const } }];
-          case 'spring': return [{ id: device.id, kind: device.kind, label: level.presentation === 'bakery' ? 'Toaster' : 'Spring', properties: { spring_power: [0, 3] as const } }];
-          case 'fan': return [{ id: device.id, kind: device.kind, properties: { fan_power: [-2, 2] as const } }];
-          case 'rotor': return [{ id: device.id, kind: device.kind, properties: { angular_speed: [-3, 3] as const } }];
-          default: return [];
-        }
+        const properties = propertiesForTarget(device.kind);
+        return Object.keys(properties).length ? [{ id: device.id, kind: device.kind, properties,
+          ...(device.kind === 'spring' ? { label: level.presentation === 'bakery' ? 'Toaster' : 'Spring' } : {}) }] : [];
       }),
     ],
     sensors: (level.devices || []).filter(device => device.kind === 'sensor').map(device => device.id),

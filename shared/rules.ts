@@ -1,10 +1,11 @@
 import { z } from 'zod';
 import { limitAbsoluteOperation, limitValue } from './rule-limits';
+import { PHYSICS_CAPABILITIES, PROPERTY_NAMES } from './physics-capabilities';
+export { ENVIRONMENT_PROPERTIES } from './physics-capabilities';
 
-export const Acceleration = z.number().finite().min(-10).max(10);
-export const Property = z.enum(['gravity', 'acceleration_x', 'restitution', 'friction', 'conveyor_speed', 'spring_power', 'fan_power', 'angular_speed']);
+export const Acceleration = z.number().finite().min(PHYSICS_CAPABILITIES.gravity.range[0]).max(PHYSICS_CAPABILITIES.gravity.range[1]);
+export const Property = z.enum(PROPERTY_NAMES);
 export type PropertyName = z.infer<typeof Property>;
-export const ENVIRONMENT_PROPERTIES = ['gravity', 'acceleration_x', 'restitution', 'friction'] as const;
 const Id = z.string().min(1).max(80);
 export const OperationSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('set_gravity'), acceleration: z.number().finite() }).strict(),
@@ -25,7 +26,7 @@ export const RuleStateSchema = z.object({
   triggers: z.array(z.object({ sensor: Id, gate: Id }).strict()).max(24),
 }).strict();
 export type RuleState = z.infer<typeof RuleStateSchema>;
-export const GRAVITY_CONTEXT: RuleContext = { targets: [{ id: 'world', kind: 'environment', properties: { gravity: [-10, 10] } }], sensors: [], gates: [] };
+export const GRAVITY_CONTEXT: RuleContext = { targets: [{ id: 'world', kind: 'environment', properties: { gravity: PHYSICS_CAPABILITIES.gravity.range } }], sensors: [], gates: [] };
 export const gravityState = (gravity: number): RuleState => ({ gravity, values: {}, triggers: [] });
 
 export function propertyRange(context: RuleContext, target: string, property: PropertyName) {
