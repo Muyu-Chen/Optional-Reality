@@ -58,6 +58,8 @@ npm start
 
 生产构建后，`npm start` 在 `http://127.0.0.1:3001/demo/` 同时提供游戏与 API。测试默认使用模拟模型，不消耗真实 API；真实 DeepSeek 调用单独验收。构建产物、依赖、密钥和本地备份均不提交。
 
+测试条件与新增测试要求见 [测试说明](./docs/testing.md)。GitHub Actions 在每次 push / pull request 时运行测试和构建。
+
 只看静态前端可用 `python3 -m http.server 8793 --bind 127.0.0.1 --directory site`，访问 `/demo/`；此方式仅本地指令可用。
 
 ## 架构与设计

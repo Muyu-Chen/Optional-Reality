@@ -18,7 +18,7 @@ export function createApp(config: AiConfig, fetcher?: typeof fetch) {
     if (origin && !allowed.has(origin)) { res.status(403).json({ error: 'Cross-origin compilation is not allowed.' }); return; }
     if (!req.is('application/json')) { res.status(415).json({ error: 'Send application/json.' }); return; }
     const now = Date.now(), ip = req.ip || 'local';
-    for (const [key, value] of requests) if (now - value.start > 60000) requests.delete(key);
+    for (const [key, value] of requests) if (now - value.start >= 60000) requests.delete(key);
     const bucket = requests.get(ip) || { start: now, count: 0 };
     if (bucket.count >= 30 || active >= 4) { res.status(429).json({ error: 'Too many preparation requests. Try again shortly.' }); return; }
     bucket.count++; requests.set(ip, bucket); active++;
