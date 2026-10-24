@@ -7,11 +7,11 @@ export function parseCommand(input: string, context?: RuleContext): ParsedComman
   const raw = input.trim().toLowerCase().replace(/[“”"']/g, '').replace(/[.!?。！]+$/g, '');
   const device = (kind: string) => context?.targets.find(target => target.kind === kind)?.id;
   if (/\band\b|\bthen\b|\bfor\b.*\b(seconds?|minutes?)\b|\d\s*[eE][+-]?\d|同时|并且|然后/.test(raw)) return { error: 'Use AI preparation for combined or timed instructions; the local parser handles one direct operation.' };
-  if (/^when (the )?(energy )?(core|ball) (touches|hits) (the )?sensor,? open (the )?gate$/.test(raw) || /^当.*(触|碰).*(传感器|感应器).*开.*门$/.test(raw)) {
+  if (/^when (the )?(energy )?(core|ball|bread|loaf) (touches|hits) (the )?(sensor|bell),? open (the )?(gate|shutter)$/.test(raw) || /^当.*(触|碰).*(传感器|感应器|铃).*开.*(门|卷帘)$/.test(raw)) {
     if (!context?.sensors[0] || !context.gates[0]) return { error: 'This scene has no sensor-to-gate condition.' };
     return { operation: { type: 'add_sensor_trigger', sensor: context.sensors[0], gate: context.gates[0] } };
   }
-  if (/\b(core|ball)\b|teleport|小球|能量球/.test(text)) return { error: 'Modify the environment, not the core.' };
+  if (/\b(core|ball|bread|loaf)\b|teleport|小球|能量球|面包(?!机)/.test(text)) return { error: 'Modify the environment, not the core.' };
   if (/^(add|enable|turn on)( the)? gravity$/.test(text) || text === '加重力') return { operation: { type: 'set_gravity', acceleration: 1 } };
   if (/^(stop|disable|remove|turn off)( the)? gravity$/.test(text) || /^(no gravity|gravity\s*=\s*0)$/.test(text) || text === '停止重力') return { operation: { type: 'set_gravity', acceleration: 0 } };
   if (/^reverse( the)? gravity$/.test(text) || text === '反转重力') return { operation: { type: 'reverse_gravity' } };
@@ -21,7 +21,7 @@ export function parseCommand(input: string, context?: RuleContext): ParsedComman
   if (/gravity|重力/.test(text) && value !== undefined) return { operation: { type: 'set_gravity', acceleration: /upward|向上/.test(text) ? -Math.abs(value) : value } };
   const options = [
     [/conveyor|belt|传送带/, 'conveyor_speed', device('conveyor')],
-    [/spring|弹簧/, 'spring_power', device('spring')],
+    [/spring|toaster|弹簧|面包机/, 'spring_power', device('spring')],
     [/fan|wind|风扇/, 'fan_power', device('fan')],
     [/wheel|rotor|rotation|转轮|转盘/, 'angular_speed', device('rotor')],
     [/bounce|elastic|restitution|弹性/, 'restitution', 'world'],

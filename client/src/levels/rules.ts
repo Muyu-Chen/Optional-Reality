@@ -1,15 +1,18 @@
 import type { RuleContext, RuleState } from '../../../shared/rules';
 import type { LevelDefinition } from './types';
+import { tierFor } from './progression';
 
 export function ruleContext(level: LevelDefinition): RuleContext {
-  return {
+  const tier=tierFor(level);
+  const editable=level.editableWorldProperties || tier?.worldProperties;
+  const context: RuleContext = {
     targets: [
-      { id: 'world', kind: 'environment', properties: { gravity: [-10, 10], restitution: [0, 1.5], friction: [0, 1] } },
-      ...level.tracks.map(track => ({ id: track.id, kind: 'surface', properties: { restitution: [0, 1.5] as const, friction: [0, 1] as const } })),
+      { id: 'world', kind: 'environment', label: 'World', properties: { gravity: [-10, 10], restitution: [0, 1.5], friction: [0, 1] }, editableProperties: editable?.filter(property=>!tier || tier.worldProperties.includes(property)) },
+      ...level.tracks.map(track => ({ id: track.id, kind: 'surface', label: track.id, properties: { restitution: [0, 1.5] as const, friction: [0, 1] as const }, editableProperties: (level.editableSurfaceProperties || tier?.worldProperties.filter(property=>property !== 'gravity'))?.filter(property=>!tier || tier.worldProperties.includes(property)) })),
       ...(level.devices || []).flatMap<RuleContext['targets'][number]>(device => {
         switch (device.kind) {
           case 'conveyor': return [{ id: device.id, kind: device.kind, properties: { conveyor_speed: [-3, 3] as const } }];
-          case 'spring': return [{ id: device.id, kind: device.kind, properties: { spring_power: [0, 3] as const } }];
+          case 'spring': return [{ id: device.id, kind: device.kind, label: level.presentation === 'bakery' ? 'Toaster' : 'Spring', properties: { spring_power: [0, 3] as const } }];
           case 'fan': return [{ id: device.id, kind: device.kind, properties: { fan_power: [-2, 2] as const } }];
           case 'rotor': return [{ id: device.id, kind: device.kind, properties: { angular_speed: [-3, 3] as const } }];
           default: return [];
@@ -19,6 +22,10 @@ export function ruleContext(level: LevelDefinition): RuleContext {
     sensors: (level.devices || []).filter(device => device.kind === 'sensor').map(device => device.id),
     gates: (level.devices || []).filter(device => device.kind === 'gate').map(device => device.id),
   };
+  for(const target of context.targets) {
+    if(target.kind !== 'environment' && target.kind !== 'surface' && ((tier && !tier.devices.includes(target.kind)) || (level.editableDevices && !level.editableDevices.includes(target.id)))) target.editableProperties=[];
+  }
+  return context;
 }
 export function initialRules(level: LevelDefinition): RuleState {
   const state: RuleState = { gravity: level.initialGravity, values: { world: { restitution: level.environment?.restitution ?? 0, friction: level.environment?.friction ?? 0 } }, triggers: [] };

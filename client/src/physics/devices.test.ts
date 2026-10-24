@@ -11,7 +11,7 @@ const apply = (world: PhysicsWorld, texts: readonly string[]) => world.applyMess
   if (message.status !== 'ready') throw new Error(message.error);
   return { text, operations: messageOperations(message) };
 }));
-const simulate = (world: PhysicsWorld, ticks = 3600) => { world.start(); for (let i = 0; i < ticks && world.running; i++) world.step(); };
+const simulate = (world: PhysicsWorld, ticks = 3600) => { world.start(); for (let i = 0; i < ticks && !world.won && !world.timedOut; i++) {if(world.tutorialId)world.continueTutorial();world.step();} };
 
 describe('factory devices in Matter.js', () => {
   it('reaches the exit using the teammate’s four environment rules', () => {
@@ -52,7 +52,8 @@ describe('factory devices in Matter.js', () => {
     } finally { world.destroy(); }
   });
   it('spinning rotors affect the core only on contact', () => {
-    const world = new PhysicsWorld(realityBreakdown);
+    // Rotation remains a supported runtime device, outside the first three tiers.
+    const world = new PhysicsWorld({...realityBreakdown,number:7,devices:[...realityBreakdown.devices!,{kind:'rotor',id:'rotor-main',position:[748,180],radius:26,angularSpeed:0}]});
     try {
       world.setGravity(0); apply(world, ['Make the wheel spin clockwise at speed 1']);
       Matter.Body.setPosition(world.ball, { x: 748, y: 140 });

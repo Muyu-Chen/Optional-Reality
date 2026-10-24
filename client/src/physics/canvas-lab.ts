@@ -1,6 +1,7 @@
 import type { LevelDefinition } from '../levels/types';
 import { PhysicsWorld, STEP_MS, type Telemetry } from './world';
 import { drawBakery } from './bakery-renderer';
+import { drawGeometry } from './geometry-renderer';
 
 export class CanvasLab {
   world: PhysicsWorld;
@@ -28,7 +29,8 @@ export class CanvasLab {
   }
   report() { this.reportState(this.world.snapshot()); }
   reset() {
-    this.world.destroy(); this.world = new PhysicsWorld(this.level); this.trail = []; this.accumulator = 0;
+    const seen = this.world.seenTutorials;
+    this.world.destroy(); this.world = new PhysicsWorld(this.level,seen); this.trail = []; this.accumulator = 0;
     this.report(); this.draw();
   }
   retry() {
@@ -63,7 +65,6 @@ export class CanvasLab {
   private draw() {
     const ctx = this.context;
     const { width, height } = this.level.viewport;
-    const { ball, exit, tracks, guideLines, instructions } = this.level;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.fillStyle = this.level.presentation === 'bakery' ? '#f5edde' : '#f2f5ed'; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -77,46 +78,9 @@ export class CanvasLab {
     const scale = Math.min(availableWidth / width, availableHeight / height);
     ctx.setTransform(scale, 0, 0, scale, left+(availableWidth-width*scale)/2, top+(availableHeight-height*scale)/2);
     if (this.level.presentation === 'bakery') { drawBakery(ctx, this.world, this.trail); return; }
-    ctx.fillStyle = '#dce5d8';
-    for (let x = 18; x < width; x += 28) for (let y = 18; y < height; y += 28) { ctx.beginPath(); ctx.arc(x, y, 1, 0, Math.PI * 2); ctx.fill(); }
-    ctx.font = '14px ui-monospace, monospace'; ctx.fillStyle = '#7b8a7e';
-    ctx.fillText('OPTIONAL REALITY / EXPERIMENTAL PHYSICS DIVISION', 30, 35);
-    ctx.fillStyle = '#263a30'; ctx.fillRect(30, 55, 42, 42);
-    ctx.fillStyle = '#fafcf7'; ctx.font = 'bold 28px system-ui, sans-serif'; ctx.fillText(String(this.level.number).padStart(2, '0'), 34, 86);
-    ctx.font = '14px ui-monospace, monospace'; ctx.fillStyle = '#53695b';
-    ctx.fillText(instructions.canvasHeading, 87, 72); ctx.fillText('OBSERVE / QUEUE / SEND', 87, 91);
-    ctx.strokeStyle = '#c4d0c0'; ctx.lineWidth = 2;
-    for (const { from, to } of guideLines) { ctx.beginPath(); ctx.moveTo(...from); ctx.lineTo(...to); ctx.stroke(); }
-    ctx.strokeStyle = '#263a30'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    for (const track of tracks) {
-      ctx.lineWidth = track.thickness;
-      ctx.beginPath(); track.points.forEach(([x,y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)); ctx.stroke();
-    }
-    if (this.trail.length > 1) {
-      ctx.strokeStyle = '#8ca994'; ctx.lineWidth = 2; ctx.setLineDash([3, 7]);
-      ctx.beginPath(); this.trail.forEach(([x,y],i) => i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y)); ctx.stroke(); ctx.setLineDash([]);
-    }
-    ctx.fillStyle = this.world.won ? '#407d53' : '#263a30'; ctx.fillRect(exit.x, exit.y, exit.width, exit.height);
-    ctx.strokeStyle = '#f7fbef'; ctx.lineWidth = 3;
-    const centreX = exit.x + exit.width / 2, centreY = exit.y + exit.height / 2;
-    const arrowSize = Math.min(exit.width * .26, exit.height * .2);
-    ctx.beginPath(); ctx.moveTo(centreX - arrowSize, centreY); ctx.lineTo(centreX + arrowSize, centreY);
-    ctx.moveTo(centreX + arrowSize * .4, centreY - arrowSize * .6); ctx.lineTo(centreX + arrowSize, centreY); ctx.lineTo(centreX + arrowSize * .4, centreY + arrowSize * .6); ctx.stroke();
-    ctx.fillStyle = '#263a30'; ctx.font = 'bold 17px ui-monospace, monospace'; ctx.textAlign = 'center';
-    ctx.fillText(exit.label, centreX, exit.y + exit.height + 26); ctx.textAlign = 'left';
-    const { x, y } = this.world.ball.position;
-    ctx.fillStyle = '#d5eb8d'; ctx.strokeStyle = '#263a30'; ctx.lineWidth = 2.5;
-    ctx.beginPath(); ctx.arc(x, y, ball.radius, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#f3f9d9'; ctx.beginPath(); ctx.arc(x - ball.radius * .3, y - ball.radius * .3, ball.radius * .26, 0, Math.PI * 2); ctx.fill();
-    if (!this.world.started) {
-      ctx.fillStyle = '#758778'; ctx.font = '15px ui-monospace, monospace'; ctx.textAlign = 'center';
-      ctx.fillText(ball.label, x, y - ball.radius - 8); ctx.textAlign = 'left';
-      ctx.fillText(instructions.readyCaption, 47, height - 23);
-    } else {
-      ctx.fillStyle = '#758778'; ctx.font = '15px ui-monospace, monospace';
-      ctx.fillText(this.world.won ? 'EXPERIMENT COMPLETE' : this.world.timedOut ? 'TIME IS UP. RESET TO TRY AGAIN.' : 'YOUR TIMING CHANGES THE OUTCOME.', 47, height - 23);
-    }
+    drawGeometry(ctx,this.world,this.trail);
   }
+
   destroy() {
     cancelAnimationFrame(this.frame); this.observer.disconnect();
     document.removeEventListener('visibilitychange', this.visible); this.world.destroy();

@@ -23,12 +23,12 @@ describe('environment rule semantics', () => {
       { type: 'set_gravity' as const, acceleration: 2 },
       { type: 'set_property' as const, target: 'world', property: 'restitution' as const, value: .7 },
     ] }];
-    const state = initialRules(gravityLab);
-    const result = applyBatch(messages, ['multi'], state, 5, ruleContext(gravityLab));
+    const state = initialRules(realityBreakdown);
+    const result = applyBatch(messages, ['multi'], state, 5, context);
     expect(result.rules.gravity).toBe(2);
     expect(result.rules.values.world.restitution).toBe(.7);
     expect(result.events).toHaveLength(1);
-    expect(state.gravity).toBe(0);
+    expect(state.gravity).toBe(8);
     expect(result.messages[0].status).toBe('sent');
   });
   it('rejects core edits, direct gate edits, foreign devices, and nonfinite values', () => {
@@ -46,6 +46,7 @@ describe('environment rule semantics', () => {
     expect(parseCommand('Set core friction to 0', context).error).toBeDefined();
     expect(prepareMessage('id', 'Set fan power to 999', context, initialRules(realityBreakdown)).status).toBe('error');
     expect(parseCommand('Set fan power to .45', context).operation).toMatchObject({ value: .45 });
-    expect(parseCommand('Make the wheel spin counterclockwise at speed 1', context).operation).toMatchObject({ value: -1 });
+    const rotorContext={...context,targets:[...context.targets,{id:'rotor-test',kind:'rotor',properties:{angular_speed:[-3,3] as const}}]};
+    expect(parseCommand('Make the wheel spin counterclockwise at speed 1', rotorContext).operation).toMatchObject({ value: -1 });
   });
 });

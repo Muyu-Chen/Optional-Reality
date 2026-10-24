@@ -8,11 +8,12 @@ import { requestJson } from './ai-client';
 import { initialRules } from '../../client/src/levels/rules';
 import { gravityLab } from '../../client/src/levels/gravity-lab';
 import { realityBreakdown } from '../../client/src/levels/reality-breakdown';
+import { bounce } from '../../client/src/levels/bounce';
 import type { CompileRequest } from '../../shared/compiler';
 
 const config = loadConfig({ AI_API_KEY: 'test-only-never-a-real-key' });
-const request = (): CompileRequest => ({ requestId: 'request-1', levelId: gravityLab.id, sceneVersion: 2, queueRevision: 4,
-  messages: [{ id: 'm1', text: 'Halve the gravity and make the surfaces more bouncy.' }], rules: { ...initialRules(gravityLab), gravity: 2 },
+const request = (): CompileRequest => ({ requestId: 'request-1', levelId: realityBreakdown.id, sceneVersion: 2, queueRevision: 4,
+  messages: [{ id: 'm1', text: 'Halve the gravity and make the surfaces more bouncy.' }], rules: { ...initialRules(realityBreakdown), gravity: 2 },
 });
 const answer = (operations: unknown[], id = 'm1', error: string | null = null) => ({ messages: [{ id, operations, error }] });
 const provider = (output: unknown, reason = 'stop') => vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ choices: [{ finish_reason: reason, message: { content: JSON.stringify(output) } }] }), { headers: { 'content-type': 'application/json' } }));
@@ -47,6 +48,14 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
     const prompt = JSON.parse(String(fetcher.mock.calls[0][1]?.body)).messages[1].content;
     expect(prompt).toContain('toaster');
     expect(prompt).toContain('vertically upward');
+  });
+  it('enforces each chapter’s permissions even when a model returns otherwise-valid operations',async()=>{
+    const tutorial={...request(),levelId:gravityLab.id,rules:initialRules(gravityLab)};
+    await expect(compileRules(tutorial,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:.9}])))).rejects.toThrow('cannot be edited');
+    const reflection={...request(),levelId:bounce.id,rules:initialRules(bounce)};
+    await expect(compileRules(reflection,config,undefined,provider(answer([{type:'reverse_gravity'}])))).rejects.toThrow('cannot be edited');
+    const result=await compileRules(reflection,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:.9}])));
+    expect(result.messages[0].operations).toHaveLength(1);
   });
   it.each([
     answer([{ type: 'set_property', target: 'ball-A', property: 'friction', value: 0 }]),

@@ -30,7 +30,16 @@ export function drawBakery(ctx: Ctx, world: PhysicsWorld, trail: readonly Point[
       }
       case 'spring': {
         const { x, y } = device.area;
-        const popped = world.devices.firedSprings.has(device.id) ? 7 : 0;
+        const state=world.devices.springs.get(device.id);
+        const charging=state?.phase === 'charging';
+        const fraction=charging ? Math.min(1,state.elapsed/(device.chargeSeconds || .6)) : 0;
+        const popped = state?.phase === 'launched' ? 7 : -fraction*8;
+        if(charging){
+          ctx.strokeStyle='#8f9c57';ctx.lineWidth=2;ctx.setLineDash([4,4]);
+          ctx.strokeRect(x-22,y+9,70,55);ctx.setLineDash([]);
+          bakeryText(ctx,'STORING ENERGY',x-24,y-2,10,'#647b43','700');
+          roundRect(ctx,x-14,y+58,48,3,1,'#d0cfaf');roundRect(ctx,x-14,y+58,Math.max(1,48*fraction),3,1,'#7b9052');
+        }
         roundRect(ctx,x-15,y+21,49,31,6,'#bdbea7');
         roundRect(ctx,x-9,y+17-popped,36,7,3,'#626e55');
         const coil: Point[] = [[x+5,y+46]];
@@ -98,11 +107,6 @@ export function drawBakery(ctx: Ctx, world: PhysicsWorld, trail: readonly Point[
   drawBread(ctx,x,y,r,world.ball.angle);
   if(!world.started) bakeryText(ctx,'START',143,389,10,'#806d51','600');
   bakeryText(ctx,'THE LAST ORDER / CHANGE THE RULES. CHOOSE THE MOMENT.',27,530,10,'#806d51');
-  if(world.won || world.timedOut){
-    roundRect(ctx,218,205,524,105,6,'#fffaf0ef');
-    bakeryText(ctx,world.won?'One last loaf. Delivered.':world.fell?'Mind the gap. Try a different timing.':'Time is up. Try a different timing.',239,246,23,world.won?'#537640':'#8b6241','700');
-    bakeryText(ctx,'Retry keeps your rules. Reset starts fresh.',240,280,14,'#806d51');
-  }
 }
 function strokePath(ctx: Ctx, points: readonly Point[], color = '#b9a58a', width = 1) {
   ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
@@ -136,7 +140,7 @@ function drawBakeryRoom(ctx: Ctx) {
  // Small engraved sign, not a laboratory HUD.
  bakeryText(ctx,'THE CORNER BAKERY',28,37,19,'#5d4a34','700');
  bakeryText(ctx,'A SMALL SHOP. DIFFERENT LAWS.',28,61,12,'#998368');
- roundRect(ctx,788,22,145,51,5,'#e9dfcd');bakeryText(ctx,'ORDER 08',804,44,12,'#806a4d','700');bakeryText(ctx,'ONE LOAF / AWAITING PICKUP',797,61,8,'#9b8260');
+ roundRect(ctx,788,22,145,51,5,'#e9dfcd');bakeryText(ctx,'ORDER 03',804,44,12,'#806a4d','700');bakeryText(ctx,'ONE LOAF / AWAITING PICKUP',797,61,8,'#9b8260');
  strokePath(ctx,[[28,80],[933,80]],'#d9cbb6');
  // Street-facing window: quiet buildings, striped awning, evening light.
  roundRect(ctx,43,125,243,195,5,'#b69a73');roundRect(ctx,50,132,229,181,2,'#dfdfce');
@@ -175,7 +179,7 @@ function drawBakeryRoom(ctx: Ctx) {
  ctx.fillStyle='#d4b580';ctx.beginPath();ctx.moveTo(897,238);ctx.lineTo(904,213);ctx.lineTo(914,220);ctx.lineTo(924,213);ctx.lineTo(936,220);ctx.lineTo(945,213);ctx.lineTo(952,238);ctx.lineTo(952,350);ctx.lineTo(897,350);ctx.closePath();ctx.fill();
  ctx.fillStyle='#bb9863';ctx.fillRect(897,239,7,111);ctx.fillStyle='#e0c695';ctx.fillRect(904,239,41,111);
  strokePath(ctx,[[916,252],[916,237],[936,237],[936,252]],'#a18354',2);
- roundRect(ctx,908,267,33,39,2,'#ece0c4');bakeryText(ctx,'08',914,291,17,'#947b53','600');bakeryText(ctx,'EXIT',909,326,11,'#9b8054','600');
+ roundRect(ctx,908,267,33,39,2,'#ece0c4');bakeryText(ctx,'03',914,291,17,'#947b53','600');bakeryText(ctx,'EXIT',909,326,11,'#9b8054','600');
  // Counter bodies stop precisely at the original collision edges.
  roundRect(ctx,55,434,440,47,1,'#b39268');
  for(let x=68;x<400;x+=137){roundRect(ctx,x,443,123,29,2,'#bd9e75');strokePath(ctx,[[x+6,446],[x+116,446]],'#cbae84');roundRect(ctx,x+49,448,25,3,1,'#806c50');}

@@ -13,7 +13,7 @@ export const OperationSchema = z.discriminatedUnion('type', [
 ]);
 export type Operation = z.infer<typeof OperationSchema>;
 export interface RuleContext {
-  targets: { id: string; kind: string; properties: Partial<Record<PropertyName, readonly [number, number]>> }[];
+  targets: { id: string; kind: string; label?: string; properties: Partial<Record<PropertyName, readonly [number, number]>>; editableProperties?: readonly PropertyName[] }[];
   sensors: string[];
   gates: string[];
 }
@@ -34,6 +34,10 @@ export function propertyRange(context: RuleContext, target: string, property: Pr
 export function checkValue(context: RuleContext, target: string, property: PropertyName, value: number) {
   const [minimum, maximum] = propertyRange(context, target, property);
   if (!Number.isFinite(value) || value < minimum || value > maximum) throw new Error(`${target}.${property} must be between ${minimum} and ${maximum}.`);
+}
+function checkEditable(context: RuleContext, target: string, property: PropertyName) {
+  const item = context.targets.find(item => item.id === target);
+  if (item?.editableProperties && !item.editableProperties.includes(property)) throw new Error(`${item.label || target}: ${property} cannot be edited in this level.`);
 }
 export function validateRuleState(input: unknown, context: RuleContext): RuleState {
   const state = RuleStateSchema.parse(input);
@@ -61,10 +65,12 @@ export function applyRules(current: RuleState, candidates: readonly unknown[], c
       continue;
     }
     if (operation.type === 'set_gravity' || operation.type === 'reverse_gravity') {
+      checkEditable(context, 'world', 'gravity');
       const value = operation.type === 'set_gravity' ? operation.acceleration : -next.gravity;
       checkValue(context, 'world', 'gravity', value); next.gravity = value || 0; continue;
     }
     const { target, property } = operation;
+    checkEditable(context, target, property);
     const previous = property === 'gravity' && target === 'world' ? next.gravity : next.values[target]?.[property]
       ?? (context.targets.find(item => item.id === target)?.kind === 'surface' ? next.values.world?.[property] : undefined);
     const value = operation.type === 'set_property' ? operation.value : previous === undefined ? NaN : previous * operation.factor;

@@ -12,12 +12,12 @@ function touchesExit({ x, y }: Matter.Vector, radius: number, exit: LevelDefinit
   const closestY = Math.max(exit.y, Math.min(y, exit.y + exit.height));
   return (x - closestX) ** 2 + (y - closestY) ** 2 <= radius ** 2;
 }
-export interface Telemetry { running: boolean; started: boolean; gravity: number; tick: number; won: boolean; timedOut: boolean; fell: boolean; x: number; y: number }
+export interface Telemetry { running: boolean; started: boolean; gravity: number; tick: number; won: boolean; timedOut: boolean; fell: boolean; tutorialId: string | null; x: number; y: number }
 
 export function initialTelemetry(level: LevelDefinition): Telemetry {
   return {
     running: false, started: false, gravity: level.initialGravity, tick: 0,
-    won: false, timedOut: false, fell: false, x: level.ball.position[0], y: level.ball.position[1],
+    won: false, timedOut: false, fell: false, tutorialId: null, x: level.ball.position[0], y: level.ball.position[1],
   };
 }
 
@@ -32,13 +32,16 @@ export class PhysicsWorld {
   won = false;
   timedOut = false;
   fell = false;
+  tutorialId: string | null = null;
+  readonly seenTutorials: Set<string>;
   rules: RuleState;
   readonly devices: DeviceRuntime;
   private history: { before: RuleState; operations: readonly Operation[]; text: string }[] = [];
   private readonly surfaces = new Map<string, Matter.Body[]>();
   get commandCount() { return this.history.length; }
 
-  constructor(readonly level: LevelDefinition) {
+  constructor(readonly level: LevelDefinition, seenTutorials: Iterable<string> = []) {
+    this.seenTutorials = new Set(seenTutorials);
     const { viewport, ball, initialGravity } = level;
     this.rules = initialRules(level);
     this.gravity = initialGravity;
@@ -97,7 +100,7 @@ export class PhysicsWorld {
   }
   // A fresh attempt with the current rules. This differs from a tick-by-tick history replay.
   retryWithRules() {
-    const next = new PhysicsWorld(this.level);
+    const next = new PhysicsWorld(this.level,this.seenTutorials);
     next.rules = structuredClone(this.rules);
     next.history = structuredClone(this.history);
     next.syncRules();
@@ -111,11 +114,18 @@ export class PhysicsWorld {
     }
     this.devices.syncRules(this.rules);
   }
-  start() { if (!this.won && !this.timedOut) { this.started = true; this.running = true; } }
+  start() { if (!this.won && !this.timedOut && !this.tutorialId) { this.started = true; this.running = true; } }
+  continueTutorial() { this.tutorialId=null;this.start(); }
   pause() { this.running = false; }
   step() {
     if (!this.running || this.won || this.timedOut) return;
     this.devices.beforeStep(this.rules, STEP_MS / 1000);
+    for(const event of this.devices.takeEvents()) {
+      const tutorial=this.level.tutorials?.find(item => item.deviceId === event.deviceId);
+      if(event.type === 'spring_charging' && tutorial && !this.seenTutorials.has(tutorial.id)) {
+        this.seenTutorials.add(tutorial.id);this.tutorialId=tutorial.id;this.pause();return;
+      }
+    }
     Engine.update(this.engine, STEP_MS);
     this.tick++;
     this.devices.afterStep(this.rules);
@@ -130,7 +140,7 @@ export class PhysicsWorld {
     }
   }
   snapshot(): Telemetry {
-    return { running: this.running, started: this.started, gravity: this.gravity, tick: this.tick, won: this.won, timedOut: this.timedOut, fell: this.fell, x: this.ball.position.x, y: this.ball.position.y };
+    return { running: this.running, started: this.started, gravity: this.gravity, tick: this.tick, won: this.won, timedOut: this.timedOut, fell: this.fell, tutorialId: this.tutorialId, x: this.ball.position.x, y: this.ball.position.y };
   }
   destroy() { Composite.clear(this.engine.world, false); Engine.clear(this.engine); }
 }

@@ -14,6 +14,8 @@ export const gravityLab: LevelDefinition = {
   viewport: { width: 800, height: 510, pixelsPerMetre: 80 },
   timeLimitSeconds: 30,
   initialGravity: 0,
+  editableWorldProperties: ['gravity'],
+  editableSurfaceProperties: [],
   ball: {
     id: 'ball-A', label: 'BALL A', position: [165, 135], velocity: [0, 0],
     radius: 17, restitution: .02,

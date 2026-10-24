@@ -1,3 +1,4 @@
+import type { PropertyName } from '../../../shared/rules';
 export type Point = readonly [x: number, y: number];
 
 export interface Line {
@@ -14,7 +15,7 @@ export interface TrackDefinition {
 export interface Rect { readonly x: number; readonly y: number; readonly width: number; readonly height: number }
 export type DeviceDefinition =
   | { readonly kind: 'conveyor'; readonly id: string; readonly area: Rect; readonly speed: number }
-  | { readonly kind: 'spring'; readonly id: string; readonly area: Rect; readonly power: number; readonly launchBase: Point; readonly launchPerPower: Point }
+  | { readonly kind: 'spring'; readonly id: string; readonly area: Rect; readonly power: number; readonly launchBase: Point; readonly launchPerPower: Point; readonly chargeSeconds?: number }
   | { readonly kind: 'fan'; readonly id: string; readonly area: Rect; readonly power: number; readonly acceleration: Point }
   | { readonly kind: 'rotor'; readonly id: string; readonly position: Point; readonly radius: number; readonly angularSpeed: number }
   | { readonly kind: 'sensor'; readonly id: string; readonly position: Point; readonly radius: number }
@@ -24,8 +25,13 @@ export type DeviceDefinition =
 export interface LevelDefinition {
   readonly id: string;
   readonly number: number;
+  readonly stage?: number;
   readonly title: string;
   readonly presentation?: 'bakery';
+  readonly editableWorldProperties?: readonly PropertyName[];
+  readonly editableSurfaceProperties?: readonly PropertyName[];
+  readonly editableDevices?: readonly string[];
+  readonly tutorials?: readonly { readonly id: string; readonly deviceId: string; readonly title: string; readonly body: string }[];
   readonly viewport: {
     readonly width: number;
     readonly height: number;
