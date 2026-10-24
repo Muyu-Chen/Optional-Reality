@@ -21,6 +21,10 @@
 | `tutorials` | 首次机关接触的教学信息，独立于模型规则 |
 | `presentation` | 当前可选面包店画风，其余使用几何物理绘图 |
 | `tracks[].feature` | 可选 `bounce`，强调表面回弹特性；不改变碰撞规则或编辑权限 |
+| `tracks[].material / editableProperties` | 表面自己的初始材质与修改权限；局部值覆盖世界默认值 |
+| `tracks[].label / aliases` | 模型与本地命令可使用的表面名称、别名 |
+| `ball.shape` | 可选受保护滑块尺寸；未设置时仍是圆球 |
+| `exit.condition` | 可选 settle：完整进入目标、速度低于 maxSpeed（m/s）并连续停留 seconds；省略时接触即通关 |
 | `instructions` | 目标、提示、场景别名、例子与输入建议 |
 
 坐标原点在左上角，位置和尺寸使用世界坐标，速度使用 m/s，重力使用 m/s²。显示缩放与留给浮动控件的空间不改变物理。

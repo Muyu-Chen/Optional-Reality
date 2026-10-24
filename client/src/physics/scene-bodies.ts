@@ -43,9 +43,14 @@ export function createSceneBodies(level: LevelDefinition) {
     rails.push(...bodies);
   }
   const { ball: definition, viewport } = level;
-  const ball = Bodies.circle(...definition.position, definition.radius, {
+  const options = {
     friction: 1, frictionStatic: 0, frictionAir: 0, restitution: definition.restitution, label: definition.id,
-  });
+  };
+  const ball = definition.shape?.kind === 'box'
+    ? Bodies.rectangle(...definition.position, definition.shape.width, definition.shape.height, options)
+    : Bodies.circle(...definition.position, definition.radius, options);
+  // The friction lesson uses a sliding block, with rotation constrained like a slider.
+  if (definition.shape?.kind === 'box') Body.setInertia(ball, Infinity);
   // Matter normalises velocity to its 60 Hz reference step.
   Body.setVelocity(ball, {
     x: definition.velocity[0] * viewport.pixelsPerMetre / 60,

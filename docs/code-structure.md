@@ -28,6 +28,7 @@
 | `client/src/levels/` | 关卡数据、等级能力、初始规则和可修改权限 |
 | `physics/scene-bodies.ts` | 按关卡创建轨道、边界与任务物体，保留刚体插入顺序 |
 | `physics/world.ts` | 固定时间步、规则应用、历史、教学与成败状态 |
+| `physics/goal.ts` | 独立的形状接触、完整进入、速度和连续停留判定；暂停时不推进 |
 | `physics/devices.ts` | 接触判断、风场、传送带、蓄力、转轮和感应开门 |
 | `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
 | `physics/geometry-renderer.ts` | 前两级几何场景绘图 |

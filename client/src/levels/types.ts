@@ -8,7 +8,11 @@ export interface Line {
 
 export interface TrackDefinition {
   readonly id: string;
-  readonly feature?: 'bounce';
+  readonly label?: string;
+  readonly aliases?: readonly string[];
+  readonly feature?: 'bounce' | 'friction';
+  readonly material?: { readonly restitution?: number; readonly friction?: number };
+  readonly editableProperties?: readonly PropertyName[];
   readonly points: readonly Point[];
   readonly thickness: number;
 }
@@ -53,6 +57,7 @@ export interface LevelDefinition {
     readonly velocity: Point;
     readonly radius: number;
     readonly restitution: number;
+    readonly shape?: { readonly kind: 'box'; readonly width: number; readonly height: number };
   };
   readonly tracks: readonly TrackDefinition[];
   readonly guideLines: readonly Line[];
@@ -63,6 +68,7 @@ export interface LevelDefinition {
     readonly y: number;
     readonly width: number;
     readonly height: number;
+    readonly condition?: { readonly kind: 'settle'; readonly seconds: number; readonly maxSpeed: number };
   };
   readonly instructions: {
     readonly objective: string;

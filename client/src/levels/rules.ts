@@ -8,7 +8,7 @@ export function ruleContext(level: LevelDefinition): RuleContext {
   const context: RuleContext = {
     targets: [
       { id: 'world', kind: 'environment', label: 'World', properties: { gravity: [-10, 10], restitution: [0, 1.5], friction: [0, 1] }, editableProperties: editable?.filter(property=>!tier || tier.worldProperties.includes(property)) },
-      ...level.tracks.map(track => ({ id: track.id, kind: 'surface', label: track.id, properties: { restitution: [0, 1.5] as const, friction: [0, 1] as const }, editableProperties: (level.editableSurfaceProperties || tier?.worldProperties.filter(property=>property !== 'gravity'))?.filter(property=>!tier || tier.worldProperties.includes(property)) })),
+      ...level.tracks.map(track => ({ id: track.id, kind: 'surface', label: track.label || track.id, aliases: track.aliases, properties: { restitution: [0, 1.5] as const, friction: [0, 1] as const }, editableProperties: (track.editableProperties || level.editableSurfaceProperties || tier?.worldProperties.filter(property=>property !== 'gravity'))?.filter(property=>!tier || tier.worldProperties.includes(property)) })),
       ...(level.devices || []).flatMap<RuleContext['targets'][number]>(device => {
         switch (device.kind) {
           case 'conveyor': return [{ id: device.id, kind: device.kind, properties: { conveyor_speed: [-3, 3] as const } }];
@@ -29,6 +29,7 @@ export function ruleContext(level: LevelDefinition): RuleContext {
 }
 export function initialRules(level: LevelDefinition): RuleState {
   const state: RuleState = { gravity: level.initialGravity, values: { world: { restitution: level.environment?.restitution ?? 0, friction: level.environment?.friction ?? 0 } }, triggers: [] };
+  for (const track of level.tracks) if (track.material) state.values[track.id] = { ...track.material };
   for (const device of level.devices || []) {
     switch (device.kind) {
       case 'conveyor': state.values[device.id] = { conveyor_speed: device.speed }; break;

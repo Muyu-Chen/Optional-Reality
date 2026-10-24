@@ -13,7 +13,7 @@ export const OperationSchema = z.discriminatedUnion('type', [
 ]);
 export type Operation = z.infer<typeof OperationSchema>;
 export interface RuleContext {
-  targets: { id: string; kind: string; label?: string; properties: Partial<Record<PropertyName, readonly [number, number]>>; editableProperties?: readonly PropertyName[] }[];
+  targets: { id: string; kind: string; label?: string; aliases?: readonly string[]; properties: Partial<Record<PropertyName, readonly [number, number]>>; editableProperties?: readonly PropertyName[] }[];
   sensors: string[];
   gates: string[];
 }

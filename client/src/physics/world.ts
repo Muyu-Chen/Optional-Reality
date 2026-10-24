@@ -4,15 +4,11 @@ import { initialRules, ruleContext } from '../levels/rules';
 import { applyRules, type Operation, type RuleState } from '../../../shared/rules';
 import { DeviceRuntime } from './devices';
 import { createSceneBodies } from './scene-bodies';
+import { GoalTracker } from './goal';
 
 const { Engine, Composite } = Matter;
 export const STEP_MS = 1000 / 120;
 
-function touchesExit({ x, y }: Matter.Vector, radius: number, exit: LevelDefinition['exit']) {
-  const closestX = Math.max(exit.x, Math.min(x, exit.x + exit.width));
-  const closestY = Math.max(exit.y, Math.min(y, exit.y + exit.height));
-  return (x - closestX) ** 2 + (y - closestY) ** 2 <= radius ** 2;
-}
 export interface Telemetry { running: boolean; started: boolean; gravity: number; tick: number; won: boolean; timedOut: boolean; fell: boolean; tutorialId: string | null; x: number; y: number }
 
 export function initialTelemetry(level: LevelDefinition): Telemetry {
@@ -37,6 +33,7 @@ export class PhysicsWorld {
   readonly seenTutorials: Set<string>;
   rules: RuleState;
   readonly devices: DeviceRuntime;
+  readonly goal: GoalTracker;
   private history: { before: RuleState; operations: readonly Operation[]; text: string }[] = [];
   private readonly surfaces: Map<string, Matter.Body[]>;
   get commandCount() { return this.history.length; }
@@ -53,6 +50,7 @@ export class PhysicsWorld {
     this.surfaces = scene.surfaces;
     Composite.add(this.engine.world, scene.bodies);
     this.devices = new DeviceRuntime(level, this.engine, this.ball);
+    this.goal = new GoalTracker(level);
     this.syncRules();
   }
 
@@ -108,11 +106,10 @@ export class PhysicsWorld {
     Engine.update(this.engine, STEP_MS);
     this.tick++;
     this.devices.afterStep(this.rules);
-    // Any part of the ball touching the visible exit counts, including its edges.
-    if (touchesExit(this.ball.position, this.level.ball.radius, this.level.exit)) {
+    if (this.goal.update(this.ball, STEP_MS / 1000)) {
       this.won = true;
       this.running = false;
-    } else if (this.tick >= this.limitTicks || (this.level.failOnFall && this.ball.position.y - this.level.ball.radius > this.level.viewport.height)) {
+    } else if (this.tick >= this.limitTicks || (this.level.failOnFall && this.ball.bounds.min.y > this.level.viewport.height)) {
       this.fell = this.tick < this.limitTicks;
       this.timedOut = true;
       this.running = false;
