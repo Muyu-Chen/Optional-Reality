@@ -6,7 +6,9 @@
 | --- | --- | --- |
 | 02.2 Not Too High / `multi-bounce` | `Set surface bounce to 0.9` 开始；第一次弹起后、第二次着地前发送 `Set surface bounce to 0.5` | 经两块蓝色板到达第二块上方出口；第二次过强会从出口上方经过 |
 | 02.3 Brake Before the Edge / `friction-runway` | `Set surface friction to 0` 开始；整个滑块进入绿色区域后发送 `Set surface friction to 0.3` | 完整停在区域内，速度 ≤ 0.12 m/s，连续 0.75 秒 |
-| 02.4 Catch, Don’t Bounce / `catch-cup` | `Set launch pad bounce to 1.1` 开始；飞行中发送 `Set cup bounce to 0` | 完整留在杯内，速度 ≤ 0.15 m/s，连续 0.8 秒 |
+| 02.4 Catch Tutorial / `catch-cup` | 提前准备发射板 1.1、杯底 0，两条均可在第一次碰撞前发送 | 局部表面教学；完整收球后自动确认，速度 ≤ 0.15 m/s，连续 0.8 秒 |
+
+接球杯定位为短教学，展示两个表面可以分别修改，不要求等到飞行中再发第二条。0.8 秒停留是避免擦边误判的自动确认，不作为独立的操作挑战。下一轮主线以同一规则在不同运动阶段的作用变化来设计，详见 [阶段式物理解谜](./phase-puzzles.md)。本页其余布局和物理验收记录仍对应现有版本。
 
 ## 视觉与物理
 
