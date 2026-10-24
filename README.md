@@ -16,7 +16,7 @@ Optional Reality is an experimental AI-powered physics sandbox where you can des
 - "Make the spring twice as stiff."
 - "Make A attract B using inverse-square gravity."
 
-这些是目标能力示例，当前尚未实现。自动识别「小球离开轨道」等场景条件属于后续扩展，首版先由用户观察并应用下一条指令。
+这些是目标能力示例。目前交互 demo 通过本地解析器支持增加、停止和反转重力；其余能力与模型接入仍待开发。自动识别「小球离开轨道」等场景条件属于后续扩展，首版先由用户观察并应用指令。
 
 ### Guided Experiments + Free Sandbox
 
@@ -39,7 +39,7 @@ AI 负责将用户意图编译为声明式操作；命令队列与规则引擎�
 
 例如，先准备 `turn off the gravity`，看到小球离开轨道时再应用。弹簧实验则可提前排好 `add gravity`、`reverse the gravity`，分别在开始下落和再次下落时执行。
 
-「一起发」指批量准备整组指令；规则仍逐条生效。`reverse gravity` 这类相对操作应在执行时读取当前状态，再计算结果。延迟执行和引擎事件触发以后再扩展。
+当前 demo 允许发送下一条 ready 消息，也可以选择多条一起执行；同批操作按队列顺序应用，重力以最后一条操作的结果为准。需要观察中间运动时，应分批发送。`reverse gravity` 这类相对操作在执行时读取当前状态，再计算结果。延迟执行和引擎事件触发以后再扩展。
 
 ### 让实验可以比较
 
@@ -63,8 +63,27 @@ AI 负责将用户意图编译为声明式操作；命令队列与规则引擎�
 
 ## 当前状态
 
-🚧 **早期规划阶段** — 面向 **SBUHacks 2026**。
+🚧 **交互 demo 阶段** — 面向 **SBUHacks 2026**。
 
-目前已完成项目文档和独立的英文静态介绍页（含重力示意、弹簧与轨道 GIF），物理沙盒原型尚未实现。首要开发目标是跑通斜坡、小球、Exit 与自然语言改规则的完整流程；弹簧、自定义引力场等能力随后扩展。
+已实现英文静态介绍页，以及 React + Matter.js 的 Gravity Lab：零重力起步、消息保存与排序、右侧解析预览、手动分批发送、暂停与重置。消息文字保存在当前浏览器；刷新或 Reset 后世界恢复零重力，消息重新等待执行。
+
+demo 使用本地解析器，支持 `add gravity`（向下 1 m/s²）、`stop gravity`（零重力）和 `reverse gravity`。停止重力只取消加速度，保留当前速度。尚未接入模型 API、后端、Undo / Replay 或自由沙盒。
+
+### 本地运行
+
+需要支持 Vite 8 的 Node.js 环境；当前已在 Node.js 26 验证。仓库锁定依赖版本。
+
+```sh
+npm ci
+npm run dev
+```
+
+开发地址为 `http://127.0.0.1:5173/demo/`。`npm test` 验证队列和物理行为；`npm run build` 执行类型检查并构建到 `site/demo/`。构建后可与介绍页一起预览：
+
+```sh
+python3 -m http.server 8793 --bind 127.0.0.1 --directory site
+```
+
+打开 `http://127.0.0.1:8793/demo/`。构建产物、依赖与本地备份不提交到 Git。
 
 介绍页源码位于 `site/`，线上地址为 [muuyyy.cfd](https://muuyyy.cfd/)。本地可运行 `python3 -m http.server 8793 --bind 127.0.0.1 --directory site` 预览。旧 Muu Tech 官网完整保留，通过软链接切换；备份、部署与回滚说明见 [deploy/README.md](./deploy/README.md)。
