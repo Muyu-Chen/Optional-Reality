@@ -78,5 +78,5 @@ export function applyRules(current: RuleState, candidates: readonly unknown[], c
     if (property === 'gravity' && target === 'world') next.gravity = value || 0;
     else (next.values[target] ||= {})[property] = value || 0;
   }
-  return next;
+  return validateRuleState(next, context);
 }
