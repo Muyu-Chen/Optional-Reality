@@ -1,0 +1,62 @@
+.composer-dock {
+  position:absolute;
+  bottom:24px;
+  right:24px;
+  width:var(--dock-width);
+  border-radius:12px;
+  padding-bottom:12px
+}
+.composer-dock .dock-heading {
+  padding-bottom:10px
+}
+.connection-dot {
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:#a6ac98;
+  margin-left:auto
+}
+.connection-dot.connected {
+  background:#759950
+}
+.composer-dock textarea {
+  display:block;
+  width:calc(100% - 28px);
+  margin:0 14px;
+  border:0;
+  border-radius:6px;
+  background:#fffff64f;
+  padding:9px 10px;
+  resize:none;
+  outline:none;
+  min-height:75px;
+  max-height:100px;
+  font-size:13px;
+  line-height:1.6;
+  color:var(--ink)
+}
+.composer-dock textarea::placeholder {
+  color:#969a87
+}
+.composer-bottom {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin:10px 14px 0
+}
+.composer-bottom>span {
+  font-size:9px;
+  line-height:1.5;
+  color:var(--muted);
+  max-width:125px
+}
+.queue-button {
+  border:1px solid #8191664d;
+  border-radius:6px;
+  background:#5e765c16;
+  color:var(--ink);
+  padding:7px 10px;
+  white-space:nowrap;
+  font-size:11px
+}

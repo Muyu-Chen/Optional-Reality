@@ -1,0 +1,31 @@
+.bottom-hud {
+  position:absolute;
+  bottom:24px;
+  left:28px;
+  right:var(--scene-right);
+  display:flex;
+  align-items:center;
+  gap:20px;
+  font:10px ui-monospace,monospace;
+  color:var(--muted)
+}
+.bottom-hud>.quiet-button {
+  font-size:11px
+}
+.bottom-hud>span:last-child {
+  margin-left:auto
+}
+.game-toast {
+  position:absolute;
+  left:28px;
+  right:var(--scene-right);
+  bottom:48px;
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.6;
+  margin:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  pointer-events:none
+}

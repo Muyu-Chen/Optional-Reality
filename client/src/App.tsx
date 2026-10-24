@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { describeOperation } from '../../shared/commands';
 import { applyRules } from '../../shared/rules';
-import { applyBatch, messageOperations, prepareMessage, retryMessages, nextMessage, type AppliedEvent, type Message } from './domain/queue';
+import { applyBatch, messageOperations, prepareMessage, retryMessages, type AppliedEvent, type Message } from './domain/queue';
 import { gravityLab } from './levels/gravity-lab';
-import { levels, findLevel } from './levels/catalog';
-import { levelLabel, tierFor, tiers } from './levels/progression';
+import { findLevel } from './levels/catalog';
 import type { LevelDefinition } from './levels/types';
 import { initialRules, ruleContext } from './levels/rules';
 import { appliedFeedback } from './domain/feedback';
@@ -12,6 +10,13 @@ import { RuleCaption, type Caption } from './components/RuleCaption';
 import { compilerStatus, prepareWithAI } from './api/compiler';
 import { CanvasLab } from './physics/canvas-lab';
 import { initialTelemetry, STEP_MS, type Telemetry } from './physics/world';
+
+import { GameHud } from './components/GameHud';
+import { MessageQueue } from './components/MessageQueue';
+import { RuleComposer } from './components/RuleComposer';
+import { RulesDrawer } from './components/RulesDrawer';
+import { GameMenu } from './components/GameMenu';
+import { TeachingOverlay, TimingHint } from './components/TeachingOverlay';
 
 const id = () => crypto.randomUUID();
 function loadMessages(level: LevelDefinition): Message[] {
@@ -24,9 +29,6 @@ function loadMessages(level: LevelDefinition): Message[] {
   } catch { return []; }
 }
 function acceleration(value: number) { return `${Math.abs(value).toFixed(1)} m/s²`; }
-function Arrow({ direction = 'right' }: { direction?: 'right' | 'down' | 'up' }) {
-  return <span aria-hidden="true">{direction === 'right' ? '↗' : direction === 'down' ? '↓' : '↑'}</span>;
-}
 
 export default function App() {
   const [level, setLevel] = useState(() => findLevel(new URLSearchParams(window.location.search).get('level') || '') || gravityLab);
@@ -237,13 +239,11 @@ function Experiment({ level, chooseLevel }: { level: LevelDefinition; chooseLeve
     }
   }
 
-  const ready = messages.filter(message => message.status === 'ready');
   const chosen = messages.filter(message => selected.has(message.id) && message.status === 'ready');
   const pending = messages.filter(message => message.status !== 'sent');
   const toSend = chosen.length ? chosen : pending.slice(0,1).filter(message => message.status === 'ready');
-  let batchGravity = telemetry.gravity;
   let previewError = '';
-  try { let preview = labRef.current?.world.rules || initialRules(level); for (const message of toSend) preview = applyRules(preview, messageOperations(message), context); batchGravity = preview.gravity; }
+  try { let preview = labRef.current?.world.rules || initialRules(level); for (const message of toSend) preview = applyRules(preview, messageOperations(message), context); }
   catch (error) { previewError = error instanceof Error ? error.message : 'Rules need preparing again.'; }
   const ended = telemetry.won || telemetry.timedOut;
   const canSend = !ended && !preparing && !previewError && toSend.length > 0;
@@ -251,34 +251,48 @@ function Experiment({ level, chooseLevel }: { level: LevelDefinition; chooseLeve
   const secondsLeft = Math.max(0, Math.ceil(level.timeLimitSeconds - telemetry.tick * STEP_MS / 1000));
 
   const isBakery = level.presentation === 'bakery';
-  const current = nextMessage(messages);
   const world = labRef.current?.world;
   const tutorial = level.tutorials?.find(item => item.id === telemetry.tutorialId);
-  const nextLevel = levels[levels.findIndex(item => item.id === level.id)+1];
-  const sent = messages.filter(message => message.status === 'sent');
-  function renderMessage(message: Message, index: number) {
-    const operations = messageOperations(message);
-    return <article key={message.id} className={`queued-message ${index === 0 ? 'current-message' : 'upcoming-message'} ${message.status}`}>
-      <div className="message-copy"><div className="message-meta">{managing && <input type="checkbox" aria-label={`Select message ${index+1}`} checked={selected.has(message.id)} disabled={message.status !== 'ready'} onChange={() => toggleSelection(message.id)}/>}<span>{index === 0 ? 'UP NEXT' : String(index+1).padStart(2,'0')}</span><span>{message.status === 'draft' ? preparing ? 'Interpreting…' : 'Waiting' : message.status === 'error' ? 'Needs editing' : 'Ready'}</span></div><p className="message-text">{message.text}</p><p className={`parsed-rule ${message.status === 'error' ? 'error-copy' : ''}`}>{operations.length ? operations.map(operation => describeOperation(operation).title).join(' · ') : message.status === 'draft' ? 'Interpreting your rule…' : message.error || 'Your rule is being prepared.'}</p>
-        {(managing || message.status === 'error') && <div className="message-actions"><button aria-label={`Edit message ${index+1}`} onClick={() => {setEditing(message.id);setInput(message.text);}}>Edit</button><button aria-label={`Delete message ${index+1}`} onClick={() => removeMessage(message.id)}>Delete</button>{managing && <><button aria-label={`Move message ${index+1} earlier`} disabled={index === 0} onClick={() => moveMessage(message.id,-1)}>↑</button><button aria-label={`Move message ${index+1} later`} disabled={index === pending.length-1} onClick={() => moveMessage(message.id,1)}>↓</button></>}</div>}
-      </div>
-      {index === 0 && <button className="send-now" disabled={!canSend || current?.status !== 'ready'} onClick={() => send([message.id])}>Send now <span aria-hidden="true">↗</span></button>}
-    </article>;
-  }
   return <main className={`game-shell ${isBakery ? 'bakery-theme' : ''}`}>
     <canvas className="game-canvas" ref={canvasRef} width={level.viewport.width} height={level.viewport.height} role="img" aria-label={level.instructions.sceneDescription}/>
-    <header className="game-hud"><a href="/" className="game-brand" aria-label="Optional Reality home">or</a><div className="game-title"><span>OPTIONAL REALITY / {levelLabel(level)}</span><h1>{level.title}</h1><p>{level.instructions.objective}</p></div><div className="hud-controls"><span className={`game-clock ${secondsLeft <= 5 ? 'urgent' : ''}`} data-testid="time-left">{secondsLeft}<small>s</small></span><button className="icon-button" aria-label="Try again" title="Try again" onClick={retryWorld}>↻</button><button className="icon-button" aria-label={telemetry.started && !telemetry.running && !menuOpen && !tutorial ? 'Resume game' : 'Pause menu'} disabled={ended} onClick={telemetry.started && !telemetry.running && !menuOpen && !tutorial ? resumeGame : openMenu}>{telemetry.started && !telemetry.running && !menuOpen && !tutorial ? '▷' : 'Ⅱ'}</button></div></header>
-    <section className={`queue-dock glass ${managing ? 'expanded' : ''}`} aria-label="Message queue"><div className="dock-heading"><span>YOUR NEXT MOVE <small>{pending.length}</small></span><button className="quiet-button" aria-expanded={managing} onClick={() => {setManaging(!managing);setSelected(new Set());}}>{managing ? 'Done' : 'Manage'}</button></div>{current ? renderMessage(current,0) : <div className="empty-queue"><p>{sent.length ? 'What changes next?' : 'A different world starts with a message.'}</p><span>Queue a rule below. Send it when you choose.</span>{!messages.length && <button className="quiet-button starter-button" onClick={loadExample}>Load starter messages ↳</button>}</div>}{pending.length > 1 && <div className="upcoming-list">{pending.slice(1).map((message,index) => renderMessage(message,index+1))}</div>}
-      {managing && <div className="queue-management"><p>Selected messages apply together, in queue order.</p><div className="button-row"><button className="small-button" disabled={!ready.length} onClick={() => setSelected(new Set(ready.map(message => message.id)))}>Select ready</button><button className="small-button" disabled={!chosen.length || ended || preparing || !!previewError} onClick={() => send(chosen.map(message => message.id))}>Send all selected</button></div><details><summary>Sent messages · {sent.length}</summary>{sent.map(message => <div className="history-item" key={message.id}><p>{message.text}</p><button className="quiet-button" disabled={messages.length >= 24} onClick={() => updateMessages([...messageRef.current,localMessage(id(),message.text)])}>Queue again</button></div>)}</details><div className="button-row"><button className="quiet-button" disabled={!events.length || ended || preparing} onClick={undoLastRule}>Undo last rule</button><button className="quiet-button" onClick={() => {updateMessages([]);setSelected(new Set());}}>Clear messages</button></div><button className="quiet-button" disabled={!api.configured || preparing || !pending.length} onClick={() => prepareQueue()}>Prepare all with AI</button></div>}
-      {previewError && <p className="inline-error">{previewError}</p>}
-    </section>
-    <section className="composer-dock glass" aria-label="Write a rule"><div className="dock-heading"><label htmlFor="message-input">{editing ? 'EDIT YOUR MESSAGE' : 'REWRITE A RULE'}</label><span className={`connection-dot ${api.configured ? 'connected' : ''}`} title={api.configured ? `AI ready · ${api.model}` : 'Local commands available'}/>{editing && <button className="quiet-button" onClick={() => {setEditing(null);setInput('');}}>Cancel</button>}</div><textarea id="message-input" value={input} maxLength={240} placeholder={`e.g. ${level.instructions.suggestedMessages[0]}`} onChange={event => setInput(event.target.value)} onKeyDown={event => {if(event.key === 'Enter' && !event.shiftKey){event.preventDefault();queueMessage();}}}/><div className="composer-bottom"><span>Enter to queue · Send now to apply</span><button className="queue-button" disabled={!input.trim() || (!editing && messages.length >= 24)} onClick={queueMessage}>{editing ? 'Save' : 'Queue message'} ↳</button></div>{!storageAvailable && <p className="inline-error">Storage is unavailable. Keep this tab open.</p>}</section>
-    <RuleCaption captions={captions} finish={finishCaption}/>
-    <div className="bottom-hud"><button className="quiet-button" aria-expanded={showRules} onClick={() => setShowRules(!showRules)}>{showRules ? 'Close rules' : 'Rules & hints'} ⌁</button><span data-testid="active-gravity">{telemetry.gravity === 0 ? 'g = 0' : `g ${telemetry.gravity > 0 ? '↓' : '↑'} ${Math.abs(telemetry.gravity).toFixed(1)} m/s²`}</span><span>{stateLabel}</span></div>
-    {showRules && <aside className="rules-drawer glass"><div className="dock-heading"><span>RULES & HINTS</span><button className="quiet-button" onClick={() => setShowRules(false)}>Close</button></div><p>{level.instructions.hint}</p><p className="tier-description">Level {level.number} · {tierFor(level)?.title}: {tierFor(level)?.lesson}</p><div className="hint-messages">{level.instructions.suggestedMessages.map(text => <button className="small-button" key={text} onClick={() => setInput(text)}>{text}</button>)}</div><button className="quiet-button" onClick={loadExample}>Load starter messages</button><dl><div><dt>Gravity</dt><dd>{telemetry.gravity} m/s²</dd></div>{Object.entries(world?.rules.values || {}).flatMap(([target,properties]) => Object.entries(properties).map(([property,value]) => <div key={target+property}><dt>{target === 'world' ? 'Surfaces' : context.targets.find(item => item.id === target)?.kind} · {property.replaceAll('_',' ')}</dt><dd>{value}</dd></div>))}</dl>{level.commandLimit && <p>{level.commandLimit-(world?.commandCount || 0)} messages remaining</p>}</aside>}
+    <GameHud level={level} telemetry={telemetry} secondsLeft={secondsLeft} menuOpen={menuOpen}
+      onRetry={retryWorld} onResume={resumeGame} onOpenMenu={openMenu} />
+    <MessageQueue messages={messages} selected={selected} managing={managing} preparing={preparing}
+      ended={ended} canSend={canSend} canUndo={!!events.length} apiConfigured={api.configured} previewError={previewError}
+      onToggleManage={() => { setManaging(!managing); setSelected(new Set()); }}
+      onSelect={toggleSelection} onSelectAll={ids => setSelected(new Set(ids))}
+      onEdit={message => { setEditing(message.id); setInput(message.text); }}
+      onDelete={removeMessage} onMove={moveMessage} onSend={send}
+      onQueueAgain={text => updateMessages([...messageRef.current, localMessage(id(), text)])}
+      onUndo={undoLastRule} onClear={() => { updateMessages([]); setSelected(new Set()); }}
+      onPrepare={() => prepareQueue()} onLoadExample={loadExample} />
+    <RuleComposer input={input} editing={!!editing} full={messages.length >= 24}
+      placeholder={`e.g. ${level.instructions.suggestedMessages[0]}`} api={api} storageAvailable={storageAvailable}
+      onInput={setInput} onQueue={queueMessage} onCancel={() => { setEditing(null); setInput(''); }} />
+    <RuleCaption captions={captions} finish={finishCaption} />
+    <div className="bottom-hud">
+      <button className="quiet-button" aria-expanded={showRules} onClick={() => setShowRules(!showRules)}>
+        {showRules ? 'Close rules' : 'Rules & hints'} ⌁
+      </button>
+      <span data-testid="active-gravity">{telemetry.gravity === 0 ? 'g = 0' : `g ${telemetry.gravity > 0 ? '↓' : '↑'} ${Math.abs(telemetry.gravity).toFixed(1)} m/s²`}</span>
+      <span>{stateLabel}</span>
+    </div>
+    {showRules && <RulesDrawer level={level} gravity={telemetry.gravity} rules={world?.rules}
+      commandCount={world?.commandCount || 0} onClose={() => setShowRules(false)}
+      onSuggest={setInput} onLoadExample={loadExample} />}
     <p className="game-toast" role="status" title={notice}>{notice}</p>
-    {tutorial && !menuOpen && <div className="stage-overlay"><section className="game-menu glass tutorial-card" role="dialog" aria-modal="false" aria-labelledby="tutorial-title"><span className="menu-eyebrow">FIRST ENCOUNTER / TIME PAUSED</span><h2 id="tutorial-title">{tutorial.title}</h2><p>{tutorial.body}</p><button className="primary-button" disabled={preparing} onClick={() => {labRef.current?.world.continueTutorial();labRef.current?.report();setNotice('The toaster is charging. Your timing changes what happens next.');}}>Continue →</button></section></div>}
-    {level.number === 1 && !ended && <aside className="tutorial-hint"><span>LEARN THE TIMING</span><p>{!messages.length ? 'Queue “add gravity” and “stop gravity” — or load the starter messages.' : !telemetry.started ? 'Send now applies your first rule. The next message stays ready.' : telemetry.gravity !== 0 ? 'Watch the ball. Send “stop gravity” as it leaves the ramp.' : 'Gravity is off. The ball keeps its momentum.'}</p></aside>}
-    {(menuOpen || ended) && <div className="stage-overlay"><section className="game-menu glass" role="dialog" aria-modal="false" aria-labelledby="menu-title"><span className="menu-eyebrow">{telemetry.won ? 'LEVEL COMPLETE' : ended ? 'ANOTHER POSSIBILITY' : 'TAKE YOUR TIME'}</span><h2 id="menu-title">{telemetry.won ? isBakery ? 'Order delivered.' : 'You found a way.' : telemetry.fell ? 'Mind the gap.' : telemetry.timedOut ? 'A different timing?' : 'Paused.'}</h2><p>{ended ? 'Try the same messages at different moments.' : level.instructions.hint}</p><div className="menu-buttons">{telemetry.won && nextLevel && <button className="primary-button" onClick={() => chooseLevel(nextLevel.id)}>Next level →</button>}{!ended && <button className="primary-button" disabled={preparing} onClick={resumeGame}>{telemetry.started ? 'Resume' : 'Back to game'}</button>}<button className={ended ? 'primary-button' : 'small-button'} onClick={retryWorld}>Try again</button><button className="quiet-button" onClick={resetWorld}>Restart & reprepare messages</button>{!!level.tutorials?.length && <button className="quiet-button" onClick={() => {retryWorld();labRef.current?.world.seenTutorials.clear();setNotice('Teaching reset. Send your setup to encounter the toaster again.');}}>Replay teaching</button>}</div><details className="level-list"><summary>Choose a level</summary>{tiers.map(tier => <div className="tier-group" key={tier.number}><strong>LEVEL {tier.number} / {tier.title}</strong>{levels.filter(item => item.number === tier.number).map(item => <button className={item.id === level.id ? 'active' : ''} key={item.id} onClick={() => chooseLevel(item.id)}>{levelLabel(item)} · {item.title}</button>)}</div>)}</details></section></div>}
+    {tutorial && !menuOpen && <TeachingOverlay tutorial={tutorial} preparing={preparing} onContinue={() => {
+      labRef.current?.world.continueTutorial();
+      labRef.current?.report();
+      setNotice('The toaster is charging. Your timing changes what happens next.');
+    }} />}
+    {level.number === 1 && !ended && <TimingHint hasMessages={!!messages.length} telemetry={telemetry} />}
+    {(menuOpen || ended) && <GameMenu level={level} telemetry={telemetry} preparing={preparing}
+      onChooseLevel={chooseLevel} onResume={resumeGame} onRetry={retryWorld} onReset={resetWorld}
+      onReplayTeaching={() => {
+        retryWorld();
+        labRef.current?.world.seenTutorials.clear();
+        setNotice('Teaching reset. Send your setup to encounter the toaster again.');
+      }} />}
   </main>;
 }

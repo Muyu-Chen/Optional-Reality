@@ -1,0 +1,48 @@
+.tutorial-card {
+  position:absolute;
+  left:20px;
+  top:20px;
+  text-align:left;
+  width:300px;
+  padding:22px
+}
+.tutorial-card h2 {
+  font-size:25px
+}
+.tutorial-card .primary-button {
+  width:100%
+}
+.tutorial-hint {
+  position:absolute;
+  left:44px;
+  bottom:95px;
+  max-width:265px;
+  pointer-events:none;
+  color:var(--muted)
+}
+.tutorial-hint>span {
+  font:9px ui-monospace,monospace;
+  letter-spacing:1.5px
+}
+.tutorial-hint p {
+  font-size:12px;
+  line-height:1.7;
+  margin:7px 0 0
+}
+.tutorial-hint~.stage-overlay {
+  z-index:5
+}
+@media(max-width:700px) {
+  .tutorial-hint {
+    display:none
+  }
+  .tutorial-card {
+    left:10px;
+    top:0;
+    width:270px;
+    padding:16px
+  }
+  .tutorial-card h2 {
+    font-size:21px
+  }
+}

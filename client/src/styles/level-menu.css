@@ -1,0 +1,46 @@
+.game-menu {
+  max-height:100%;
+  overflow:auto
+}
+.level-list {
+  margin-top:17px;
+  text-align:left;
+  font-size:11px;
+  color:var(--muted)
+}
+.level-list summary {
+  padding:7px 0
+}
+.tier-group {
+  padding:8px 0;
+  border-top:1px solid var(--line)
+}
+.tier-group>strong {
+  display:block;
+  font:9px ui-monospace,monospace;
+  letter-spacing:.7px;
+  margin-bottom:5px
+}
+.tier-group button {
+  display:block;
+  border:0;
+  background:none;
+  width:100%;
+  text-align:left;
+  padding:7px 8px;
+  border-radius:4px;
+  color:var(--ink);
+  font-size:11px
+}
+.tier-group button.active {
+  background:#70885920
+}
+.tier-group button:hover {
+  background:#70885912
+}
+.tier-description {
+  font-size:10px!important
+}
+.tutorial-card {
+  max-height:100%
+}

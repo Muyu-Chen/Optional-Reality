@@ -1,0 +1,72 @@
+.game-hud {
+  position:absolute;
+  top:22px;
+  left:28px;
+  right:var(--scene-right);
+  display:flex;
+  align-items:flex-start;
+  gap:12px
+}
+.game-brand {
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+  width:33px;
+  height:33px;
+  border-radius:9px;
+  background:var(--ink);
+  color:#fffdf2;
+  font-size:17px;
+  letter-spacing:-1.7px;
+  padding-right:2px
+}
+.game-title>span {
+  font:9px ui-monospace,monospace;
+  letter-spacing:1.7px;
+  color:var(--muted);
+  display:block;
+  margin-bottom:5px
+}
+.game-title h1 {
+  font-size:22px;
+  font-weight:560;
+  letter-spacing:-.7px;
+  margin:0;
+  line-height:1.15
+}
+.game-title>p {
+  font-size:12px;
+  color:var(--muted);
+  margin:7px 0 0
+}
+.hud-controls {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  white-space:nowrap
+}
+.game-clock {
+  font:24px ui-monospace,monospace;
+  margin-right:8px;
+  letter-spacing:-1.5px
+}
+.game-clock small {
+  font:11px system-ui,sans-serif;
+  color:var(--muted);
+  margin-left:3px
+}
+.urgent {
+  color:#a46137
+}
+.icon-button {
+  width:33px;
+  height:33px;
+  border-radius:50%;
+  border:1px solid var(--line);
+  background:#fffff66b;
+  font-size:19px;
+  display:grid;
+  place-items:center;
+  padding:0
+}

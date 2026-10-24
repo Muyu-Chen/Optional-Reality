@@ -1,0 +1,220 @@
+@media(max-width:1000px) {
+  :root,.game-canvas {
+    --scene-left:16px;
+    --scene-right:318px;
+    --scene-top:108px;
+    --dock-width:280px
+  }
+  .game-hud {
+    left:16px;
+    gap:9px;
+    top:20px
+  }
+  .queue-dock,.composer-dock {
+    right:18px
+  }
+  .game-title h1 {
+    font-size:19px
+  }
+  .game-title>p {
+    max-width:260px;
+    font-size:11px
+  }
+  .hud-controls {
+    gap:4px
+  }
+  .game-clock {
+    font-size:20px;
+    margin-right:2px
+  }
+  .bottom-hud,.game-toast {
+    left:16px
+  }
+  .bottom-hud {
+    gap:12px
+  }
+  .rule-caption {
+    left:24px;
+    max-width:calc(100% - 350px)
+  }
+  .rule-caption p {
+    font-size:17px
+  }
+}
+@media(max-width:700px) {
+  :root,.game-canvas {
+    --scene-left:12px;
+    --scene-right:12px;
+    --scene-top:116px;
+    --scene-bottom:318px;
+    --dock-width:calc(100% - 28px)
+  }
+  .game-hud {
+    right:14px;
+    left:14px;
+    top:18px
+  }
+  .game-title h1 {
+    font-size:18px
+  }
+  .game-title>span {
+    font-size:8px
+  }
+  .game-title>p {
+    max-width:210px;
+    font-size:10px
+  }
+  .hud-controls {
+    gap:6px
+  }
+  .icon-button {
+    width:29px;
+    height:29px;
+    font-size:17px
+  }
+  .game-clock {
+    font-size:20px
+  }
+  .queue-dock {
+    top:auto;
+    bottom:190px;
+    right:14px;
+    max-height:130px
+  }
+  .dock-heading {
+    padding:9px 12px;
+    font-size:8px
+  }
+  .current-message {
+    padding:8px 12px
+  }
+  .message-text {
+    font-size:12px;
+    margin:5px 0
+  }
+  .parsed-rule {
+    font-size:9px
+  }
+  .send-now {
+    width:63px;
+    padding:8px;
+    font-size:10px
+  }
+  .send-now span {
+    display:none
+  }
+  .upcoming-list {
+    max-height:36px
+  }
+  .upcoming-message {
+    padding:6px 12px
+  }
+  .upcoming-message .message-meta,.upcoming-message .parsed-rule {
+    display:none
+  }
+  .upcoming-message .message-text {
+    font-size:11px;
+    margin:0
+  }
+  .queue-dock.expanded {
+    max-height:58svh;
+    bottom:190px;
+    z-index:5
+  }
+  .queue-dock.expanded .upcoming-list {
+    max-height:170px
+  }
+  .composer-dock {
+    bottom:36px;
+    right:14px;
+    padding-bottom:9px
+  }
+  .composer-dock textarea {
+    min-height:55px;
+    font-size:12px
+  }
+  .composer-bottom {
+    margin-top:7px
+  }
+  .composer-bottom>span {
+    max-width:none;
+    font-size:8px
+  }
+  .bottom-hud {
+    bottom:10px;
+    left:14px;
+    right:14px;
+    font-size:9px
+  }
+  .bottom-hud>.quiet-button {
+    font-size:10px
+  }
+  .game-toast {
+    display:none
+  }
+  .empty-queue {
+    padding:3px 12px 10px
+  }
+  .empty-queue>p {
+    font-size:12px;
+    margin-bottom:4px
+  }
+  .empty-queue>span {
+    font-size:10px
+  }
+  .starter-button {
+    margin-top:6px;
+    font-size:10px
+  }
+  .stage-overlay {
+    top:108px;
+    bottom:318px
+  }
+  .game-menu {
+    padding:18px;
+    width:300px;
+    max-height:100%;
+    overflow:auto
+  }
+  .game-menu h2 {
+    font-size:23px;
+    margin:9px 0
+  }
+  .game-menu>p {
+    font-size:11px;
+    margin-bottom:10px
+  }
+  .menu-buttons {
+    gap:6px
+  }
+  .level-select {
+    margin-top:12px
+  }
+  .rule-caption {
+    top:115px;
+    left:20px;
+    max-width:260px
+  }
+  .rule-caption p {
+    font-size:15px
+  }
+  .rules-drawer {
+    left:14px;
+    bottom:322px;
+    max-height:50svh
+  }
+  .queue-management {
+    min-height:100px
+  }
+  .queue-dock.expanded .current-message {
+    flex-shrink:0
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  .current-message {
+    animation:none
+  }
+  .rule-caption {
+    animation:none
+  }
+}
