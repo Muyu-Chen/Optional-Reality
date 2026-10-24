@@ -24,17 +24,17 @@ describe('message queue through the game UI', () => {
   });
 
   it('blocks an invalid head until it is edited, without skipping to a valid rule', async () => {
-    await startGame('bounce');
-    await queue('Set gravity to 99');
-    await queue('Set surface bounce to 0.9');
+    await startGame('toaster');
+    await queue('Set conveyor speed to 1');
+    await queue('Set toaster power to 2');
     expect(button('Send now').disabled).toBe(true);
     expect(lab().world.commandCount).toBe(0);
     await click('Edit message 1');
-    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Set surface bounce to 0.8' } });
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Set toaster power to 1.5' } });
     await click('Save ↳');
     await click('Send now');
-    expect(lab().world.rules.values.world.restitution).toBe(.8);
-    expect(rows()[0].textContent).toContain('Set surface bounce to 0.9');
+    expect(lab().world.rules.values['spring-main'].spring_power).toBe(1.5);
+    expect(rows()[0].textContent).toContain('Set toaster power to 2');
   });
 
   it('applies selected rules in queue order and clears selection after sending', async () => {

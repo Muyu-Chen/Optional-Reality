@@ -1,4 +1,4 @@
-import { Acceleration, OperationSchema, type Operation, type RuleContext } from './rules';
+import { applyRules, gravityState, GRAVITY_CONTEXT, OperationSchema, type Operation, type RuleContext } from './rules';
 import { surfaceTarget } from './surface-target';
 import { normalizeCommand } from './command-language';
 import { parseAcceleration } from './acceleration-command';
@@ -48,11 +48,9 @@ export function parseCommand(input: string, context?: RuleContext): ParsedComman
 }
 
 export function applyOperation(current: number, candidate: unknown): number {
-  Acceleration.parse(current);
   const operation = OperationSchema.parse(candidate);
   if (operation.type !== 'set_gravity' && operation.type !== 'reverse_gravity') throw new Error('This operation requires the scene rule context.');
-  const next = operation.type === 'set_gravity' ? operation.acceleration : -current;
-  return Object.is(next, -0) ? 0 : next;
+  return applyRules(gravityState(current),[operation],GRAVITY_CONTEXT).gravity;
 }
 export function describeOperation(operation: Operation): { title: string; detail: string } {
   if (operation.type === 'reverse_gravity') return { title: 'Reverse gravity', detail: 'Invert the gravity that is active when sent.' };

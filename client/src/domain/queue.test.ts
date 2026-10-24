@@ -44,7 +44,7 @@ describe('prepared command batches', () => {
     }
     expect(parseCommand('turn off gravity when the ball leaves the track').error).toBeDefined();
     expect(() => applyOperation(0, { type: 'set_gravity', acceleration: Infinity })).toThrow();
-    expect(() => applyOperation(0, { type: 'set_gravity', acceleration: 11 })).toThrow();
+    expect(applyOperation(0, { type: 'set_gravity', acceleration: 11 })).toBe(10);
     expect(Object.is(applyOperation(0, { type: 'reverse_gravity' }), -0)).toBe(false);
   });
 });

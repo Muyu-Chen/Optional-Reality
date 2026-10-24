@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { limitAbsoluteOperation, limitValue } from './rule-limits';
 
 export const Acceleration = z.number().finite().min(-10).max(10);
 export const Property = z.enum(['gravity', 'acceleration_x', 'restitution', 'friction', 'conveyor_speed', 'spring_power', 'fan_power', 'angular_speed']);
@@ -6,10 +7,10 @@ export type PropertyName = z.infer<typeof Property>;
 export const ENVIRONMENT_PROPERTIES = ['gravity', 'acceleration_x', 'restitution', 'friction'] as const;
 const Id = z.string().min(1).max(80);
 export const OperationSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('set_gravity'), acceleration: Acceleration }).strict(),
+  z.object({ type: z.literal('set_gravity'), acceleration: z.number().finite() }).strict(),
   z.object({ type: z.literal('reverse_gravity') }).strict(),
-  z.object({ type: z.literal('set_property'), target: Id, property: Property, value: z.number().finite().min(-100).max(100) }).strict(),
-  z.object({ type: z.literal('scale_property'), target: Id, property: Property, factor: z.number().finite().min(-10).max(10) }).strict(),
+  z.object({ type: z.literal('set_property'), target: Id, property: Property, value: z.number().finite() }).strict(),
+  z.object({ type: z.literal('scale_property'), target: Id, property: Property, factor: z.number().finite() }).strict(),
   z.object({ type: z.literal('add_sensor_trigger'), sensor: Id, gate: Id }).strict(),
 ]);
 export type Operation = z.infer<typeof OperationSchema>;
@@ -59,7 +60,7 @@ function validateTrigger(trigger: { sensor: string; gate: string }, context: Rul
 export function applyRules(current: RuleState, candidates: readonly unknown[], context: RuleContext): RuleState {
   const next = structuredClone(validateRuleState(current, context));
   for (const candidate of candidates) {
-    const operation = OperationSchema.parse(candidate);
+    const operation = limitAbsoluteOperation(OperationSchema.parse(candidate),context).operation;
     if (operation.type === 'add_sensor_trigger') {
       validateTrigger(operation, context);
       if (!next.triggers.some(item => item.sensor === operation.sensor && item.gate === operation.gate)) next.triggers.push({ sensor: operation.sensor, gate: operation.gate });
@@ -75,7 +76,8 @@ export function applyRules(current: RuleState, candidates: readonly unknown[], c
     const previous = property === 'gravity' && target === 'world' ? next.gravity : next.values[target]?.[property]
       ?? (context.targets.find(item => item.id === target)?.kind === 'surface' ? next.values.world?.[property]
         : target === 'world' && property === 'acceleration_x' ? 0 : undefined);
-    const value = operation.type === 'set_property' ? operation.value : previous === undefined ? NaN : previous * operation.factor;
+    const requested = operation.type === 'set_property' ? operation.value : previous === undefined ? NaN : previous * operation.factor;
+    const value = limitValue(requested,propertyRange(context,target,property));
     checkValue(context, target, property, value);
     if (property === 'gravity' && target === 'world') next.gravity = value || 0;
     else (next.values[target] ||= {})[property] = value || 0;

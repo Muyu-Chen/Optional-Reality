@@ -3,6 +3,14 @@ import type { LevelDefinition } from '../levels/types';
 
 const number = (value: number) => Number(value.toFixed(3)).toString();
 
+function limitingNote(operation: Operation, before: RuleState, actual: number, level: LevelDefinition) {
+  if (operation.type !== 'scale_property') return '';
+  const prior = operation.property === 'gravity' ? before.gravity : before.values[operation.target]?.[operation.property]
+    ?? (level.tracks.some(track => track.id === operation.target) ? before.values.world?.[operation.property] : undefined);
+  const requested = prior === undefined ? undefined : prior * operation.factor;
+  return requested !== undefined && requested !== actual ? ` (limited from ${number(requested)})` : '';
+}
+
 // Captions describe the applied state, including relative commands resolved at send time.
 export function appliedFeedback(operations: readonly Operation[], before: RuleState, after: RuleState, level: LevelDefinition): string[] {
   const changes = new Map<string,string>();
@@ -14,21 +22,21 @@ export function appliedFeedback(operations: readonly Operation[], before: RuleSt
     const property = operation.type === 'set_gravity' || operation.type === 'reverse_gravity' ? 'gravity' : operation.property;
     const target = operation.type === 'set_gravity' || operation.type === 'reverse_gravity' ? 'world' : operation.target;
     if (property === 'gravity') {
-      changes.set('gravity',after.gravity === 0 ? 'Gravity turned off. Momentum remains.' : `Gravity now pulls ${after.gravity > 0 ? 'downward' : 'upward'} at ${number(Math.abs(after.gravity))} m/s².`);
+      changes.set('gravity',after.gravity === 0 ? 'Gravity turned off. Momentum remains.' : `Gravity now pulls ${after.gravity > 0 ? 'downward' : 'upward'} at ${number(Math.abs(after.gravity))} m/s²${limitingNote(operation,before,after.gravity,level)}.`);
       continue;
     }
     const value = after.values[target]?.[property];
     if (value === undefined) continue;
     const prior = before.values[target]?.[property];
     if (property === 'acceleration_x') {
-      changes.set('acceleration_x', value === 0 ? 'Horizontal acceleration turned off. Momentum remains.' : `Acceleration now pulls ${value > 0 ? 'right' : 'left'} at ${number(Math.abs(value))} m/s².`);
+      changes.set('acceleration_x', value === 0 ? 'Horizontal acceleration turned off. Momentum remains.' : `Acceleration now pulls ${value > 0 ? 'right' : 'left'} at ${number(Math.abs(value))} m/s²${limitingNote(operation,before,value,level)}.`);
       continue;
     }
     const kind = level.devices?.find(device => device.id === target)?.kind;
     const surface=level.tracks.find(track=>track.id===target);
     const name = surface ? `${surface.label || 'Surface'} ${property==='friction'?'friction':'bounce'}` : kind === 'conveyor' ? 'Conveyor speed' : kind === 'spring' ? 'Toaster power' : kind === 'fan' ? 'Fan power' : kind === 'rotor' ? 'Wheel speed' : property === 'friction' ? 'Surface friction' : 'Surface bounce';
     const change = prior === undefined || prior === value ? 'set' : value > prior ? 'increased' : 'decreased';
-    changes.set(target+':'+property,`${name} ${change} to ${number(value)}.`);
+    changes.set(target+':'+property,`${name} ${change} to ${number(value)}${limitingNote(operation,before,value,level)}.`);
   }
   return [...changes.values()];
 }

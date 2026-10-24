@@ -87,7 +87,9 @@ export function useGameSession(level: LevelDefinition) {
       return;
     }
     if (!lab.world.undoRule()) return;
-    const restored: Message = { id: last.id, text: last.text, status: 'ready', operations: last.operations };
+    const restored: Message = { id: last.id, text: last.text, status: 'ready', operations: last.operations,
+      understoodAs:last.understoodAs,adjustments:last.adjustments,
+    };
     queue.updateMessages(queue.messageRef.current.some(message => message.id === last.id)
       ? queue.messageRef.current.map(message => message.id === last.id ? { ...message, status: 'ready' } : message)
       : [...queue.messageRef.current, restored]);

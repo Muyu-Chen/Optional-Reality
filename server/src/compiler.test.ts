@@ -73,7 +73,6 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
   it.each([
     answer([{ type: 'set_property', target: 'ball-A', property: 'friction', value: 0 }]),
     answer([{ type: 'set_gravity', acceleration: Infinity }]),
-    answer([{ type: 'set_property', target: 'world', property: 'restitution', value: 999 }]),
     answer([{ type: 'add_sensor_trigger', sensor: 'imaginary', gate: 'gate-final' }]),
     answer([{ type: 'eval', code: 'arbitrary code' }]),
     answer([{ type: 'set_gravity', acceleration: 1 }], 'wrong-id'),

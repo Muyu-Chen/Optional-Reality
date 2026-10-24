@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { applyRules } from '../../../shared/rules';
+import { limitAbsoluteOperations } from '../../../shared/rule-limits';
 import { compilerStatus, prepareWithAI } from '../api/compiler';
 import { CompilationSession } from '../api/compilation-session';
 import { loadMessages, messageStorageKey } from '../domain/message-storage';
@@ -55,11 +56,17 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
       const result = await prepareWithAI(request, ticket.signal);
       if (!compilation.isCurrent(ticket)) return;
       let preview = lab.world.rules;
-      for (const message of result.messages) preview = applyRules(preview, message.operations, context);
-      const compiled = new Map(result.messages.map(message => [message.id, message]));
+      const bounded = result.messages.map(message => {
+        const limited = limitAbsoluteOperations(message.operations,context);
+        preview = applyRules(preview,limited.operations,context);
+        const adjustments = [...new Map([...(message.adjustments || []),...limited.adjustments]
+          .map(item => [JSON.stringify(item),item])).values()];
+        return {...message,operations:limited.operations,adjustments};
+      });
+      const compiled = new Map(bounded.map(message => [message.id, message]));
       updateMessages(messageRef.current.map(message => compiled.has(message.id) ? {
         id: message.id, text: message.text, status: 'ready', operations: compiled.get(message.id)!.operations,
-        understoodAs: compiled.get(message.id)!.understoodAs, source: 'ai',
+        understoodAs: compiled.get(message.id)!.understoodAs, adjustments: compiled.get(message.id)!.adjustments, source: 'ai',
       } : message));
       onNotice('AI preparation complete. Review the parsed rules, then send when ready. The experiment remains paused.');
     } catch (error) {

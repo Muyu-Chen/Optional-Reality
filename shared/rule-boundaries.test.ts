@@ -10,11 +10,15 @@ const properties = context.targets.flatMap(target => Object.entries(target.prope
 })));
 
 describe('rule ranges and permissions', () => {
-  it.each(properties)('accepts endpoints and rejects overflow/nonfinite $target.$property atomically', ({ target, property, range }) => {
+  it.each(properties)('accepts endpoints, clips finite overflow and rejects nonfinite $target.$property atomically', ({ target, property, range }) => {
     const current = initialRules(realityBreakdown), before = structuredClone(current);
     const set = (value: number) => ({ type: 'set_property', target, property, value });
     for (const value of range) expect(() => applyRules(current, [set(value)], context)).not.toThrow();
-    for (const value of [range[0] - .001, range[1] + .001, NaN, Infinity, -Infinity]) {
+    for (const value of [range[0] - .001, range[1] + .001]) {
+      const next=applyRules(current,[set(value)],context),applied=property === 'gravity' ? next.gravity : next.values[target]?.[property];
+      expect(applied).toBe(Math.max(range[0],Math.min(range[1],value)));expect(current).toEqual(before);
+    }
+    for (const value of [NaN, Infinity, -Infinity]) {
       expect(() => applyRules(current, [{ type: 'set_gravity', acceleration: 2 }, set(value)], context)).toThrow();
       expect(current).toEqual(before);
     }
@@ -39,7 +43,7 @@ describe('rule ranges and permissions', () => {
     const next = applyRules(first, [doubleFloor], context);
     expect(next.values['factory-floor'].friction).toBe(.48);
     delete state.values['fan-main'].fan_power;
-    expect(() => applyRules(state, [{ type: 'scale_property', target: 'fan-main', property: 'fan_power', factor: 2 }], context)).toThrow('between');
+    expect(() => applyRules(state, [{ type: 'scale_property', target: 'fan-main', property: 'fan_power', factor: 2 }], context)).toThrow('finite');
   });
 
   it('normalizes negative zero for set and relative operations', () => {

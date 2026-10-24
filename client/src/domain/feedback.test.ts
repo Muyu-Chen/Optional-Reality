@@ -6,6 +6,12 @@ import { initialRules, ruleContext } from '../levels/rules';
 import { appliedFeedback } from './feedback';
 
 describe('applied environment captions', () => {
+  it('shows the actual bound and the resolved request for a relative change', () => {
+    const before=initialRules(realityBreakdown);before.values['fan-main'].fan_power=1.5;
+    const operations=[{type:'scale_property',target:'fan-main',property:'fan_power',factor:2}] as const;
+    const after=applyRules(before,operations,ruleContext(realityBreakdown));
+    expect(appliedFeedback(operations,before,after,realityBreakdown)).toEqual(['Fan power increased to 2 (limited from 3).']);
+  });
   it('reads the resolved gravity instead of repeating a relative command', () => {
     const before = {...initialRules(gravityLab),gravity:2};
     const operations = [{type:'reverse_gravity'}] as const;

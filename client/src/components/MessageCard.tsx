@@ -36,6 +36,9 @@ export function MessageCard({ message, index, count, managing, selected, prepari
         </div>
         <p className="message-text">{message.text}</p>
         {message.understoodAs && <p className="parsed-rule">Understood as: {message.understoodAs}</p>}
+        {message.adjustments?.map((adjustment,i) => <p className="parsed-rule" key={i}>
+          Requested {adjustment.requested} → limited to {adjustment.applied} (range {adjustment.minimum} to {adjustment.maximum})
+        </p>)}
         <p className={`parsed-rule ${message.status === 'error' ? 'error-copy' : ''}`}>{description}</p>
         {(managing || message.status === 'error') && (
           <div className="message-actions">

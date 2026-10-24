@@ -14,7 +14,7 @@ describe('environment rule semantics', () => {
     const operations = [{ type: 'scale_property', target: 'belt-main', property: 'conveyor_speed', factor: 2 }];
     expect(applyRules(state, operations, context).values['belt-main'].conveyor_speed).toBe(2);
     state.values['belt-main'].conveyor_speed = 2;
-    expect(() => applyRules(state, operations, context)).toThrow('between');
+    expect(applyRules(state, operations, context).values['belt-main'].conveyor_speed).toBe(3);
     state.values.world.friction = .2;
     expect(applyRules(state, [{ type: 'scale_property', target: 'factory-floor', property: 'friction', factor: 2 }], context).values['factory-floor'].friction).toBe(.4);
   });
@@ -44,7 +44,7 @@ describe('environment rule semantics', () => {
     expect(parseCommand('Set gravity to 2 and bounce to 0.7', context).error).toBeDefined();
     expect(parseCommand('Set gravity to 1 for 2 seconds', context).error).toBeDefined();
     expect(parseCommand('Set core friction to 0', context).error).toBeDefined();
-    expect(prepareMessage('id', 'Set fan power to 999', context, initialRules(realityBreakdown)).status).toBe('error');
+    expect(prepareMessage('id', 'Set fan power to 999', context, initialRules(realityBreakdown))).toMatchObject({status:'ready',operation:{value:2},adjustments:[{requested:999,applied:2}]});
     expect(parseCommand('Set fan power to .45', context).operation).toMatchObject({ value: .45 });
     const rotorContext={...context,targets:[...context.targets,{id:'rotor-test',kind:'rotor',properties:{angular_speed:[-3,3] as const}}]};
     expect(parseCommand('Make the wheel spin counterclockwise at speed 1', rotorContext).operation).toMatchObject({ value: -1 });
