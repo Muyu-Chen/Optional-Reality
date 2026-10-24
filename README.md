@@ -16,7 +16,7 @@ Optional Reality is an experimental AI-powered physics sandbox where you can des
 - "Make the spring twice as stiff."
 - "Make A attract B using inverse-square gravity."
 
-这些是目标能力示例。目前交互 demo 通过本地解析器支持增加、停止和反转重力；其余能力与模型接入仍待开发。自动识别「小球离开轨道」等场景条件属于后续扩展，首版先由用户观察并应用指令。
+这些是目标能力示例。当前已接入 DeepSeek Flash，将自然语言编译为重力与环境属性操作；本地解析器保留为离线入口。自动识别「小球离开轨道」等场景条件属于后续扩展，首版先由用户观察并应用指令。
 
 ### Guided Experiments + Free Sandbox
 
@@ -69,7 +69,11 @@ AI 负责将用户意图编译为声明式操作；命令队列与规则引擎�
 
 首次发送有效消息自动开始 30 秒实验，暂停不消耗模拟时间，球的任意部分碰到可见 Exit 即通关；倒计时结束后可重置重试。消息文字保存在当前浏览器；刷新或 Reset 后世界恢复零重力，倒计时恢复 30 秒，消息重新等待执行。
 
-demo 使用本地解析器，支持 `add gravity`（向下 1 m/s²）、`stop gravity`（零重力）和 `reverse gravity`。停止重力只取消加速度，保留当前速度。尚未接入模型 API、后端、Undo / Replay 或自由沙盒。
+demo 保留本地指令 `add gravity`（向下 1 m/s²）、`stop gravity`（零重力）和 `reverse gravity`，并支持数值形式的重力、表面弹性与摩擦。停止重力只取消加速度，保留当前速度。
+
+输入自由语言后点击 **Prepare with AI**，后端使用可配置的兼容 API 编译整组待发送消息。一句话可以包含多个操作；全部通过 Zod、对象权限与数值范围校验后，才整体进入 ready。准备期间暂停实验，编辑、排序或 Reset 会取消旧请求；发送时再次按实际状态验证，相对操作不提前固化。
+
+队友的 Reality Breakdown 工厂玩法已迁入 Matter.js 运行层：传送带、接触弹簧、风场、转轮、传感器开门、表面属性、100 条消息额度、规则 Undo 与保留规则重试。该关目前只注册在运行时及编译器中，**设备 UI 与关卡选择入口暂不接入**；当前可见的仍是 Gravity Lab。完整时间轴 Replay 和自由沙盒尚未实现。
 
 ### 关卡定义
 
@@ -83,15 +87,25 @@ demo 使用本地解析器，支持 `add gravity`（向下 1 m/s²）、`stop gr
 
 ```sh
 npm ci
+cp .env.example .env
+# 在 .env 的 AI_API_KEY 中填入 DeepSeek 密钥
 npm run dev
 ```
 
-开发地址为 `http://127.0.0.1:5173/demo/`。`npm test` 验证队列和物理行为；`npm run build` 执行类型检查并构建到 `site/demo/`。构建后可与介绍页一起预览：
+已有 `.env` 时直接编辑，避免覆盖密钥。
+
+开发地址为 `http://127.0.0.1:5173/demo/`；`npm run dev` 同时运行 Vite 和本地 Express API。默认配置为 `AI_BASE_URL=https://api.deepseek.com`、`AI_MODEL=deepseek-flash`，使用 Chat Completions JSON 输出，关闭思考模式以缩短准备延迟。密钥只由后端 `.env` 读取，不进入前端或 Git；修改配置后重启 API。
+
+`npm test` 验证队列、设备物理、规则、HTTP 接口与模型错误处理；接口自动测试使用模拟服务，不消耗真实 API。`npm run build` 执行类型检查并构建到 `site/demo/`，随后用 `npm start` 在 `http://127.0.0.1:3001/demo/` 同时提供前端和 API。
+
+仅查看静态前端也可以运行：
 
 ```sh
 python3 -m http.server 8793 --bind 127.0.0.1 --directory site
 ```
 
-打开 `http://127.0.0.1:8793/demo/`。构建产物、依赖与本地备份不提交到 Git。
+打开 `http://127.0.0.1:8793/demo/`；此方式没有 API，仅本地指令可用。构建产物、依赖与本地备份不提交到 Git。
+
+API 配置与部署边界见 [server/README.md](./server/README.md)。生产站点接入 API 时需要反向代理 `/api/`，并允许同源请求；当前线上介绍页的部署配置尚未改动。
 
 介绍页源码位于 `site/`，线上地址为 [muuyyy.cfd](https://muuyyy.cfd/)。本地可运行 `python3 -m http.server 8793 --bind 127.0.0.1 --directory site` 预览。旧 Muu Tech 官网完整保留，通过软链接切换；备份、部署与回滚说明见 [deploy/README.md](./deploy/README.md)。
