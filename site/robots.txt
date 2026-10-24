@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /camera/
+Sitemap: https://muuyyy.cfd/sitemap.xml
