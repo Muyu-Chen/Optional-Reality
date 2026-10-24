@@ -18,6 +18,7 @@
 DeepSeek 的请求格式与 JSON 输出参数依据 [Chat Completions 官方文档](https://api-docs.deepseek.com/api/create-chat-completion/)。通用结构化输出的模式与校验原则参考 [OpenAI Docs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat)；不假设所有兼容供应商支持 `json_schema`。
 
 - `GET /api/status` 只返回模型名与是否配置密钥。
+- `GET /api/health` 返回 `{ "ok": true }`，禁止缓存，不调用供应商或返回模型配置。
 - `POST /api/compile` 接收关卡 ID、请求 ID、场景版本、队列版本、消息快照和规则快照。关卡能力由服务端目录决定，不接受客户端自定义权限或模型地址。
 - 模型输出只允许声明式操作：重力设置或反转、水平加速度、环境属性设置或缩放、传感器到门的接触触发器。有限数值超范围由代码限幅并返回 adjustments，模型保留原请求数字；未知目标、非有限值、受保护物体、任意代码和不支持条件仍拒绝。
 - 整批消息 ID、顺序、内容结构和操作必须全部通过验证才返回 ready；不会执行已准备的规则。客户端检查版本，并在真正发送时再次校验。
@@ -31,4 +32,8 @@ DeepSeek 的请求格式与 JSON 输出参数依据 [Chat Completions 官方文�
 
 真实请求与自动测试应分别报告。自动测试用模拟供应商验证 JSON、超时、拒绝响应、目标权限、HTTP 错误和身份版本；填好本地密钥后可以手动在界面准备一条消息验证真实模型。
 
-部署到现有 Apache 时，需要将 `/api/` 代理到该本地服务，并把页面 CSP 的 `connect-src` 从 `none` 调整为 `'self'`，服务配置 `APP_ORIGIN`。本次没有修改服务器或发布这些 API 路由。
+手动执行 `npm run check:live` 会使用后端 `.env` 发出真实付费请求：八关分别验证十条错词、口语、方向和组合/相对指令，再验证设备限幅、命名表面和三类非法指令。使用 `LIVE_COMPILER_URL=https://muuyyy.cfd/api/compile npm run check:live` 则经本站后端转发测试，不向站点发送开发机密钥。结果保存在忽略的 `.localwork/live-api-check/`，不属于自动测试。
+
+线上链路为浏览器同源 `/api/` → Apache HTTPS 反代 → `127.0.0.1:3001` → DeepSeek。后端端口只监听回环，不单独开放公网模型 API 端口；浏览器无法获得模型密钥。`/api/compile` 是游戏正常使用的公网网站路由，保留输入校验、同源检查和限流；同源检查不等同于用户认证。
+
+部署到现有 Apache 时，将 `/api/` 代理到该本地服务，游戏 CSP 的 `connect-src` 使用 `'self'`，服务配置 `APP_ORIGIN`。实际发布版本与备份见 [线上记录](../deploy/live-game.md)。

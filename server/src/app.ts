@@ -9,6 +9,7 @@ export function createApp(config: AiConfig, fetcher?: typeof fetch) {
   const app = express();
   app.disable('x-powered-by');
   app.use(express.json({ limit: '32kb' }));
+  app.get('/api/health', (_req, res) => res.set('Cache-Control', 'no-store').json({ ok: true }));
   app.get('/api/status', (_req, res) => res.json({ configured: Boolean(config.apiKey), model: config.model }));
   let active = 0;
   const requests = new Map<string, { start: number; count: number }>();

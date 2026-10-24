@@ -35,6 +35,14 @@ async function endpoint(provider = vi.fn<typeof fetch>().mockImplementation(asyn
 }
 
 describe('HTTP request boundaries (mocked model provider)', () => {
+  it('serves minimal uncached health without calling the provider or exposing its configuration', async () => {
+    const { base, provider } = await endpoint();
+    const response = await fetch(`${base}/api/health`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
+    expect(await response.json()).toEqual({ ok: true });
+    expect(provider).not.toHaveBeenCalled();
+  });
   it.each([
     ['wrong content type', 'text/plain', '{}', 415],
     ['malformed JSON', 'application/json', '{broken', 400],

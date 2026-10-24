@@ -28,7 +28,7 @@
 - 所有实验共享重力、水平加速度、弹性、摩擦；教学用建议引导，预设设备/结构与任务物体仍受保护。
 - UI 英文主导，输入支持中文和英文，继续使用 DeepSeek Flash 与兼容 API。
 
-实际验收记录见 [verification.md](./docs/verification.md)，当前 374 项自动测试、类型检查与生产构建通过；条件矩阵见 [测试说明](./docs/testing.md)。
+实际验收记录见 [verification.md](./docs/verification.md)，当前 378 项自动测试、类型检查与生产构建通过；条件矩阵见 [测试说明](./docs/testing.md)。
 
 ## 模块整理
 
