@@ -22,7 +22,7 @@ export function RuleComposer({ input, editing, full, placeholder, storageAvailab
       <textarea id="message-input" value={input} maxLength={240} placeholder={placeholder}
         onChange={event => onInput(event.target.value)}
         onKeyDown={event => {
-          if (event.key === 'Enter' && !event.shiftKey) {
+          if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
             event.preventDefault();
             onQueue();
           }

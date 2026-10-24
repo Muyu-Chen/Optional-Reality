@@ -42,7 +42,6 @@ export function useMessageQueue(level: LevelDefinition, labRef: RefObject<Canvas
       return;
     }
     const entry = localMessage(editing || crypto.randomUUID(), text);
-    if (entry.status === 'error' && entry.requiresAI && api.configured) entry.status = 'draft';
     updateMessages(editing
       ? messageRef.current.map(message => message.id === editing ? entry : message)
       : [...messageRef.current, entry]);
@@ -62,7 +61,9 @@ export function useMessageQueue(level: LevelDefinition, labRef: RefObject<Canvas
     const next = [...messageRef.current];
     const pending = next.map((message, index) => message.status !== 'sent' ? index : -1).filter(index => index >= 0);
     const from = next.findIndex(message => message.id === messageId);
-    const to = pending[pending.indexOf(from) + direction];
+    const position = pending.indexOf(from);
+    if (position < 0) return;
+    const to = pending[position + direction];
     if (to === undefined) return;
     [next[from], next[to]] = [next[to], next[from]];
     updateMessages(next);
@@ -76,12 +77,14 @@ export function useMessageQueue(level: LevelDefinition, labRef: RefObject<Canvas
   }
 
   function queueAgain(text: string) {
+    if (messageRef.current.length >= 24) return;
     updateMessages([...messageRef.current, localMessage(crypto.randomUUID(), text)]);
   }
 
   function clearMessages() {
     updateMessages([]);
     clearSelection();
+    cancelEditing();
   }
 
   function toggleManaging() {

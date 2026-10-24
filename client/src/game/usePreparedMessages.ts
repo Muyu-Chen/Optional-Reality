@@ -25,9 +25,10 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
     setMessages(next);
   }, [compilation]);
 
-  const localMessage = useCallback((messageId: string, text: string) => (
-    prepareMessage(messageId, text, context, initialRules(level))
-  ), [context, level]);
+  const localMessage = useCallback((messageId: string, text: string) => {
+    const message = prepareMessage(messageId, text, context, initialRules(level));
+    return message.requiresAI && api.configured ? { ...message, status: 'draft' as const, error: undefined } : message;
+  }, [context, level, api.configured]);
 
   const invalidateScene = useCallback(() => {
     compilation.sceneChanged();
