@@ -35,6 +35,8 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 
 基础例子：`add gravity`、`stop gravity`、`reverse gravity`、`Set surface bounce to 0.9`、`Set toaster power to 2`、`Set fan power to 0.45`。不同关卡只允许其声明的属性；任务小球或面包不能被直接移动或修改速度。
 
+物理特性使用固定视觉语言：蓝色回弹纹、橙色推动箭头、紫色重力方向。输入窗列出本关可修改项；设备的 Editable / Preset 与特性颜色分开。后续十四种机关与几何关卡组合见 [机关设计提案](./docs/physics-mechanisms.md)。
+
 ## 本地运行
 
 使用支持 Vite 8 的 Node.js；当前在 Node.js 26 验证。
