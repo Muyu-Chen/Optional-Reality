@@ -8,6 +8,7 @@ export interface Line {
 
 export interface TrackDefinition {
   readonly id: string;
+  readonly feature?: 'bounce';
   readonly points: readonly Point[];
   readonly thickness: number;
 }

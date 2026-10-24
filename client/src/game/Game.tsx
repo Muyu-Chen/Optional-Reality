@@ -7,6 +7,7 @@ import { RuleComposer } from '../components/RuleComposer';
 import { RulesDrawer } from '../components/RulesDrawer';
 import { TeachingOverlay, TimingHint } from '../components/TeachingOverlay';
 import type { LevelDefinition } from '../levels/types';
+import { editableRuleLabels } from '../levels/presentation';
 import { useGameSession } from './useGameSession';
 
 export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLevel: (id: string) => void }) {
@@ -28,6 +29,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
         onQueueAgain={queue.queueAgain} onUndo={game.undoLastRule} onClear={queue.clearMessages}
         onPrepare={() => queue.prepareQueue()} onLoadExample={queue.loadExample} />
       <RuleComposer input={queue.input} editing={!!queue.editing} full={queue.messages.length >= 24}
+        editableRules={editableRuleLabels(level)}
         placeholder={`e.g. ${level.instructions.suggestedMessages[0]}`} api={queue.api}
         storageAvailable={queue.storageAvailable} onInput={queue.setInput} onQueue={queue.queueMessage}
         onCancel={queue.cancelEditing} />

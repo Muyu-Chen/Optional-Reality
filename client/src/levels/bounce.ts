@@ -7,7 +7,7 @@ export const bounce: LevelDefinition = {
   editableWorldProperties: ['restitution'], editableSurfaceProperties: ['restitution'],
   environment: { restitution: .1, friction: 0 },
   ball: { id: 'ball-A', label: 'BALL A', position: [120,130], velocity: [1.5,0], radius: 16, restitution: 0 },
-  tracks: [{ id: 'bounce-floor', points: [[60,427],[760,427]], thickness: 14 }],
+  tracks: [{ id: 'bounce-floor', feature: 'bounce', points: [[60,427],[760,427]], thickness: 14 }],
   guideLines: [], exit: { id: 'exit', label: 'EXIT', x: 684, y: 145, width: 70, height: 95 },
   instructions: {
     objective: 'Bounce the ball into the raised exit',

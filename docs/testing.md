@@ -1,6 +1,6 @@
 # 测试要求与条件矩阵
 
-运行 `npm ci`、`npm test`、`npm run build`。测试使用模拟 API，不读取 `.env` 中的密钥、不调用真实模型。Node.js 26 下当前为 **22 个测试文件、213 项测试**。GitHub Actions 在 push / pull request 时重复执行安装、测试、类型检查与生产构建。
+运行 `npm ci`、`npm test`、`npm run build`。测试使用模拟 API，不读取 `.env` 中的密钥、不调用真实模型。Node.js 26 下当前为 **23 个测试文件、219 项测试**。GitHub Actions 在 push / pull request 时重复执行安装、测试、类型检查与生产构建。
 
 ## 覆盖条件
 

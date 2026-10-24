@@ -46,7 +46,7 @@
     --scene-left:12px;
     --scene-right:12px;
     --scene-top:116px;
-    --scene-bottom:318px;
+    --scene-bottom:376px;
     --dock-width:calc(100% - 28px)
   }
   .game-hud {
@@ -77,7 +77,7 @@
   }
   .queue-dock {
     top:auto;
-    bottom:190px;
+    bottom:248px;
     right:14px;
     max-height:130px
   }
@@ -118,7 +118,7 @@
   }
   .queue-dock.expanded {
     max-height:58svh;
-    bottom:190px;
+    bottom:248px;
     z-index:5
   }
   .queue-dock.expanded .upcoming-list {
@@ -132,6 +132,11 @@
   .composer-dock textarea {
     min-height:55px;
     font-size:12px
+  }
+  .editable-rules {
+    font-size:11px;
+    line-height:1.4;
+    margin-bottom:6px
   }
   .composer-bottom {
     margin-top:7px
@@ -168,7 +173,7 @@
   }
   .stage-overlay {
     top:108px;
-    bottom:318px
+    bottom:376px
   }
   .game-menu {
     padding:18px;
@@ -200,7 +205,7 @@
   }
   .rules-drawer {
     left:14px;
-    bottom:322px;
+    bottom:380px;
     max-height:50svh
   }
   .queue-management {

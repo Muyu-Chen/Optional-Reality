@@ -1,5 +1,6 @@
 import type { Point } from '../levels/types';
 import type { PhysicsWorld } from './world';
+import { drawBounceMarks, drawGravityKey, physicsColours } from './visual-language';
 
 // Pure-physics chapters use the same geometry for the illustration and collisions.
 export function drawGeometry(ctx: CanvasRenderingContext2D, world: PhysicsWorld, trail: readonly Point[]) {
@@ -11,15 +12,15 @@ export function drawGeometry(ctx: CanvasRenderingContext2D, world: PhysicsWorld,
   for(const line of level.guideLines){ctx.beginPath();ctx.moveTo(...line.from);ctx.lineTo(...line.to);ctx.stroke();}
   for(const track of level.tracks){
     const bounce=world.rules.values[track.id]?.restitution ?? world.rules.values.world?.restitution ?? 0;
-    ctx.lineWidth=track.thickness;ctx.strokeStyle=bounce>=.75?'#7f9958':'#344b39';
+    ctx.lineWidth=track.thickness;ctx.strokeStyle=track.feature === 'bounce' ? physicsColours.bounce : physicsColours.structure;
     ctx.beginPath();track.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
-    if(level.id==='bounce'){
-      ctx.fillStyle='#a6b89255';
+    if(track.feature === 'bounce'){
+      drawBounceMarks(ctx,track.points,bounce);
       const y=track.points[0][1]+track.thickness/2;
-      for(let x=65;x<760;x+=20){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+9,y);ctx.lineTo(x+1,y+9);ctx.lineTo(x-8,y+9);ctx.closePath();ctx.fill();}
-      ctx.font='13px ui-monospace,monospace';ctx.fillStyle='#6e815d';ctx.fillText(`SURFACE BOUNCE = ${Number(bounce.toFixed(2))}`,70,y+38);
+      ctx.font='13px ui-monospace,monospace';ctx.fillStyle=physicsColours.bounce;ctx.fillText(`BOUNCE SURFACE · ${Number(bounce.toFixed(2))}`,track.points[0][0]+10,y+38);
     }
   }
+  drawGravityKey(ctx,world.gravity,42,53);
   if(trail.length>1){ctx.lineWidth=2;ctx.strokeStyle='#8ca47a99';ctx.setLineDash([2,7]);ctx.beginPath();trail.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();ctx.setLineDash([]);}
   const exit=level.exit;
   ctx.fillStyle=world.won?'#779957':'#344b39';ctx.beginPath();ctx.roundRect(exit.x,exit.y,exit.width,exit.height,5);ctx.fill();

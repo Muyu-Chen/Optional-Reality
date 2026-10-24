@@ -31,10 +31,13 @@
 | `physics/devices.ts` | 接触判断、风场、传送带、蓄力、转轮和感应开门 |
 | `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
 | `physics/geometry-renderer.ts` | 前两级几何场景绘图 |
+| `physics/visual-language.ts` | 跨场景的特性配色、力箭头、重力与回弹纹；只读取状态 |
 | `physics/bakery-renderer.ts` | 组合面包店背景、机关、面包与轨迹 |
 | `physics/bakery/room.ts` | 静态背景绘画 |
 | `physics/bakery/devices.ts` | 各机关的状态绘图，读取运行层状态 |
 | `physics/bakery/bread.ts`、`drawing.ts` | 面包绘制与画布基础函数 |
+
+`levels/presentation.ts` 从实际规则权限生成输入窗的可修改项，避免另外维护一份 UI 白名单。`TrackDefinition.feature` 声明需要强调的表面特性，不授予编辑权限；实际弹性仍由规则状态决定。
 
 以上 `physics/` 均位于 `client/src/`。绘图不能推进模拟、修改规则或发起模型请求。React 不承接每一物理帧的位置更新。
 

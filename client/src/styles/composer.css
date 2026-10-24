@@ -9,6 +9,12 @@
 .composer-dock .dock-heading {
   padding-bottom:10px
 }
+.editable-rules {
+  margin:0 14px 10px;
+  font-size:12px;
+  line-height:1.5;
+  color:var(--ink)
+}
 .connection-dot {
   width:5px;
   height:5px;

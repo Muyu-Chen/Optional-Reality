@@ -5,12 +5,13 @@ interface RuleComposerProps {
   placeholder: string;
   storageAvailable: boolean;
   api: { configured: boolean; model: string };
+  editableRules?: readonly string[];
   onInput: (text: string) => void;
   onQueue: () => void;
   onCancel: () => void;
 }
 
-export function RuleComposer({ input, editing, full, placeholder, storageAvailable, api, onInput, onQueue, onCancel }: RuleComposerProps) {
+export function RuleComposer({ input, editing, full, placeholder, storageAvailable, api, editableRules, onInput, onQueue, onCancel }: RuleComposerProps) {
   return (
     <section className="composer-dock glass" aria-label="Write a rule">
       <div className="dock-heading">
@@ -19,6 +20,7 @@ export function RuleComposer({ input, editing, full, placeholder, storageAvailab
           title={api.configured ? `AI ready · ${api.model}` : 'Local commands available'} />
         {editing && <button className="quiet-button" onClick={onCancel}>Cancel</button>}
       </div>
+      {editableRules && <p className="editable-rules">You can change: {editableRules.join(' · ') || 'No editable rules'}</p>}
       <textarea id="message-input" value={input} maxLength={240} placeholder={placeholder}
         onChange={event => onInput(event.target.value)}
         onKeyDown={event => {
