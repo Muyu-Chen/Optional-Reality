@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { applyOperation, describeOperation } from '../../shared/commands';
 import { applyBatch, prepareMessage, type AppliedEvent, type Message } from './domain/queue';
-import { CanvasLab, ROUND_SECONDS, STEP_MS, type Telemetry } from './physics/world';
+import { gravityLab } from './levels/gravity-lab';
+import { CanvasLab } from './physics/canvas-lab';
+import { initialTelemetry, STEP_MS, type Telemetry } from './physics/world';
 
-const STORAGE_KEY = 'optional-reality.gravity-lab.messages.v1';
-const INITIAL: Telemetry = { running: false, started: false, gravity: 0, tick: 0, won: false, timedOut: false, x: 165, y: 135 };
+const level = gravityLab;
+const STORAGE_KEY = `optional-reality.${level.id}.messages.v1`;
+const INITIAL = initialTelemetry(level);
 const id = () => crypto.randomUUID();
 function loadMessages(): Message[] {
   try {
@@ -27,14 +30,15 @@ export default function App() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [telemetry, setTelemetry] = useState<Telemetry>(INITIAL);
   const [events, setEvents] = useState<AppliedEvent[]>([]);
-  const [notice, setNotice] = useState('Zero gravity. Your first sent message starts the 30-second experiment.');
+  const [notice, setNotice] = useState(`${level.initialGravity === 0 ? 'Zero gravity.' : `Initial gravity = ${level.initialGravity} m/s².`} Your first sent message starts the ${level.timeLimitSeconds}-second experiment.`);
   const [storageAvailable, setStorageAvailable] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const labRef = useRef<CanvasLab | null>(null);
 
   useEffect(() => {
     if (!canvasRef.current) return;
-    const lab = new CanvasLab(canvasRef.current, setTelemetry);
+    document.title = `${level.title} — Optional Reality`;
+    const lab = new CanvasLab(canvasRef.current, level, setTelemetry);
     labRef.current = lab;
     return () => { lab.destroy(); labRef.current = null; };
   }, []);
@@ -99,11 +103,11 @@ export default function App() {
     labRef.current?.reset();
     updateMessages(messageRef.current.map(message => prepareMessage(message.id, message.text)));
     setSelected(new Set()); setEvents([]);
-    setNotice('World reset to zero gravity. Your messages are kept and ready for another run.');
+    setNotice('World reset. Initial gravity restored. Your messages are kept and ready for another run.');
   }
   function loadExample() {
-    updateMessages(['add gravity', 'stop gravity'].map(text => prepareMessage(id(), text)));
-    setNotice('Two messages prepared. Send the first to begin; send the second when the ball leaves the track.');
+    updateMessages(level.instructions.exampleMessages.map(text => prepareMessage(id(), text)));
+    setNotice(level.instructions.exampleNotice);
   }
 
   const ready = messages.filter(message => message.status === 'ready');
@@ -115,7 +119,7 @@ export default function App() {
   const canSend = !ended && toSend.length > 0;
   const pending = messages.filter(message => message.status !== 'sent');
   const stateLabel = telemetry.won ? 'Complete' : telemetry.timedOut ? 'Time’s up' : telemetry.running ? 'Running' : telemetry.started ? 'Paused' : 'Ready';
-  const secondsLeft = Math.max(0, Math.ceil(ROUND_SECONDS - telemetry.tick * STEP_MS / 1000));
+  const secondsLeft = Math.max(0, Math.ceil(level.timeLimitSeconds - telemetry.tick * STEP_MS / 1000));
 
   return <div className="app-shell">
     <header className="app-header">
@@ -123,13 +127,13 @@ export default function App() {
       <div className="header-links"><span className="demo-badge"><span className="dot"/> INTERACTIVE DEMO</span><a href="/">Project home <Arrow/></a></div>
     </header>
     <main>
-      <div className="lab-heading"><div><p className="eyebrow">01 / GRAVITY LAB</p><h1>Your messages. Your physics.</h1><p className="intro">Prepare your messages. Send the first to begin.</p></div><div className="parser-note"><span className="small-orbit" aria-hidden="true">✳</span><div><strong>Local parser demo</strong><span>Three commands. No model API yet.</span></div></div></div>
+      <div className="lab-heading"><div><p className="eyebrow">{String(level.number).padStart(2, '0')} / {level.title.toUpperCase()}</p><h1>Your messages. Your physics.</h1><p className="intro">Prepare your messages. Send the first to begin.</p></div><div className="parser-note"><span className="small-orbit" aria-hidden="true">✳</span><div><strong>Local parser demo</strong><span>Three commands. No model API yet.</span></div></div></div>
       <div className="workbench">
         <section className="panel messages-panel" aria-labelledby="messages-title">
           <div className="panel-heading"><div><p className="eyebrow">01 / PREPARE</p><h2 id="messages-title">Message queue <span className="count">{messages.length}</span></h2></div><button className="text-button" disabled={!messages.length} onClick={() => { updateMessages([]); setSelected(new Set()); setEditing(null); setInput(''); setNotice('Message queue cleared. The world is unchanged.'); }}>Clear</button></div>
           {messages.length > 0 && <div className="selection-toolbar"><span>{chosen.length ? `${chosen.length} selected` : `${ready.length} ready`}</span><button className="text-button" disabled={!ready.length} onClick={() => setSelected(chosen.length ? new Set() : new Set(ready.map(message => message.id)))}>{chosen.length ? 'Clear selection' : 'Select all ready'}</button></div>}
           <div className="queue-list">
-            {!messages.length && <div className="empty-queue"><span className="empty-symbol" aria-hidden="true">↳</span><h3>Write first.<br/>Send later.</h3><p>Your messages stay here until you choose to apply them.</p><button className="outline-button" onClick={loadExample}>Load two-step example <span aria-hidden="true">+</span></button></div>}
+            {!messages.length && <div className="empty-queue"><span className="empty-symbol" aria-hidden="true">↳</span><h3>Write first.<br/>Send later.</h3><p>Your messages stay here until you choose to apply them.</p><button className="outline-button" onClick={loadExample}>Load example messages <span aria-hidden="true">+</span></button></div>}
             {messages.map((message, index) => {
               const number = String(index + 1).padStart(2, '0');
               const pendingIndex = pending.findIndex(item => item.id === message.id);
@@ -144,12 +148,12 @@ export default function App() {
           <div className="send-controls">
             {toSend.length > 0 && <p className="send-preview">{toSend.length > 1 ? 'Batch result' : 'On send'}: <strong>{batchGravity === 0 ? 'gravity = 0' : `${batchGravity > 0 ? 'downward' : 'upward'} · ${acceleration(batchGravity)}`}</strong>{toSend.length > 1 && <span>Applied in queue order, with no time between messages.</span>}</p>}
             <button className="primary-button send-button" disabled={!canSend} onClick={() => send(toSend.map(message => message.id))}>{chosen.length > 1 ? 'Send all selected' : 'Send next message'} <Arrow/></button>
-            <p className="send-hint">{ended ? 'Reset to try another run.' : !telemetry.started ? 'Your first send starts the 30-second countdown.' : telemetry.running ? 'Send when the moment is right.' : 'Paused. Resume to see the result.'}</p>
+            <p className="send-hint">{ended ? 'Reset to try another run.' : !telemetry.started ? `Your first send starts the ${level.timeLimitSeconds}-second countdown.` : telemetry.running ? 'Send when the moment is right.' : 'Paused. Resume to see the result.'}</p>
           </div>
           <div className="composer">
             <div className="composer-label"><label htmlFor="message-input">{editing ? 'Edit your message' : 'Describe a rule'}</label>{editing && <button className="text-button" onClick={() => { setEditing(null); setInput(''); }}>Cancel</button>}</div>
-            <textarea id="message-input" value={input} maxLength={240} placeholder="e.g. add gravity" onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) { event.preventDefault(); queueMessage(); } }}/>
-            <div className="suggestions">{['add gravity', 'stop gravity', 'reverse gravity'].map(text => <button key={text} onClick={() => setInput(text)}>{text}</button>)}</div>
+            <textarea id="message-input" value={input} maxLength={240} placeholder={`e.g. ${level.instructions.suggestedMessages[0] || 'describe a rule'}`} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) { event.preventDefault(); queueMessage(); } }}/>
+            <div className="suggestions">{level.instructions.suggestedMessages.map(text => <button key={text} onClick={() => setInput(text)}>{text}</button>)}</div>
             <button className="primary-button queue-button" disabled={!input.trim() || (!editing && messages.length >= 24)} onClick={queueMessage}>{editing ? 'Save message' : 'Add to queue'} <span aria-hidden="true">↳</span></button>
             <p className="storage-note">{storageAvailable ? 'Saved on this device. Reload resets the experiment.' : 'Browser storage unavailable. Keep this tab open to retain messages.'}</p>
           </div>
@@ -158,13 +162,13 @@ export default function App() {
         <section className="panel simulation-panel" aria-labelledby="simulation-title">
           <div className="panel-heading"><div><p className="eyebrow">02 / OBSERVE</p><h2 id="simulation-title">The experiment</h2></div><span className={`world-status ${telemetry.running ? 'running' : ''}`}><span className="dot"/>{stateLabel}</span></div>
           <div className="gravity-readout"><div><span className="readout-label">ACTIVE GRAVITY</span><strong data-testid="active-gravity">{telemetry.gravity === 0 ? '0' : `${telemetry.gravity > 0 ? '↓' : '↑'} ${Math.abs(telemetry.gravity).toFixed(1)}`} <small>m/s²</small></strong></div><div className={`countdown ${secondsLeft <= 5 ? 'urgent' : ''}`}><span className="readout-label">TIME LEFT</span><strong data-testid="time-left">{secondsLeft}<small> s</small></strong></div></div>
-          <div className="canvas-frame"><canvas ref={canvasRef} aria-label="Live physics scene with a floating ball, a curved track, and an exit. The world starts with zero gravity." role="img"/></div>
+          <div className="canvas-frame"><canvas ref={canvasRef} width={level.viewport.width} height={level.viewport.height} aria-label={level.instructions.sceneDescription} role="img"/></div>
           <div className="simulation-controls"><div><button className="outline-button" onClick={toggleSimulation} disabled={!telemetry.started || ended}>{telemetry.started && !telemetry.running ? '▶ Resume' : 'Ⅱ Pause'}</button><button className="reset-button" onClick={resetWorld}>↺ Reset</button></div><span className="tick-label">{events.length} {events.length === 1 ? 'message' : 'messages'} sent</span></div>
-          <div className={`mission ${telemetry.won ? 'completed' : ''} ${telemetry.timedOut ? 'expired' : ''}`}><span aria-hidden="true">{telemetry.won ? '✓' : telemetry.timedOut ? '↺' : '↗'}</span><div><strong>{telemetry.won ? 'You reached the exit.' : telemetry.timedOut ? 'Time’s up. Try another timing.' : 'Touch the exit within 30 seconds.'}</strong><p>{telemetry.won || telemetry.timedOut ? 'Reset to try again with the same messages.' : 'Send “add gravity” to begin. Send “stop gravity” as the ball leaves the track.'}</p></div></div>
+          <div className={`mission ${telemetry.won ? 'completed' : ''} ${telemetry.timedOut ? 'expired' : ''}`}><span aria-hidden="true">{telemetry.won ? '✓' : telemetry.timedOut ? '↺' : '↗'}</span><div><strong>{telemetry.won ? 'You reached the exit.' : telemetry.timedOut ? 'Time’s up. Try another timing.' : `${level.instructions.objective} within ${level.timeLimitSeconds} seconds.`}</strong><p>{telemetry.won || telemetry.timedOut ? 'Reset to try again with the same messages.' : level.instructions.hint}</p></div></div>
         </section>
       </div>
       <div className="notice" role="status" aria-live="polite"><span className="dot"/>{telemetry.won ? 'Experiment complete. You controlled the timing.' : telemetry.timedOut ? 'Time’s up. Reset to try again; your messages are saved.' : notice}</div>
     </main>
-    <footer><span>Optional Reality / Gravity Lab</span><span>Acceleration changes. Momentum remains.</span></footer>
+    <footer><span>Optional Reality / {level.title}</span><span>Acceleration changes. Momentum remains.</span></footer>
   </div>;
 }

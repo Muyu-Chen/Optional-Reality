@@ -134,7 +134,7 @@ footer { display: flex; justify-content: space-between; gap: 20px; color: var(--
   .simulation-panel { grid-row: 1; }
   .messages-panel { grid-row: 2; min-height: 780px; max-height: 1000px; }
   .canvas-frame { flex: none; min-height: 0; }
-  .canvas-frame canvas { height: auto; aspect-ratio: 800 / 510; max-height: 500px; }
+  .canvas-frame canvas { height: auto; max-height: 500px; }
   .queue-list { min-height: 210px; }
   h1 { font-size: 32px; }
   .demo-badge { display: none; }
