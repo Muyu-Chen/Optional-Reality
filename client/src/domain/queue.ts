@@ -1,9 +1,11 @@
 import { parseCommand, type Operation } from '../../../shared/commands';
+import { normalizeCommand } from '../../../shared/command-language';
 import { applyRules, GRAVITY_CONTEXT, gravityState, type RuleContext, type RuleState } from '../../../shared/rules';
 
 export interface Message {
   id: string; text: string; status: 'draft' | 'ready' | 'error' | 'sent';
   operation?: Operation; operations?: Operation[]; error?: string; source?: 'local' | 'ai'; requiresAI?: boolean;
+  understoodAs?: string;
 }
 export interface AppliedEvent { id: string; text: string; tick: number; gravity: number; operations: Operation[] }
 export const messageOperations = (message: Message) => message.operations || (message.operation ? [message.operation] : []);
@@ -12,7 +14,8 @@ export function prepareMessage(id: string, text: string, context?: RuleContext, 
   if (!parsed.operation) return { id, text: text.trim(), status: 'error', error: parsed.error, requiresAI: true };
   try {
     if (context && rules) applyRules(rules, [parsed.operation], context);
-    return { id, text: text.trim(), status: 'ready', operation: parsed.operation, source: 'local' };
+    const normalized = normalizeCommand(text);
+    return { id, text: text.trim(), status: 'ready', operation: parsed.operation, source: 'local', ...(normalized !== text.trim() ? { understoodAs: normalized } : {}) };
   } catch (error) { return { id, text: text.trim(), status: 'error', error: error instanceof Error ? error.message : 'Invalid command.' }; }
 }
 

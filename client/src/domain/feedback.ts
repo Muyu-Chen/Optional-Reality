@@ -20,6 +20,10 @@ export function appliedFeedback(operations: readonly Operation[], before: RuleSt
     const value = after.values[target]?.[property];
     if (value === undefined) continue;
     const prior = before.values[target]?.[property];
+    if (property === 'acceleration_x') {
+      changes.set('acceleration_x', value === 0 ? 'Horizontal acceleration turned off. Momentum remains.' : `Acceleration now pulls ${value > 0 ? 'right' : 'left'} at ${number(Math.abs(value))} m/s².`);
+      continue;
+    }
     const kind = level.devices?.find(device => device.id === target)?.kind;
     const surface=level.tracks.find(track=>track.id===target);
     const name = surface ? `${surface.label || 'Surface'} ${property==='friction'?'friction':'bounce'}` : kind === 'conveyor' ? 'Conveyor speed' : kind === 'spring' ? 'Toaster power' : kind === 'fan' ? 'Fan power' : kind === 'rotor' ? 'Wheel speed' : property === 'friction' ? 'Surface friction' : 'Surface bounce';

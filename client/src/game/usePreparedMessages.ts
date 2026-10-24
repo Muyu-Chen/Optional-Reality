@@ -56,9 +56,10 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
       if (!compilation.isCurrent(ticket)) return;
       let preview = lab.world.rules;
       for (const message of result.messages) preview = applyRules(preview, message.operations, context);
-      const compiled = new Map(result.messages.map(message => [message.id, message.operations]));
+      const compiled = new Map(result.messages.map(message => [message.id, message]));
       updateMessages(messageRef.current.map(message => compiled.has(message.id) ? {
-        id: message.id, text: message.text, status: 'ready', operations: compiled.get(message.id), source: 'ai',
+        id: message.id, text: message.text, status: 'ready', operations: compiled.get(message.id)!.operations,
+        understoodAs: compiled.get(message.id)!.understoodAs, source: 'ai',
       } : message));
       onNotice('AI preparation complete. Review the parsed rules, then send when ready. The experiment remains paused.');
     } catch (error) {

@@ -1,8 +1,9 @@
 import { z } from 'zod';
 
 export const Acceleration = z.number().finite().min(-10).max(10);
-export const Property = z.enum(['gravity', 'restitution', 'friction', 'conveyor_speed', 'spring_power', 'fan_power', 'angular_speed']);
+export const Property = z.enum(['gravity', 'acceleration_x', 'restitution', 'friction', 'conveyor_speed', 'spring_power', 'fan_power', 'angular_speed']);
 export type PropertyName = z.infer<typeof Property>;
+export const ENVIRONMENT_PROPERTIES = ['gravity', 'acceleration_x', 'restitution', 'friction'] as const;
 const Id = z.string().min(1).max(80);
 export const OperationSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('set_gravity'), acceleration: Acceleration }).strict(),
@@ -72,7 +73,8 @@ export function applyRules(current: RuleState, candidates: readonly unknown[], c
     const { target, property } = operation;
     checkEditable(context, target, property);
     const previous = property === 'gravity' && target === 'world' ? next.gravity : next.values[target]?.[property]
-      ?? (context.targets.find(item => item.id === target)?.kind === 'surface' ? next.values.world?.[property] : undefined);
+      ?? (context.targets.find(item => item.id === target)?.kind === 'surface' ? next.values.world?.[property]
+        : target === 'world' && property === 'acceleration_x' ? 0 : undefined);
     const value = operation.type === 'set_property' ? operation.value : previous === undefined ? NaN : previous * operation.factor;
     checkValue(context, target, property, value);
     if (property === 'gravity' && target === 'world') next.gravity = value || 0;

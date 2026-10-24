@@ -85,6 +85,7 @@ export class PhysicsWorld {
   }
   private syncRules() {
     this.gravity = this.rules.gravity; this.engine.gravity.y = this.gravity;
+    this.engine.gravity.x = this.rules.values.world?.acceleration_x ?? 0;
     for (const [id, bodies] of this.surfaces) for (const body of bodies) {
       body.restitution = this.rules.values[id]?.restitution ?? this.rules.values.world?.restitution ?? 0;
       body.friction = this.rules.values[id]?.friction ?? this.rules.values.world?.friction ?? 0;

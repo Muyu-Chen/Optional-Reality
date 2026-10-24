@@ -25,7 +25,7 @@ describe('message queue through the game UI', () => {
 
   it('blocks an invalid head until it is edited, without skipping to a valid rule', async () => {
     await startGame('bounce');
-    await queue('add gravity');
+    await queue('Set gravity to 99');
     await queue('Set surface bounce to 0.9');
     expect(button('Send now').disabled).toBe(true);
     expect(lab().world.commandCount).toBe(0);

@@ -13,7 +13,7 @@ describe('independent surface materials', () => {
   it('validates preset materials separately from player permissions', () => {
     const state=initialRules(level), context=ruleContext(level);
     expect(()=>validateRuleState(state,context)).not.toThrow();
-    expect(context.targets.find(target=>target.id==='pad')).toMatchObject({label:'Launch pad',aliases:['pad'],editableProperties:['restitution']});
+    expect(context.targets.find(target=>target.id==='pad')).toMatchObject({label:'Launch pad',aliases:['pad'],editableProperties:['restitution','friction']});
     expect(()=>applyRules(state,[{type:'set_property',target:'wall',property:'restitution',value:.9}],context)).toThrow('cannot be edited');
   });
   it('only changes the chosen surface and restores its material on undo', () => {

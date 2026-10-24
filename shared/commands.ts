@@ -1,9 +1,12 @@
 import { Acceleration, OperationSchema, type Operation, type RuleContext } from './rules';
 import { surfaceTarget } from './surface-target';
+import { normalizeCommand } from './command-language';
+import { parseAcceleration } from './acceleration-command';
 export { Acceleration, OperationSchema, type Operation } from './rules';
 export type ParsedCommand = { operation: Operation; error?: never } | { operation?: never; error: string };
 
 export function parseCommand(input: string, context?: RuleContext): ParsedCommand {
+  input = normalizeCommand(input);
   const text = input.trim().toLowerCase().replace(/[“”"'.!?。！]/g, '').replace(/\s+/g, ' ');
   const raw = input.trim().toLowerCase().replace(/'s\b/g, '').replace(/[“”"']/g, '').replace(/[.!?。！]+$/g, '');
   const device = (kind: string) => context?.targets.find(target => target.kind === kind)?.id;
@@ -19,6 +22,8 @@ export function parseCommand(input: string, context?: RuleContext): ParsedComman
   if (/\bwhen\b|\bif\b|当|如果/.test(text)) return { error: 'Only the sensor-to-gate condition is supported. Send other rules manually.' };
   const number = raw.match(/-?(?:\d+(?:\.\d+)?|\.\d+)/);
   const value = number ? Number(number[0]) : undefined;
+  const acceleration = parseAcceleration(raw);
+  if (acceleration) return acceleration;
   if (/gravity|重力/.test(text) && value !== undefined) return { operation: { type: 'set_gravity', acceleration: /upward|向上/.test(text) ? -Math.abs(value) : value } };
   const options = [
     [/conveyor|belt|传送带/, 'conveyor_speed', device('conveyor')],
@@ -53,7 +58,7 @@ export function describeOperation(operation: Operation): { title: string; detail
   if (operation.type === 'reverse_gravity') return { title: 'Reverse gravity', detail: 'Invert the gravity that is active when sent.' };
   if (operation.type === 'add_sensor_trigger') return { title: 'Sensor → gate', detail: `${operation.sensor} contact opens ${operation.gate}.` };
   if (operation.type === 'scale_property') return { title: `${operation.property.replaceAll('_', ' ')} × ${operation.factor}`, detail: `Read ${operation.target} at execution time.` };
-  if (operation.type === 'set_property') return { title: `${operation.property.replaceAll('_', ' ')} = ${operation.value}`, detail: `Target: ${operation.target}.` };
+  if (operation.type === 'set_property') return { title: operation.property === 'acceleration_x' ? operation.value === 0 ? 'Horizontal acceleration = 0' : `Acceleration ${operation.value > 0 ? '→' : '←'} ${Math.abs(operation.value)} m/s²` : `${operation.property.replaceAll('_', ' ')} = ${operation.value}`, detail: `Target: ${operation.target}.` };
   if (operation.acceleration === 0) return { title: 'gravity = 0', detail: 'No gravitational acceleration.' };
   return { title: `Gravity ${operation.acceleration > 0 ? '↓' : '↑'}`, detail: `${operation.acceleration > 0 ? 'Downward' : 'Upward'} · a = ${Math.abs(operation.acceleration)} m/s²` };
 }

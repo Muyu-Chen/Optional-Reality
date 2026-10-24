@@ -62,11 +62,11 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
     expect(prompt).toContain('toaster');
     expect(prompt).toContain('vertically upward');
   });
-  it('enforces each chapter’s permissions even when a model returns otherwise-valid operations',async()=>{
+  it('keeps baseline physics available in every chapter while checking device permissions separately',async()=>{
     const tutorial={...request(),levelId:gravityLab.id,rules:initialRules(gravityLab)};
-    await expect(compileRules(tutorial,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:.9}])))).rejects.toThrow('cannot be edited');
+    await expect(compileRules(tutorial,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:.9}])))).resolves.toMatchObject({messages:[{operations:[{value:.9}]}]});
     const reflection={...request(),levelId:bounce.id,rules:initialRules(bounce)};
-    await expect(compileRules(reflection,config,undefined,provider(answer([{type:'reverse_gravity'}])))).rejects.toThrow('cannot be edited');
+    await expect(compileRules(reflection,config,undefined,provider(answer([{type:'reverse_gravity'}])))).resolves.toMatchObject({messages:[{operations:[{type:'reverse_gravity'}]}]});
     const result=await compileRules(reflection,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:.9}])));
     expect(result.messages[0].operations).toHaveLength(1);
   });

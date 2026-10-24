@@ -24,9 +24,9 @@ describe('three playable chapters',()=>{
     expect(levels.map(level=>level.id)).toEqual(['gravity-lab','bounce','multi-bounce','friction-runway','catch-cup','toaster','breeze','reality-breakdown']);
     expect(levels.at(-1)?.id).toBe('reality-breakdown');
     for(const level of levels)expect(()=>validateRuleState(initialRules(level),ruleContext(level))).not.toThrow();
-    expect(()=>applyRules(initialRules(gravityLab),[{type:'set_property',target:'world',property:'friction',value:.1}],ruleContext(gravityLab))).toThrow('cannot be edited');
-    expect(()=>applyRules(initialRules(bounce),[{type:'set_gravity',acceleration:0}],ruleContext(bounce))).toThrow('cannot be edited');
-    expect(()=>applyRules(initialRules(bounce),[{type:'set_property',target:'bounce-floor',property:'friction',value:.1}],ruleContext(bounce))).toThrow('cannot be edited');
+    expect(()=>applyRules(initialRules(gravityLab),[{type:'set_property',target:'world',property:'friction',value:.1}],ruleContext(gravityLab))).not.toThrow();
+    expect(()=>applyRules(initialRules(bounce),[{type:'set_gravity',acceleration:0}],ruleContext(bounce))).not.toThrow();
+    expect(()=>applyRules(initialRules(bounce),[{type:'set_property',target:'bounce-floor',property:'friction',value:.1}],ruleContext(bounce))).not.toThrow();
   });
   it.each([.8,.85,.9,.95,1])('wins the reflection puzzle with bounce %s',value=>{
     const world=new PhysicsWorld(bounce);

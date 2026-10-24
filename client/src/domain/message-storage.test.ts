@@ -34,6 +34,6 @@ describe('stored message drafts', () => {
     expect(messageStorageKey(bounce)).not.toBe(messageStorageKey(gravityLab));
     saved(['add gravity']);
     expect(loadMessages(gravityLab)[0].status).toBe('ready');
-    expect(loadMessages(bounce)[0].status).toBe('error');
+    expect(loadMessages(bounce)[0].status).toBe('ready');
   });
 });

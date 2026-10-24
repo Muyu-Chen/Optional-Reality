@@ -40,6 +40,8 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 
 物理特性使用固定视觉语言：蓝色回弹纹、青色摩擦纹、橙色推动箭头、紫色重力方向。输入窗列出本关可修改项；设备的 Editable / Preset 与特性颜色分开。新增三关的玩法与验证见 [几何关卡说明](./docs/geometry-levels.md)，后续机关见 [机关设计提案](./docs/physics-mechanisms.md)。
 
+所有关卡共享重力、水平加速度、弹性和摩擦，教学提示推荐解法而不禁用基础物理量。`add acceleration right word` 会纠正为 `add acceleration rightward`，队列保留原文并展示理解结果。消息语义见 [共享物理规则与消息理解](./docs/command-language.md)。
+
 ## 本地运行
 
 使用支持 Vite 8 的 Node.js；当前在 Node.js 26 验证。

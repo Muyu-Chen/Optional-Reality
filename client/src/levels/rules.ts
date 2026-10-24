@@ -1,14 +1,14 @@
-import type { RuleContext, RuleState } from '../../../shared/rules';
+import { ENVIRONMENT_PROPERTIES, type RuleContext, type RuleState } from '../../../shared/rules';
 import type { LevelDefinition } from './types';
 import { tierFor } from './progression';
 
 export function ruleContext(level: LevelDefinition): RuleContext {
   const tier=tierFor(level);
-  const editable=level.editableWorldProperties || tier?.worldProperties;
   const context: RuleContext = {
     targets: [
-      { id: 'world', kind: 'environment', label: 'World', properties: { gravity: [-10, 10], restitution: [0, 1.5], friction: [0, 1] }, editableProperties: editable?.filter(property=>!tier || tier.worldProperties.includes(property)) },
-      ...level.tracks.map(track => ({ id: track.id, kind: 'surface', label: track.label || track.id, aliases: track.aliases, properties: { restitution: [0, 1.5] as const, friction: [0, 1] as const }, editableProperties: (track.editableProperties || level.editableSurfaceProperties || tier?.worldProperties.filter(property=>property !== 'gravity'))?.filter(property=>!tier || tier.worldProperties.includes(property)) })),
+      { id: 'world', kind: 'environment', label: 'World', properties: { gravity: [-10, 10], acceleration_x: [-10, 10], restitution: [0, 1.5], friction: [0, 1] }, editableProperties: [...ENVIRONMENT_PROPERTIES] },
+      // Preset structural walls remain protected; active surfaces share material controls.
+      ...level.tracks.map(track => ({ id: track.id, kind: 'surface', label: track.label || track.id, aliases: track.aliases, properties: { restitution: [0, 1.5] as const, friction: [0, 1] as const }, editableProperties: track.editableProperties?.length === 0 ? [] : ['restitution', 'friction'] as const })),
       ...(level.devices || []).flatMap<RuleContext['targets'][number]>(device => {
         switch (device.kind) {
           case 'conveyor': return [{ id: device.id, kind: device.kind, properties: { conveyor_speed: [-3, 3] as const } }];
@@ -28,7 +28,7 @@ export function ruleContext(level: LevelDefinition): RuleContext {
   return context;
 }
 export function initialRules(level: LevelDefinition): RuleState {
-  const state: RuleState = { gravity: level.initialGravity, values: { world: { restitution: level.environment?.restitution ?? 0, friction: level.environment?.friction ?? 0 } }, triggers: [] };
+  const state: RuleState = { gravity: level.initialGravity, values: { world: { acceleration_x: 0, restitution: level.environment?.restitution ?? 0, friction: level.environment?.friction ?? 0 } }, triggers: [] };
   for (const track of level.tracks) if (track.material) state.values[track.id] = { ...track.material };
   for (const device of level.devices || []) {
     switch (device.kind) {

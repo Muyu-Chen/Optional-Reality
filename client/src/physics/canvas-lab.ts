@@ -2,6 +2,7 @@ import type { LevelDefinition } from '../levels/types';
 import { PhysicsWorld, STEP_MS, type Telemetry } from './world';
 import { drawBakery } from './bakery-renderer';
 import { drawGeometry } from './geometry-renderer';
+import { drawHorizontalAcceleration } from './acceleration-renderer';
 
 export class CanvasLab {
   world: PhysicsWorld;
@@ -77,8 +78,9 @@ export class CanvasLab {
     const availableWidth = Math.max(1,this.canvas.width-left-right), availableHeight = Math.max(1,this.canvas.height-top-bottom);
     const scale = Math.min(availableWidth / width, availableHeight / height);
     ctx.setTransform(scale, 0, 0, scale, left+(availableWidth-width*scale)/2, top+(availableHeight-height*scale)/2);
-    if (this.level.presentation === 'bakery') { drawBakery(ctx, this.world, this.trail); return; }
-    drawGeometry(ctx,this.world,this.trail);
+    if (this.level.presentation === 'bakery') drawBakery(ctx, this.world, this.trail);
+    else drawGeometry(ctx,this.world,this.trail);
+    drawHorizontalAcceleration(ctx,this.world);
   }
 
   destroy() {

@@ -11,11 +11,12 @@ export type CompileRequest = z.infer<typeof CompileRequestSchema>;
 export const ModelOutputSchema = z.object({
   messages: z.array(z.object({
     id: z.string().min(1).max(80), operations: z.array(OperationSchema).max(16), error: z.string().max(300).nullable(),
+    understoodAs: z.string().trim().min(1).max(240).nullish(),
   }).strict()).min(1).max(24),
 }).strict();
 export const CompileResponseSchema = z.object({
   requestId: z.string(), levelId: z.string(), sceneVersion: z.number().int(), queueRevision: z.number().int(),
-  messages: z.array(z.object({ id: z.string(), operations: z.array(OperationSchema).min(1).max(16) }).strict()).min(1).max(24),
+  messages: z.array(z.object({ id: z.string(), operations: z.array(OperationSchema).min(1).max(16), understoodAs: z.string().trim().min(1).max(240).optional() }).strict()).min(1).max(24),
 }).strict();
 export function validateCompilation(request: CompileRequest, output: unknown, context: RuleContext) {
   const compiled = ModelOutputSchema.parse(output);
@@ -27,5 +28,7 @@ export function validateCompilation(request: CompileRequest, output: unknown, co
     state = applyRules(state, message.operations, context);
   }
   const { rules: _rules, messages: _messages, ...identity } = request;
-  return CompileResponseSchema.parse({ ...identity, messages: compiled.messages.map(({ id, operations }) => ({ id, operations })) });
+  return CompileResponseSchema.parse({ ...identity, messages: compiled.messages.map(({ id, operations, understoodAs }, index) => ({ id, operations,
+    ...(understoodAs && understoodAs !== request.messages[index].text.trim() ? { understoodAs } : {}),
+  })) });
 }

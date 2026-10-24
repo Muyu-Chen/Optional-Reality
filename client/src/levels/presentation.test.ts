@@ -10,21 +10,22 @@ import { frictionRunway } from './friction-runway';
 import { catchCup } from './catch-cup';
 
 describe('player-facing capabilities', () => {
+  const base = ['Gravity','Horizontal acceleration','Surface bounce','Surface friction'];
   it.each([
-    [gravityLab, ['Gravity']],
-    [bounce, ['Surface bounce']],
-    [multiBounce, ['Gravity','Surface bounce']],
-    [frictionRunway, ['Gravity','Surface friction']],
-    [catchCup, ['Gravity','Launch pad bounce','Cup base bounce']],
-    [toaster, ['Toaster power']],
-    [breeze, ['Airflow']],
-    [realityBreakdown, ['Gravity', 'Surface bounce', 'Surface friction', 'Conveyor speed', 'Toaster power', 'Airflow', 'Touch switch → gate']],
+    [gravityLab, base],
+    [bounce, base],
+    [multiBounce, base],
+    [frictionRunway, base],
+    [catchCup, [...base,'Launch pad bounce','Cup base bounce','Cup base friction']],
+    [toaster, [...base,'Toaster power']],
+    [breeze, [...base,'Airflow']],
+    [realityBreakdown, [...base, 'Conveyor speed', 'Toaster power', 'Airflow', 'Touch switch → gate']],
   ] as const)('only advertises permitted rules in $0.id', (level, expected) => {
     expect(editableRuleLabels(level)).toEqual(expected);
   });
 
   it('follows scene permissions and names a spring without a bakery theme', () => {
-    expect(editableRuleLabels({ ...toaster, presentation: undefined })).toEqual(['Spring strength']);
-    expect(editableRuleLabels({ ...toaster, editableDevices: [] })).toEqual([]);
+    expect(editableRuleLabels({ ...toaster, presentation: undefined })).toEqual([...base,'Spring strength']);
+    expect(editableRuleLabels({ ...toaster, editableDevices: [] })).toEqual(base);
   });
 });
