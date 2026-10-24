@@ -8,6 +8,7 @@ interface MessageQueueProps {
   preparing: boolean;
   ended: boolean;
   canSend: boolean;
+  messageErrors: Record<string, string>;
   canUndo: boolean;
   apiConfigured: boolean;
   previewError: string;
@@ -33,7 +34,8 @@ export function MessageQueue(props: MessageQueueProps) {
   const chosen = ready.filter(message => selected.has(message.id));
   const renderMessage = (message: Message, index: number) => (
     <MessageCard key={message.id} message={message} index={index} count={pending.length}
-      managing={managing} selected={selected.has(message.id)} preparing={preparing} canSend={canSend}
+      managing={managing} selected={selected.has(message.id)} preparing={preparing}
+      canSend={canSend && !props.messageErrors[message.id]} validationError={props.messageErrors[message.id]}
       onSelect={props.onSelect} onEdit={props.onEdit} onDelete={props.onDelete}
       onMove={props.onMove} onSend={props.onSend} />
   );

@@ -96,16 +96,13 @@
     font-size:9px
   }
   .send-now {
-    width:63px;
-    padding:8px;
+    padding:5px 8px;
     font-size:10px
   }
   .send-now span {
     display:none
   }
-  .upcoming-list {
-    max-height:36px
-  }
+  .upcoming-list { max-height:90px }
   .upcoming-message {
     padding:6px 12px
   }

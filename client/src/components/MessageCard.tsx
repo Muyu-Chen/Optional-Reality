@@ -9,6 +9,7 @@ interface MessageCardProps {
   selected: boolean;
   preparing: boolean;
   canSend: boolean;
+  validationError?: string;
   onSelect: (id: string) => void;
   onEdit: (message: Message) => void;
   onDelete: (id: string) => void;
@@ -16,7 +17,7 @@ interface MessageCardProps {
   onSend: (ids: string[]) => void;
 }
 
-export function MessageCard({ message, index, count, managing, selected, preparing, canSend,
+export function MessageCard({ message, index, count, managing, selected, preparing, canSend, validationError,
   onSelect, onEdit, onDelete, onMove, onSend }: MessageCardProps) {
   const operations = messageOperations(message);
   const status = message.status === 'draft' ? preparing ? 'Interpreting…' : 'Waiting'
@@ -28,11 +29,23 @@ export function MessageCard({ message, index, count, managing, selected, prepari
   return (
     <article className={`queued-message ${index === 0 ? 'current-message' : 'upcoming-message'} ${message.status}`}>
       <div className="message-copy">
+        <div className="message-header">
         <div className="message-meta">
           {managing && <input type="checkbox" aria-label={`Select message ${index + 1}`}
             checked={selected} disabled={message.status !== 'ready'} onChange={() => onSelect(message.id)} />}
           <span>{index === 0 ? 'UP NEXT' : String(index + 1).padStart(2, '0')}</span>
           <span>{status}</span>
+        </div>
+        <div className="message-quick-actions">
+          <button className="send-now" disabled={!canSend || message.status !== 'ready'}
+            onClick={() => onSend([message.id])}>Send now</button>
+          <button className="delete-message" aria-label={`Delete message ${index + 1}`} title="Delete message"
+            onClick={() => onDelete(message.id)}>
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">
+              <path d="M3 4.5h10M6 4.5v-2h4v2M4 4.5l.7 9h6.6l.7-9M6.5 7v4M9.5 7v4" />
+            </svg>
+          </button>
+        </div>
         </div>
         <p className="message-text">{message.text}</p>
         {message.understoodAs && <p className="parsed-rule">Understood as: {message.understoodAs}</p>}
@@ -40,10 +53,10 @@ export function MessageCard({ message, index, count, managing, selected, prepari
           Requested {adjustment.requested} → limited to {adjustment.applied} (range {adjustment.minimum} to {adjustment.maximum})
         </p>)}
         <p className={`parsed-rule ${message.status === 'error' ? 'error-copy' : ''}`}>{description}</p>
+        {validationError && <p className="parsed-rule error-copy">{validationError}</p>}
         {(managing || message.status === 'error') && (
           <div className="message-actions">
             <button aria-label={`Edit message ${index + 1}`} onClick={() => onEdit(message)}>Edit</button>
-            <button aria-label={`Delete message ${index + 1}`} onClick={() => onDelete(message.id)}>Delete</button>
             {managing && <>
               <button aria-label={`Move message ${index + 1} earlier`} disabled={index === 0}
                 onClick={() => onMove(message.id, -1)}>↑</button>
@@ -53,8 +66,6 @@ export function MessageCard({ message, index, count, managing, selected, prepari
           </div>
         )}
       </div>
-      {index === 0 && <button className="send-now" disabled={!canSend || message.status !== 'ready'}
-        onClick={() => onSend([message.id])}>Send now <span aria-hidden="true">↗</span></button>}
     </article>
   );
 }

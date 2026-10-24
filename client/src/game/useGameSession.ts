@@ -113,11 +113,15 @@ export function useGameSession(level: LevelDefinition) {
 
   const chosen = queue.messages.filter(message => queue.selected.has(message.id) && message.status === 'ready');
   const pending = queue.messages.filter(message => message.status !== 'sent');
-  const toSend = chosen.length ? chosen : pending.slice(0, 1).filter(message => message.status === 'ready');
+  const messageErrors: Record<string, string> = {};
+  for (const message of pending.filter(message => message.status === 'ready')) {
+    try { applyRules(labRef.current?.world.rules || initialRules(level), messageOperations(message), context); }
+    catch (error) { messageErrors[message.id] = error instanceof Error ? error.message : 'Prepare this rule again.'; }
+  }
   let previewError = '';
   try {
     let preview = labRef.current?.world.rules || initialRules(level);
-    for (const message of toSend) preview = applyRules(preview, messageOperations(message), context);
+    for (const message of chosen) preview = applyRules(preview, messageOperations(message), context);
   } catch (error) {
     previewError = error instanceof Error ? error.message : 'Rules need preparing again.';
   }
@@ -125,8 +129,8 @@ export function useGameSession(level: LevelDefinition) {
   return {
     canvasRef, telemetry, queue, controls, notice, captions, finishCaption,
     world: labRef.current?.world,
-    canUndo: !!events.length, ended, previewError,
-    canSend: !ended && !queue.preparing && !previewError && toSend.length > 0,
+    canUndo: !!events.length, ended, previewError, messageErrors,
+    canSend: !ended && !queue.preparing,
     stateLabel: gameStateLabel(telemetry),
     secondsLeft: Math.max(0, Math.ceil(level.timeLimitSeconds - telemetry.tick * STEP_MS / 1000)),
     tutorial: level.tutorials?.find(item => item.id === telemetry.tutorialId),

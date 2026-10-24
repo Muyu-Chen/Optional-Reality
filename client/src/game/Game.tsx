@@ -22,7 +22,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
       <GameHud level={level} telemetry={telemetry} secondsLeft={game.secondsLeft} menuOpen={controls.menuOpen}
         onRetry={game.retryWorld} onResume={controls.resumeGame} onOpenMenu={controls.openMenu} />
       <MessageQueue messages={queue.messages} selected={queue.selected} managing={queue.managing}
-        preparing={queue.preparing} ended={game.ended} canSend={game.canSend} canUndo={game.canUndo}
+        preparing={queue.preparing} ended={game.ended} canSend={game.canSend} messageErrors={game.messageErrors} canUndo={game.canUndo}
         apiConfigured={queue.api.configured} previewError={game.previewError}
         onToggleManage={queue.toggleManaging} onSelect={queue.toggleSelection} onSelectAll={queue.selectMessages}
         onEdit={queue.editMessage} onDelete={queue.removeMessage} onMove={queue.moveMessage} onSend={game.send}

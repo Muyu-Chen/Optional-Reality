@@ -1,4 +1,4 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, vi } from 'vitest';
 import type { CompileRequest } from '../../../shared/compiler';
 import type { Operation } from '../../../shared/rules';
@@ -85,7 +85,8 @@ export async function startGame(level = 'gravity-lab', api = new ControlledApi()
 }
 
 export const lab = () => fixtures.labs.at(-1)!;
-export const button = (name: string) => screen.getByRole<HTMLButtonElement>('button', { name });
+// Existing sequential-play tests intentionally operate on the first pending row.
+export const button = (name: string) => (name === 'Send now' ? within(rows()[0]) : screen).getByRole<HTMLButtonElement>('button', { name });
 export const rows = () => screen.queryAllByRole('article');
 export async function click(name: string) { await act(async () => fireEvent.click(button(name))); }
 export async function queue(text: string) {
