@@ -20,7 +20,8 @@
 - [x] 编辑、删除、排序待发送消息；浏览器保存消息文字，重置后保留并重新准备。
 - [x] 记录执行 tick，反转读取执行时重力；取消重力保留动量。
 - [x] 默认 Send next message，多选改为 Send all selected，只保留一个发送按钮。
-- [x] 16 项自动测试、类型检查与生产构建通过。
+- [x] 关卡抽为独立文件；物理世界、渲染、界面提示、时限和 Reset 共同读取统一配置。
+- [x] 21 项自动测试、类型检查与生产构建通过，包含不同尺寸、时限和初始状态的独立关卡验证。
 
 此 demo 没有模型请求、后端、Undo 或 Replay；下方清单仍按完整首版验收，部分子项已有 demo 基础。界面与可玩性检查继续进行。
 
@@ -60,21 +61,26 @@ HTTP → Express → AI Rule Compiler → OpenAI 兼容 API
 ```
 
 - Physics Engine 管理物理世界、固定时间步长和对象映射。
+- `levels/` 保存只读关卡数据；`PhysicsWorld(level)` 与 `CanvasLab(canvas, level, report)` 共用定义，运行状态独立于关卡配置。
 - Command Queue 保存已编译操作，用户点击 Apply next 后，Rule Engine 在下一个物理更新边界应用队首项并记录模拟 tick。
 - AI Rule Compiler 只负责意图到规则的转换，不参与逐帧模拟。
 - React 管理界面状态；物体位置由模拟循环和 Canvas 更新，避免逐帧写入 React State。
 - 共享协议与规则执行逻辑不依赖 HTTP 或 Electron，便于未来增加运行容器。
 
-完整首版的建议目录（当前已创建 `client/` 和 `shared/commands.ts`，其余按需补充）：
+当前核心目录与后续模块（`components/`、`rules.ts`、`api/`、`server/` 按需补充）：
 
 ```text
 Optional-Reality/
 ├── client/src/
 │   ├── components/          # React 界面
-│   ├── physics/engine.ts    # Matter.js 世界与更新循环
-│   ├── physics/rules.ts     # 规则执行与生命周期
-│   ├── physics/queue.ts     # 已准备指令、执行游标和历史
-│   ├── physics/scenes.ts    # 预设场景与初始状态
+│   ├── levels/
+│   │   ├── types.ts        # 只读关卡定义
+│   │   ├── geometry.ts     # 纯几何辅助函数
+│   │   └── gravity-lab.ts  # 第一关场景与提示
+│   ├── physics/world.ts    # 按关卡配置创建和更新 Matter.js 世界
+│   ├── physics/canvas-lab.ts # 通用 Canvas 绘图、循环与清理
+│   ├── physics/rules.ts    # 待扩展的规则执行与生命周期
+│   ├── domain/queue.ts     # 已准备指令、批量执行和历史
 │   ├── api/                # 浏览器到后端的请求
 │   └── App.tsx
 ├── server/src/

@@ -71,6 +71,12 @@ AI 负责将用户意图编译为声明式操作；命令队列与规则引擎�
 
 demo 使用本地解析器，支持 `add gravity`（向下 1 m/s²）、`stop gravity`（零重力）和 `reverse gravity`。停止重力只取消加速度，保留当前速度。尚未接入模型 API、后端、Undo / Replay 或自由沙盒。
 
+### 关卡定义
+
+每关放在 `client/src/levels/` 的独立文件中。当前第一关为 [gravity-lab.ts](./client/src/levels/gravity-lab.ts)，统一定义轨道、出生点、Exit、初始重力、时限和提示。物理运行时与 Canvas 渲染读取同一份配置，Reset 也从该定义重建世界。
+
+`App.tsx` 只选择并传入关卡，普通轨道关卡可以通过新增配置复用现有逻辑。字段、单位与新增步骤见 [关卡开发说明](./client/src/levels/README.md)。
+
 ### 本地运行
 
 需要支持 Vite 8 的 Node.js 环境；当前已在 Node.js 26 验证。仓库锁定依赖版本。
