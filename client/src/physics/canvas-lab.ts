@@ -1,5 +1,6 @@
 import type { LevelDefinition } from '../levels/types';
 import { PhysicsWorld, STEP_MS, type Telemetry } from './world';
+import { drawBakery } from './bakery-renderer';
 
 export class CanvasLab {
   world: PhysicsWorld;
@@ -12,7 +13,7 @@ export class CanvasLab {
   private context: CanvasRenderingContext2D;
   private visible = () => { if (document.hidden) { this.world.pause(); this.report(); } };
 
-  constructor(private canvas: HTMLCanvasElement, readonly level: LevelDefinition, private reportState: (state: Telemetry) => void) {
+  constructor(private canvas: HTMLCanvasElement, readonly level: LevelDefinition, private reportState: (state: Telemetry) => void, private immersive = false) {
     const context = canvas.getContext('2d');
     if (!context) throw new Error('This browser cannot create the canvas.');
     this.world = new PhysicsWorld(level);
@@ -29,6 +30,12 @@ export class CanvasLab {
   reset() {
     this.world.destroy(); this.world = new PhysicsWorld(this.level); this.trail = []; this.accumulator = 0;
     this.report(); this.draw();
+  }
+  retry() {
+    const previous = this.world;
+    this.world = previous.retryWithRules(); previous.destroy();
+    this.trail = []; this.accumulator = 0;
+    this.world.start(); this.report(); this.draw();
   }
   private resize() {
     const ratio = window.devicePixelRatio || 1;
@@ -59,9 +66,17 @@ export class CanvasLab {
     const { ball, exit, tracks, guideLines, instructions } = this.level;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    ctx.fillStyle = '#fafcf7'; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    const scale = Math.min(this.canvas.width / width, this.canvas.height / height);
-    ctx.setTransform(scale, 0, 0, scale, (this.canvas.width - width * scale) / 2, (this.canvas.height - height * scale) / 2);
+    ctx.fillStyle = this.level.presentation === 'bakery' ? '#f5edde' : '#f2f5ed'; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    const ratio = window.devicePixelRatio || 1;
+    // The canvas fills the screen; reserve readable space for floating game controls.
+    // These CSS tokens are shared with the HUD so it cannot hide the pickup target.
+    const style = this.immersive ? getComputedStyle(this.canvas) : null;
+    const inset = (name: string) => style ? (parseFloat(style.getPropertyValue(`--scene-${name}`)) || 0) * ratio : 0;
+    const left = inset('left'), right = inset('right'), top = inset('top'), bottom = inset('bottom');
+    const availableWidth = Math.max(1,this.canvas.width-left-right), availableHeight = Math.max(1,this.canvas.height-top-bottom);
+    const scale = Math.min(availableWidth / width, availableHeight / height);
+    ctx.setTransform(scale, 0, 0, scale, left+(availableWidth-width*scale)/2, top+(availableHeight-height*scale)/2);
+    if (this.level.presentation === 'bakery') { drawBakery(ctx, this.world, this.trail); return; }
     ctx.fillStyle = '#dce5d8';
     for (let x = 18; x < width; x += 28) for (let y = 18; y < height; y += 28) { ctx.beginPath(); ctx.arc(x, y, 1, 0, Math.PI * 2); ctx.fill(); }
     ctx.font = '14px ui-monospace, monospace'; ctx.fillStyle = '#7b8a7e';

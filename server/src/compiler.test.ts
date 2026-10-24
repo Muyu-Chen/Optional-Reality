@@ -41,8 +41,12 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
   });
   it('accepts the factory sensor condition from scene-specific IDs', async () => {
     const input = { ...request(), levelId: realityBreakdown.id, rules: initialRules(realityBreakdown) };
-    const result = await compileRules(input, config, undefined, provider(answer([{ type: 'add_sensor_trigger', sensor: 'sensor-gate', gate: 'gate-final' }])));
+    const fetcher = provider(answer([{ type: 'add_sensor_trigger', sensor: 'sensor-gate', gate: 'gate-final' }]));
+    const result = await compileRules(input, config, undefined, fetcher);
     expect(result.messages[0].operations[0].type).toBe('add_sensor_trigger');
+    const prompt = JSON.parse(String(fetcher.mock.calls[0][1]?.body)).messages[1].content;
+    expect(prompt).toContain('toaster');
+    expect(prompt).toContain('vertically upward');
   });
   it.each([
     answer([{ type: 'set_property', target: 'ball-A', property: 'friction', value: 0 }]),

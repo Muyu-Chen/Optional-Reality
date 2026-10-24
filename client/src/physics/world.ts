@@ -12,12 +12,12 @@ function touchesExit({ x, y }: Matter.Vector, radius: number, exit: LevelDefinit
   const closestY = Math.max(exit.y, Math.min(y, exit.y + exit.height));
   return (x - closestX) ** 2 + (y - closestY) ** 2 <= radius ** 2;
 }
-export interface Telemetry { running: boolean; started: boolean; gravity: number; tick: number; won: boolean; timedOut: boolean; x: number; y: number }
+export interface Telemetry { running: boolean; started: boolean; gravity: number; tick: number; won: boolean; timedOut: boolean; fell: boolean; x: number; y: number }
 
 export function initialTelemetry(level: LevelDefinition): Telemetry {
   return {
     running: false, started: false, gravity: level.initialGravity, tick: 0,
-    won: false, timedOut: false, x: level.ball.position[0], y: level.ball.position[1],
+    won: false, timedOut: false, fell: false, x: level.ball.position[0], y: level.ball.position[1],
   };
 }
 
@@ -130,7 +130,7 @@ export class PhysicsWorld {
     }
   }
   snapshot(): Telemetry {
-    return { running: this.running, started: this.started, gravity: this.gravity, tick: this.tick, won: this.won, timedOut: this.timedOut, x: this.ball.position.x, y: this.ball.position.y };
+    return { running: this.running, started: this.started, gravity: this.gravity, tick: this.tick, won: this.won, timedOut: this.timedOut, fell: this.fell, x: this.ball.position.x, y: this.ball.position.y };
   }
   destroy() { Composite.clear(this.engine.world, false); Engine.clear(this.engine); }
 }

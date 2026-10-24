@@ -25,6 +25,7 @@ export interface LevelDefinition {
   readonly id: string;
   readonly number: number;
   readonly title: string;
+  readonly presentation?: 'bakery';
   readonly viewport: {
     readonly width: number;
     readonly height: number;

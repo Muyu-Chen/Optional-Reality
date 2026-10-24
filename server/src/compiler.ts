@@ -24,7 +24,7 @@ export async function compileRules(input: unknown, config: AiConfig, signal?: Ab
   const context = ruleContext(level);
   validateRuleState(request.rules, context);
   const output = await requestJson(config, SYSTEM + '\nOutput JSON schema:\n' + JSON.stringify(z.toJSONSchema(ModelOutputSchema)), JSON.stringify({
-    level: { id: level.id, title: level.title, editable: context },
+    level: { id: level.id, title: level.title, description: level.instructions.sceneDescription, editable: context },
     currentRules: request.rules, messages: request.messages,
   }), signal, fetcher);
   return validateCompilation(request, output, context);

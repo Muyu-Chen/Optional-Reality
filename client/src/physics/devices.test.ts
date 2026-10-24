@@ -48,7 +48,7 @@ describe('factory devices in Matter.js', () => {
       Matter.Body.setPosition(world.ball, { x: 600, y: 230 });
       simulate(world, 30);
       expect(world.ball.position.y).toBeLessThan(220);
-      expect(world.ball.position.x).toBeGreaterThan(600);
+      expect(world.ball.position.x).toBeCloseTo(600, 5);
     } finally { world.destroy(); }
   });
   it('spinning rotors affect the core only on contact', () => {
