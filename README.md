@@ -1,111 +1,77 @@
 # Optional Reality
 
-**Reality is optional. The laws of physics are yours to rewrite.**
+**Reality is optional. Change the rules. Choose the moment.**
 
-Optional Reality is an experimental AI-powered physics sandbox where you can describe new physical laws in natural language and watch a simulated world react in real time.
+Optional Reality 是一个通过自然语言改写规则、选择执行时机的 **2D 物理解谜游戏**。
 
-## 项目思想
+核心循环：观察场景 → 编写消息 → 解析排队 → **Send now** → 物理变化与字幕反馈 → 重试不同解法。
 
-如果重力、摩擦和物体之间的相互作用都可以重新定义，会发生什么？
+AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行物理世界。玩家决定规则何时生效；关闭重力保留惯性，反转与翻倍在执行时读取当前值。模型不参与逐帧计算，不执行生成的 JavaScript。
 
-我们希望用户通过自然语言描述新的物理规律，并观察它们在二维世界中的效果。首版先支持清楚、直接的指令，由用户控制应用时机，例如：
+## 当前可玩内容
 
-- "Make gravity pull everything to the left."
-- "Turn off the gravity."
-- "Reverse the gravity."
-- "Make the spring twice as stiff."
-- "Make A attract B using inverse-square gravity."
+面向 SBUHacks 2026，已实现三个等级、五个递进小关：
 
-这些是目标能力示例。当前已接入 DeepSeek Flash，将自然语言编译为重力与环境属性操作；本地解析器保留为离线入口。自动识别「小球离开轨道」等场景条件属于后续扩展，首版先由用户观察并应用指令。
+| 等级 | 小关 | 主要学习内容 |
+| --- | --- | --- |
+| 1 · Motion | 01 Gravity Lab | 零重力起步，沿斜坡运动，在离轨时取消重力 |
+| 2 · Collisions | 02 A Little More Bounce | 修改地面弹性，反弹进入高处出口 |
+| 3 · Devices | 03.1 A Little Stored Energy | 只调整面包机，认识压缩、蓄力与释放 |
+| 3 · Devices | 03.2 Catch the Breeze | 只调整向上的风场 |
+| 3 · Devices | 03.3 The Last Order | 组合传送带、面包机、风扇和感应开门 |
 
-### Guided Experiments + Free Sandbox
+等级定义能力上限，每个小关可固定部分参数。转轮运行层已保留，但不放进当前主线；摩擦小关、更多机关组合、自然元素和自由沙盒后续扩展。
 
-- **引导实验**：提供明确的初始场景和目标。第一个实验是让小球沿斜坡运动，最终进入 Exit；用户通过修改规则尝试不同解法。
-- **自由沙盒**：提供自由实验空间，让用户创建物体、组合规则、观察结果，不要求通关。首版先提供一个简单的可重置场景。
+## 游戏操作
 
-引导实验帮助用户理解系统的能力，自由沙盒承接进一步的探索。Hackathon 首先做好一个引导实验和一个基础沙盒。
+- 全屏场景，右下半透明输入窗；Enter 将消息排队，Shift+Enter 换行。
+- 消息自动解析，右上 **Send now** 执行队首，下一条自动补位。准备消息不改变世界。
+- 简单指令可本地准备，自由语言使用 DeepSeek Flash。等待 AI 时暂停；执行已准备消息不等待网络。
+- 左侧字幕显示实际修改结果，几秒后淡出。规则参数、提示、批量发送与历史收在菜单里。
+- 首次有效发送开始 30 秒模拟倒计时；普通暂停、API 等待与教学暂停不消耗模拟时间。
+- **Try again** 恢复初始世界和额度，原消息重新待发，保留已解析操作以比较发送时机。
+- 面包机每次接触会蓄力约 0.6 秒；首次额外暂停教学，Continue 后恢复。重试不重复打断，菜单可重看教学。
+- 暂停菜单切换小关，通关后可进入下一关。界面以英语为主，支持中英文输入。
 
-### AI 生成规则，物理引擎运行世界
+基础例子：`add gravity`、`stop gravity`、`reverse gravity`、`Set surface bounce to 0.9`、`Set toaster power to 2`、`Set fan power to 0.45`。不同关卡只允许其声明的属性；任务小球或面包不能被直接移动或修改速度。
 
-核心流程是：**一句自然语言 → 一条经过验证的结构化规则 → 可观察的物理变化**。
+## 本地运行
 
-AI 负责将用户意图编译为声明式操作；命令队列与规则引擎负责按用户选择的时机应用操作、管理规则和生命周期；Matter.js 负责实际的物理模拟。AI 仅在准备指令时参与，不参与逐帧计算，也不直接生成模拟结果。
-
-我们只执行系统明确支持并经过验证的规则，不执行模型生成的任意 JavaScript。界面应展示规则的含义和影响对象，使每次修改都可理解、可检查、可撤销。
-
-### 先编排，再逐条应用
-
-用户先编辑、排序一组简单指令，一次提交给 AI 转换并校验。队列准备好后，每条规则暂不生效；用户观察模拟，在合适的时机点击 **Apply next**，由本地规则引擎立即应用下一条，避免现场等待 API。
-
-例如，先准备 `turn off the gravity`，看到小球离开轨道时再应用。弹簧实验则可提前排好 `add gravity`、`reverse the gravity`，分别在开始下落和再次下落时执行。
-
-当前 demo 允许发送下一条 ready 消息，也可以选择多条一起执行；同批操作按队列顺序应用，重力以最后一条操作的结果为准。需要观察中间运动时，应分批发送。`reverse gravity` 这类相对操作在执行时读取当前状态，再计算结果。延迟执行和引擎事件触发以后再扩展。
-
-### 让实验可以比较
-
-- **Undo**：撤销最近一次规则修改，不自动恢复物体之前的位置和速度。
-- **Replay**：重建相同初始场景，按记录的模拟时刻重放已执行指令；未执行的队列项继续等待用户操作。
-- **Reset**：恢复初始场景及默认规则，清除执行历史与编译结果，保留队列文字作为草稿。
-
-重建世界应清除旧速度、约束、计时器和事件监听等运行状态，采用固定时间步长，减少上一轮实验对下一轮的影响。
-
-物理反馈本身也是探索的一部分：增大全程恒定重力未必能让小球飞得更远；物体之间有吸引力，也不意味着自动形成稳定轨道。系统应真实执行规则，让用户通过实验发现条件、初始速度和规则组合的作用。
-
-## 首版形态与技术方向
-
-首版是运行在浏览器中的 **Web 应用**，暂不引入 Electron。使用 React + TypeScript + Vite 构建界面，Matter.js + Canvas 2D 运行和展示模拟；Node.js + Express 后端连接可配置的 **OpenAI 兼容 API**，并通过 Zod 校验规则。
-
-物理模拟在浏览器本地运行，模型请求经过后端。API 地址、模型和密钥可配置，不绑定单一服务商；首版使用内存保存场景和规则，不引入数据库。
-
-物理引擎、规则引擎与 AI 请求层保持独立，后续如需桌面窗口、本地文件或本地模型能力，再考虑接入 Electron。
-
-完整技术栈、模块划分和开发顺序见 [dev-todo.md](./dev-todo.md)。
-
-## 当前状态
-
-🚧 **交互 demo 阶段** — 面向 **SBUHacks 2026**。
-
-已实现英文静态介绍页，以及 React + Matter.js 的 Gravity Lab：零重力起步、消息保存与排序、卡片内解析预览、手动分批发送、暂停与重置。界面只保留一个消息队列和一个实验画面；默认按钮为 **Send next message**，选择多条消息后变为 **Send all selected**。
-
-首次发送有效消息自动开始 30 秒实验，暂停不消耗模拟时间，球的任意部分碰到可见 Exit 即通关；倒计时结束后可重置重试。消息文字保存在当前浏览器；刷新或 Reset 后世界恢复零重力，倒计时恢复 30 秒，消息重新等待执行。
-
-demo 保留本地指令 `add gravity`（向下 1 m/s²）、`stop gravity`（零重力）和 `reverse gravity`，并支持数值形式的重力、表面弹性与摩擦。停止重力只取消加速度，保留当前速度。
-
-输入自由语言后点击 **Prepare with AI**，后端使用可配置的兼容 API 编译整组待发送消息。一句话可以包含多个操作；全部通过 Zod、对象权限与数值范围校验后，才整体进入 ready。准备期间暂停实验，编辑、排序或 Reset 会取消旧请求；发送时再次按实际状态验证，相对操作不提前固化。
-
-队友的 Reality Breakdown 工厂玩法已迁入 Matter.js 运行层：传送带、接触弹簧、风场、转轮、传感器开门、表面属性、100 条消息额度、规则 Undo 与保留规则重试。该关目前只注册在运行时及编译器中，**设备 UI 与关卡选择入口暂不接入**；当前可见的仍是 Gravity Lab。完整时间轴 Replay 和自由沙盒尚未实现。
-
-### 关卡定义
-
-每关放在 `client/src/levels/` 的独立文件中。当前第一关为 [gravity-lab.ts](./client/src/levels/gravity-lab.ts)，统一定义轨道、出生点、Exit、初始重力、时限和提示。物理运行时与 Canvas 渲染读取同一份配置，Reset 也从该定义重建世界。
-
-`App.tsx` 只选择并传入关卡，普通轨道关卡可以通过新增配置复用现有逻辑。字段、单位与新增步骤见 [关卡开发说明](./client/src/levels/README.md)。
-
-### 本地运行
-
-需要支持 Vite 8 的 Node.js 环境；当前已在 Node.js 26 验证。仓库锁定依赖版本。
+使用支持 Vite 8 的 Node.js；当前在 Node.js 26 验证。
 
 ```sh
 npm ci
-cp .env.example .env
-# 在 .env 的 AI_API_KEY 中填入 DeepSeek 密钥
+cp -n .env.example .env
+# 在 .env 的 AI_API_KEY 中填入密钥；已有 .env 时直接编辑，避免覆盖
 npm run dev
 ```
 
-已有 `.env` 时直接编辑，避免覆盖密钥。
+打开 `http://127.0.0.1:5173/demo/`。Vite 前端和 Express API 同时启动。
 
-开发地址为 `http://127.0.0.1:5173/demo/`；`npm run dev` 同时运行 Vite 和本地 Express API。默认配置为 `AI_BASE_URL=https://api.deepseek.com`、`AI_MODEL=deepseek-flash`，使用 Chat Completions JSON 输出，关闭思考模式以缩短准备延迟。密钥只由后端 `.env` 读取，不进入前端或 Git；修改配置后重启 API。
-
-`npm test` 验证队列、设备物理、规则、HTTP 接口与模型错误处理；接口自动测试使用模拟服务，不消耗真实 API。`npm run build` 执行类型检查并构建到 `site/demo/`，随后用 `npm start` 在 `http://127.0.0.1:3001/demo/` 同时提供前端和 API。
-
-仅查看静态前端也可以运行：
+默认配置为 `AI_BASE_URL=https://api.deepseek.com`、`AI_MODEL=deepseek-flash`，使用 JSON 输出并关闭思考模式。密钥仅由后端读取，不能使用 `VITE_` 变量传入前端；修改配置后重启 API。
 
 ```sh
-python3 -m http.server 8793 --bind 127.0.0.1 --directory site
+npm test
+npm run build
+npm start
 ```
 
-打开 `http://127.0.0.1:8793/demo/`；此方式没有 API，仅本地指令可用。构建产物、依赖与本地备份不提交到 Git。
+生产构建后，`npm start` 在 `http://127.0.0.1:3001/demo/` 同时提供游戏与 API。测试默认使用模拟模型，不消耗真实 API；真实 DeepSeek 调用单独验收。构建产物、依赖、密钥和本地备份均不提交。
 
-API 配置与部署边界见 [server/README.md](./server/README.md)。生产站点接入 API 时需要反向代理 `/api/`，并允许同源请求；当前线上介绍页的部署配置尚未改动。
+只看静态前端可用 `python3 -m http.server 8793 --bind 127.0.0.1 --directory site`，访问 `/demo/`；此方式仅本地指令可用。
 
-介绍页源码位于 `site/`，线上地址为 [muuyyy.cfd](https://muuyyy.cfd/)。本地可运行 `python3 -m http.server 8793 --bind 127.0.0.1 --directory site` 预览。旧 Muu Tech 官网完整保留，通过软链接切换；备份、部署与回滚说明见 [deploy/README.md](./deploy/README.md)。
+## 架构与设计
+
+React + TypeScript + Vite 管理界面；Matter.js + Canvas 2D 运行、绘制世界；Express 调用可配置的 OpenAI 兼容 API；Zod 共享并校验规则。Web 首发，暂不做 Electron、数据库或 3D。
+
+- `client/src/levels/`：独立关卡、等级与编辑权限。
+- `client/src/physics/`：固定时间步长、设备、机关状态和独立绘图。
+- `client/src/domain/`：消息队列、执行历史与真实变化字幕。
+- `shared/`：声明式操作、状态与编译协议。
+- `server/src/`：模型适配、提示词、场景权限及 HTTP。
+
+完整设计与开发要求见 [游戏设计约定](./docs/game-design.md)，当前进度见 [dev-todo.md](./dev-todo.md)，新增关卡见 [关卡说明](./client/src/levels/README.md)，API 配置见 [server/README.md](./server/README.md)。
+
+面包店绘图改编自 yihanzhao231 的 `temp/1024-zyh@30d802f`，物理和指令统一使用本项目运行层。旧关卡 ID `reality-breakdown` 保留。
+
+静态介绍页位于 `site/`，线上地址为 [muuyyy.cfd](https://muuyyy.cfd/)。本轮仅更新本地游戏及仓库，线上部署未改动；备份和切换说明见 [deploy/README.md](./deploy/README.md)。

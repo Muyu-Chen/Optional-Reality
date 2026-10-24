@@ -1,38 +1,39 @@
-# 关卡定义
+# 等级与关卡
 
-每个关卡放在一个独立的 TypeScript 文件中，并导出符合 `LevelDefinition` 的只读配置。当前第一关为 [gravity-lab.ts](./gravity-lab.ts)，公共类型见 [types.ts](./types.ts)。
+每个小关导出只读 `LevelDefinition`，只定义数据。物理、绘图、输入与模型请求分别放在各自运行层。
 
-关卡文件只定义数据，可以使用 `geometry.ts` 生成曲线采样点；不创建 Matter 刚体，不启动计时器，也不操作 React 或 Canvas。
+`progression.ts` 定义三个等级及能力上限：1 运动，2 碰撞，3 机关。`catalog.ts` 按顺序注册五个小关：`gravity-lab`、`bounce`、`toaster`、`breeze`、`reality-breakdown`。
 
-| 字段 | 用途 |
+`number` 是等级，`stage` 是同级的小关编号。`levelLabel()` 统一生成 01、02、03.1 等显示标签。等级与小关不同；后续可以增加 2.2 摩擦关，不必让每个新布局都成为新等级。
+
+## 主要字段
+
+| 字段 | 含义 |
 | --- | --- |
-| `id`、`number`、`title` | 稳定标识、编号、界面与标签页标题；浏览器消息按关卡 ID 保存 |
-| `viewport` | 逻辑画布尺寸，以及每米对应的坐标单位数 |
-| `timeLimitSeconds` | 物理超时、界面倒计时和时限提示共同读取的秒数 |
-| `initialGravity` | 初始重力加速度，单位 m/s²；正数向下，负数向上 |
-| `ball` | ID、标签、出生坐标、半径、弹性与初速度；初速度单位为 m/s |
-| `tracks` | 一组有 ID 的折线轨道及厚度；碰撞与绘图使用相同的点和厚度 |
-| `guideLines` | 支撑线、基线等装饰，仅用于绘图，不产生碰撞 |
-| `exit` | 出口位置、尺寸与标签；绘图和接触通关判断使用同一矩形 |
-| `devices` | 可选：传送带、弹簧发射器、风场、转轮、传感器和门的只读数据 |
-| `commandLimit`、`failOnFall`、`ceilingY` | 可选的消息额度、掉落失败和顶边界 |
-| `environment` | 可选的全局表面弹性与摩擦初值 |
-| `instructions` | 目标、提示、画布标题、无障碍描述、示例消息与建议命令 |
+| `id / number / stage / title` | 稳定 ID、等级、小关及名称；消息按 ID 保存 |
+| `viewport` | 世界尺寸与每米坐标数，影响模拟单位与画面缩放 |
+| `timeLimitSeconds / initialGravity` | 模拟时限和初始重力，正数向下 |
+| `ball` | 出生点、半径、弹性、初始速度；物体受保护 |
+| `tracks / guideLines / exit` | 碰撞轨道、装饰线与接触通关矩形 |
+| `devices` | 传送带、接触弹簧、风场、转轮、传感器和门 |
+| `editableWorldProperties / editableSurfaceProperties` | 关卡可修改属性，再与等级上限相交；空数组表示全部固定 |
+| `editableDevices` | 允许修改的设备 ID；省略时允许本等级内的设备 |
+| `tutorials` | 首次机关接触的教学信息，独立于模型规则 |
+| `presentation` | 当前可选面包店画风，其余使用几何物理绘图 |
+| `instructions` | 目标、提示、场景别名、例子与输入建议 |
 
-坐标原点在左上角，x 向右、y 向下。位置、半径、轨道厚度与出口尺寸使用逻辑画布坐标。`ball.velocity` 使用 m/s，运行时统一换算为 Matter 的速度单位。`instructions.objective` 是不带句号和时限的目标短语，界面会自动补上关卡秒数。
+坐标原点在左上角，位置和尺寸使用世界坐标，速度使用 m/s，重力使用 m/s²。显示缩放与留给浮动控件的空间不改变物理。
 
-新增同类关卡时：
+所有初始状态都要经过数值校验，但不等于玩家可以修改。`rules.ts` 生成状态范围和编辑权限，后端与执行器共同读取它；模型也收到这些权限。场景别名应写清，例如 toaster 是 spring-main、bell 是 sensor-gate。
 
-1. 复制第一关到新的关卡文件，设置独立的 ID 和场景数据。
-2. 在 `App.tsx` 的组合入口导入新定义，并将 `level` 指向它。
-3. 运行 `npm test` 与 `npm run build`，在浏览器检查碰撞、通关和 Reset。
+## 新增步骤
 
-`PhysicsWorld(level)` 只负责建造和更新物理世界，`CanvasLab(canvas, level, report)` 负责画面、循环与清理；Reset 会从同一关卡定义创建新的物理世界，配置本身不保存本轮运行状态。
+1. 先明确学习目标、属于哪个等级、沿用哪些机关，只加入一个主要新概念。
+2. 新建独立定义，提供合理的初始状态、目标、失败条件、提示与可复现解法。
+3. 注册到 catalog；新增设备时先定义动作、权限和事件，再实现物理与独立绘图。
+4. 验证默认状态不会通关、解法有容错窗口、重试恢复初始状态、暂停不消耗模拟时间。
+5. 运行测试与生产构建，在浏览器实际检查碰撞、作用区域、队列、字幕和切关。
 
-当前还支持 `DeviceDefinition` 中的环境设备：传送带、接触弹簧发射器、区域风场、转轮、传感器和门。所有用户可修改的属性与范围由 `rules.ts` 生成，核心物体不在可编辑对象中。`set_property` 修改环境属性，`scale_property` 在执行时计算相对变化；自动条件仅支持已存在传感器触碰后开门。
+面包机使用接触约束蓄力，`chargeSeconds` 为模拟时间；首次 charging 触发教学，Continue 才恢复。重试保留已见教学，Replay teaching 可重新启用。
 
-队友的工厂关卡位于 `reality-breakdown.ts`，功能迁入 Matter.js，原独立 HTML 保持在忽略目录中。为统一单位，原样例的重力倍率 1（640 px/s²）换算为 8 m/s²，时限沿用项目的 30 秒。传送带速度与设备 power 仍是有范围的控制量，具体作用由设备运行层换算。
-
-`catalog.ts` 将第一关和工厂关卡注册给后端编译器。按当前要求，工厂设备绘图和关卡选择 UI 均暂缓；不要把工厂配置直接接到现有 Canvas 暴露给用户，当前渲染器尚未绘制设备和闸门。
-
-运行层 `undoRule()` 撤销规则并退回一条消息额度，不回滚物体运动；`retryWithRules()` 创建新世界、保留规则和额度，重新等待首次发送或开始。这是重试，不是按历史 tick 重放。全新 `PhysicsWorld(level)` 恢复初始设备、规则和额度。暂不引入关卡回调、动态脚本或任意模型代码执行。
+第三关保留旧 ID `reality-breakdown`。绘图改编自队友的面包店原型；旧 HTML 的独立物理与解析器不属于运行层。转轮有单独测试，但当前主线没有放置，避免一次引入过多机关。

@@ -928,3 +928,24 @@ summary {
 .tutorial-card {
   max-height:100%
 }
+.caption-stack {
+  position: absolute;
+  top: 30%;
+  left: 42px;
+  max-width: min(330px,calc(100% - 400px));
+  pointer-events: none;
+  z-index: 2;
+}
+.caption-stack .rule-caption {
+  position: relative;
+  top: auto;
+  left: auto;
+  max-width: none;
+  margin-bottom: 10px;
+}
+@media(max-width:1000px) {
+  .caption-stack { left: 24px; max-width: calc(100% - 350px); }
+}
+@media(max-width:700px) {
+  .caption-stack { left: 20px; top: 115px; max-width: 260px; }
+}

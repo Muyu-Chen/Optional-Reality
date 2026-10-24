@@ -147,10 +147,11 @@ function Experiment({ level, chooseLevel }: { level: LevelDefinition; chooseLeve
     try {
       const result = applyBatch(messageRef.current, ids, lab.world.rules, lab.world.tick, context);
       let captionState = lab.world.rules;
+      const captionGroup=id();
       const feedback = result.events.map(event => {
         const after = applyRules(captionState,event.operations,context);
         const lines = appliedFeedback(event.operations,captionState,after,level); captionState = after;
-        return {id:id(),lines};
+        return {id:id(),lines,group:captionGroup};
       });
       lab.world.applyMessages(result.events.map(event => ({ text: event.text, operations: event.operations })));
       setCaptions(previous => [...previous,...feedback]);
