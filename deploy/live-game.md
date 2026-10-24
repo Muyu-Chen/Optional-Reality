@@ -1,6 +1,55 @@
 # 线上游戏 — 2026-10-24
 
-## 当前八关版本
+## 当前版本：共享能力与真实 AI 验收
+
+- 游戏：https://muuyyy.cfd/demo/；应用版本 `fcfcbff80a09cf54e2e8a8fbb88e204192cbc6c5`。
+- 发布目录 `20261024T233406Z-fcfcbff`（UTC 标识）；应用 current 指向 `/opt/optional-reality/releases/20261024T233406Z-fcfcbff`，静态 current 指向 `/var/www/muu-tech/releases/20261024T233406Z-fcfcbff-optional-reality-game`。
+- 全关共用完整物理能力目录与固定模型提示。真实 API 首轮发现中文“往左 0.5”被理解成正数，修正本地方向识别和提示后再验收。
+- 本地真实编译器：13 次供应商请求、85 条消息通过；发布后经公网本站转发：13 次请求、85 条消息再次全部通过，包含八关各十条错词/中英文口语/方向/相对及组合指令，以及设备限幅、命名表面和非法指令拒绝。
+- 独立源码目录全新 `npm ci` 后，378 项测试、类型检查和生产构建通过。服务器临时回环端口 3112 检查真实模型成功，切换后该临时服务已停止。
+- 浏览器实际输入带 enviroment / accelrate 错词的英文口语，AI 返回向左 0.5 m/s²；发送后显示真实字幕，Try again 恢复同一 Ready 消息与 30 秒。浏览器 warning/error 为空。
+
+### 网络边界
+
+浏览器 → 本站 HTTPS `/api/` → Apache → `127.0.0.1:3001` → DeepSeek。线上游戏可正常调用 AI；模型密钥和供应商请求留在后端。**没有额外开放公网后端端口**，公网 3001 连接不可达，服务器监听核实为回环地址。
+
+`/api/compile` 是经本站 HTTPS 可请求的游戏路由，保留同源检查、限流、schema 与权限校验；这并不是登录认证。`GET /api/health` 仅返回 `{ "ok": true }`，禁止缓存；`/api/status` 仍为游戏返回是否配置及模型名，不返回密钥。
+
+持久 `.env` 保留原文件与 `root:optional-reality 640` 权限，位于 webroot 外。浏览器资源无真实密钥或直连供应商地址。公网 `/.env`、`/demo/.env`、`/server/src/index.ts` 均为 404，带无关 Origin 的编译请求为 403。Apache、TLS、camera 代理配置未修改。
+
+### 本次备份与构建核验
+
+- 服务器备份：`/var/backups/optional-reality/20261024T233406Z-fcfcbff/`；本地：`.localwork/backups/physics-20261024T233406Z-fcfcbff/`，目录 700、文件 600。
+- `site.tar.gz` SHA256：`1fc0168dc63fde9f0735975a9852ab026e88fdf67f63de9f09bf51110a808273`。
+- `app-source.tar.gz` SHA256：`838e9209ed256fd1b7a8da8878654bb64d6d15be77b51bf4888322eaf730e141`。源码归档排除 `.env` 和依赖；同时记录 current、服务单元与 Apache 游戏配置。
+- 前端 HTML SHA256：`8e6e26390037b144e46fe632e1de9610b8f9793efda39c7e55116a8b46cb0ce0`。
+- JS：`index-C8SYBB9_.js`，SHA256 `518af91f339bf466f7f01615e9158f60c51e3ba069befffbdbdf3aac6719114a`；CSS `index-BQJwfbB4.css`。公网 HTML、JS、CSS 与独立构建逐字节一致。
+- 首页与上一版本逐字节一致，旧哈希 JS 仍可加载，新旧 release 与持久密钥分别保留。
+- 真实验收报告：忽略目录 `.localwork/live-api-check/report.json`、`report-relay.json`；截图 `.localwork/deploy-physics/live-ai-ready.png`、`live-ai-sent.png`、`live-ai-retry.png`。
+
+### 回退到上一八关版
+
+以 root 在服务器执行，先检查两个 current 仍为本次版本。只回退代码与静态文件，不回退持久 `.env`；不修改 Apache 路由。若 current 已变化，停止并核对后续发布。
+
+```sh
+set -eu
+app_root=/opt/optional-reality
+site_root=/var/www/muu-tech
+test "$(readlink -f "$app_root/current")" = "$app_root/releases/20261024T233406Z-fcfcbff"
+test "$(readlink -f "$site_root/current")" = "$site_root/releases/20261024T233406Z-fcfcbff-optional-reality-game"
+test -f "$app_root/releases/20261024T231848Z-c103fad/server/src/index.ts"
+test -f "$site_root/releases/20261024T231848Z-c103fad-optional-reality-game/demo/index.html"
+apache2ctl configtest
+ln -s "$app_root/releases/20261024T231848Z-c103fad" "$app_root/.rollback-app-$$"
+mv -Tf "$app_root/.rollback-app-$$" "$app_root/current"
+systemctl restart optional-reality
+curl -fsS --retry 15 --retry-connrefused --retry-delay 1 http://127.0.0.1:3001/api/status
+ln -s "$site_root/releases/20261024T231848Z-c103fad-optional-reality-game" "$site_root/.rollback-web-$$"
+mv -Tf "$site_root/.rollback-web-$$" "$site_root/current"
+curl -fsS https://muuyyy.cfd/api/status
+```
+
+## 历史八关版本
 
 - 地址：https://muuyyy.cfd/demo/；八个关卡，新增 02.2 多次反弹、02.3 摩擦跑道、02.4 接球杯。
 - 应用版本：`c103fad12d8489c0a8ad13201cf64a1af92f0e9f`，包含新增关卡及共享物理规则、指令纠正和数值限幅修正。
