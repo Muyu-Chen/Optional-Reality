@@ -7,6 +7,7 @@ export default defineConfig({
   base: '/demo/',
   plugins: [react()],
   publicDir: false,
+  server: { proxy: { '/api': 'http://127.0.0.1:3001' } },
   build: {
     outDir: fileURLToPath(new URL('./site/demo', import.meta.url)),
     emptyOutDir: true,
