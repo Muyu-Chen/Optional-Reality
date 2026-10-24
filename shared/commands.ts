@@ -1,17 +1,18 @@
 import { Acceleration, OperationSchema, type Operation, type RuleContext } from './rules';
+import { surfaceTarget } from './surface-target';
 export { Acceleration, OperationSchema, type Operation } from './rules';
 export type ParsedCommand = { operation: Operation; error?: never } | { operation?: never; error: string };
 
 export function parseCommand(input: string, context?: RuleContext): ParsedCommand {
   const text = input.trim().toLowerCase().replace(/[“”"'.!?。！]/g, '').replace(/\s+/g, ' ');
-  const raw = input.trim().toLowerCase().replace(/[“”"']/g, '').replace(/[.!?。！]+$/g, '');
+  const raw = input.trim().toLowerCase().replace(/'s\b/g, '').replace(/[“”"']/g, '').replace(/[.!?。！]+$/g, '');
   const device = (kind: string) => context?.targets.find(target => target.kind === kind)?.id;
   if (/\band\b|\bthen\b|\bfor\b.*\b(seconds?|minutes?)\b|\d\s*[eE][+-]?\d|同时|并且|然后/.test(raw)) return { error: 'Use AI preparation for combined or timed instructions; the local parser handles one direct operation.' };
   if (/^when (the )?(energy )?(core|ball|bread|loaf) (touches|hits) (the )?(sensor|bell),? open (the )?(gate|shutter)$/.test(raw) || /^当.*(触|碰).*(传感器|感应器|铃).*开.*(门|卷帘)$/.test(raw)) {
     if (!context?.sensors[0] || !context.gates[0]) return { error: 'This scene has no sensor-to-gate condition.' };
     return { operation: { type: 'add_sensor_trigger', sensor: context.sensors[0], gate: context.gates[0] } };
   }
-  if (/\b(core|ball|bread|loaf)\b|teleport|小球|能量球|面包(?!机)/.test(text)) return { error: 'Modify the environment, not the core.' };
+  if (/\b(core|ball|bread|loaf|block|slider|cube)\b|teleport|小球|能量球|滑块|面包(?!机)/.test(text)) return { error: 'Modify the environment, not the core.' };
   if (/^(add|enable|turn on)( the)? gravity$/.test(text) || text === '加重力') return { operation: { type: 'set_gravity', acceleration: 1 } };
   if (/^(stop|disable|remove|turn off)( the)? gravity$/.test(text) || /^(no gravity|gravity\s*=\s*0)$/.test(text) || text === '停止重力') return { operation: { type: 'set_gravity', acceleration: 0 } };
   if (/^reverse( the)? gravity$/.test(text) || text === '反转重力') return { operation: { type: 'reverse_gravity' } };
@@ -27,8 +28,11 @@ export function parseCommand(input: string, context?: RuleContext): ParsedComman
     [/bounce|elastic|restitution|弹性/, 'restitution', 'world'],
     [/friction|摩擦/, 'friction', 'world'],
   ] as const;
-  for (const [pattern, property, target] of options) {
+  for (const [pattern, property, defaultTarget] of options) {
     if (!pattern.test(text)) continue;
+    const resolved = property === 'restitution' || property === 'friction' ? surfaceTarget(raw, context) : { target: defaultTarget };
+    if ('error' in resolved && resolved.error) return { error: resolved.error };
+    const target = resolved.target;
     if (!target) return { error: 'This device is not present in the current scene.' };
     if (/reverse|反转/.test(text)) return { operation: { type: 'scale_property', target, property, factor: -1 } };
     const amount = /stop|off|关闭|停止/.test(text) ? 0 : value;

@@ -21,7 +21,8 @@ export function appliedFeedback(operations: readonly Operation[], before: RuleSt
     if (value === undefined) continue;
     const prior = before.values[target]?.[property];
     const kind = level.devices?.find(device => device.id === target)?.kind;
-    const name = kind === 'conveyor' ? 'Conveyor speed' : kind === 'spring' ? 'Toaster power' : kind === 'fan' ? 'Fan power' : kind === 'rotor' ? 'Wheel speed' : property === 'friction' ? 'Surface friction' : 'Surface bounce';
+    const surface=level.tracks.find(track=>track.id===target);
+    const name = surface ? `${surface.label || 'Surface'} ${property==='friction'?'friction':'bounce'}` : kind === 'conveyor' ? 'Conveyor speed' : kind === 'spring' ? 'Toaster power' : kind === 'fan' ? 'Fan power' : kind === 'rotor' ? 'Wheel speed' : property === 'friction' ? 'Surface friction' : 'Surface bounce';
     const change = prior === undefined || prior === value ? 'set' : value > prior ? 'increased' : 'decreased';
     changes.set(target+':'+property,`${name} ${change} to ${number(value)}.`);
   }

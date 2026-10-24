@@ -26,8 +26,8 @@ function boundaries(level: LevelDefinition) {
   return [
     ...(!level.failOnFall ? [Bodies.rectangle(width / 2, height + 18, width + 72, 36,
       { ...staticSurface, label: 'boundary-bottom' })] : []),
-    Bodies.rectangle(-18, height / 2, 36, height * 2, { ...staticSurface, label: 'boundary-left' }),
-    Bodies.rectangle(width + 18, height / 2, 36, height * 2, { ...staticSurface, label: 'boundary-right' }),
+    ...(!level.openEdges?.includes('left') ? [Bodies.rectangle(-18, height / 2, 36, height * 2, { ...staticSurface, label: 'boundary-left' })] : []),
+    ...(!level.openEdges?.includes('right') ? [Bodies.rectangle(width + 18, height / 2, 36, height * 2, { ...staticSurface, label: 'boundary-right' })] : []),
     Bodies.rectangle(width / 2, (level.ceilingY ?? 0) - 18, width + 72, 36, { ...staticSurface, label: 'boundary-top' }),
   ];
 }

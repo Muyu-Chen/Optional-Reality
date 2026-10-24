@@ -1,7 +1,7 @@
 import type { LevelDefinition } from './types';
 
 export const bounce: LevelDefinition = {
-  id: 'bounce', number: 2, title: 'A Little More Bounce',
+  id: 'bounce', number: 2, stage: 1, title: 'A Little More Bounce',
   viewport: { width: 800, height: 510, pixelsPerMetre: 80 },
   timeLimitSeconds: 30, initialGravity: 1,
   editableWorldProperties: ['restitution'], editableSurfaceProperties: ['restitution'],

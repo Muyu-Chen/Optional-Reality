@@ -21,7 +21,7 @@ function advance(world: PhysicsWorld, count=3600) {
 
 describe('three playable chapters',()=>{
   it('has ordered stable IDs, with valid initial states independent from editing permissions',()=>{
-    expect(levels.map(level=>level.number)).toEqual([1,2,3,3,3]);
+    expect(levels.map(level=>level.id)).toEqual(['gravity-lab','bounce','multi-bounce','friction-runway','catch-cup','toaster','breeze','reality-breakdown']);
     expect(levels.at(-1)?.id).toBe('reality-breakdown');
     for(const level of levels)expect(()=>validateRuleState(initialRules(level),ruleContext(level))).not.toThrow();
     expect(()=>applyRules(initialRules(gravityLab),[{type:'set_property',target:'world',property:'friction',value:.1}],ruleContext(gravityLab))).toThrow('cannot be edited');

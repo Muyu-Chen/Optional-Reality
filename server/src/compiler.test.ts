@@ -9,6 +9,7 @@ import { initialRules } from '../../client/src/levels/rules';
 import { gravityLab } from '../../client/src/levels/gravity-lab';
 import { realityBreakdown } from '../../client/src/levels/reality-breakdown';
 import { bounce } from '../../client/src/levels/bounce';
+import { catchCup } from '../../client/src/levels/catch-cup';
 import type { CompileRequest } from '../../shared/compiler';
 
 const config = loadConfig({ AI_API_KEY: 'test-only-never-a-real-key' });
@@ -27,6 +28,18 @@ async function endpoint(key = config.apiKey, fetcher = provider(valid())) {
 }
 
 describe('AI compiler with a mocked provider (no live credentials)', () => {
+  it('compiles named cup surfaces from the shared scene context and rejects readonly substitutions', async () => {
+    const input={...request(),levelId:catchCup.id,rules:initialRules(catchCup)};
+    const fetcher=provider(answer([{type:'set_property',target:'cup-base',property:'restitution',value:0}]));
+    const result=await compileRules(input,config,undefined,fetcher);
+    expect(result.messages[0].operations[0]).toMatchObject({target:'cup-base',value:0});
+    const prompt=JSON.parse(String(fetcher.mock.calls[0][1]?.body)).messages[1].content;
+    expect(prompt).toContain('Launch pad');expect(prompt).toContain('Cup base');expect(prompt).toContain('杯底');
+    for(const target of ['world','cup-left','ball-A']) {
+      await expect(compileRules(input,config,undefined,provider(answer([{type:'set_property',target,property:'restitution',value:0}])))).rejects.toThrow();
+    }
+    expect(input.rules).toEqual(initialRules(catchCup));
+  });
   it('sends the requested model and JSON format, and preserves relative multi-operation commands', async () => {
     const fetcher = provider(valid()), input = request();
     const result = await compileRules(input, config, undefined, fetcher);

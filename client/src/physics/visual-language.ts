@@ -29,8 +29,8 @@ export function drawGravityKey(ctx: CanvasRenderingContext2D, gravity: number, x
   ctx.save();
   ctx.fillStyle = physicsColours.gravity;
   ctx.font = '13px ui-monospace,monospace';
-  ctx.fillText(gravity === 0 ? 'GRAVITY OFF · MOMENTUM REMAINS' : `GRAVITY ${gravity > 0 ? '↓' : '↑'} ${Math.abs(gravity).toFixed(1)} m/s²`, x, y);
-  if (gravity) drawForceArrow(ctx, x + 8, y + 13 + (gravity < 0 ? 28 : 0), [0, gravity], 28, physicsColours.gravity);
+  ctx.fillText(gravity === 0 ? 'GRAVITY OFF · MOMENTUM REMAINS' : `GRAVITY ${gravity > 0 ? '↓' : '↑'} ${Math.abs(gravity).toFixed(1)} m/s²`, x + 24, y);
+  if (gravity) drawForceArrow(ctx, x + 6, y - 20 + (gravity < 0 ? 24 : 0), [0, gravity], 24, physicsColours.gravity);
   ctx.restore();
 }
 
