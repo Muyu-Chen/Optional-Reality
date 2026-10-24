@@ -1,7 +1,7 @@
 import type { LevelDefinition } from './types';
 
 export const catchCup: LevelDefinition = {
-  id:'catch-cup',number:2,stage:4,title:'Catch, Don’t Bounce',
+  id:'catch-cup',number:2,stage:4,title:'Catch Tutorial',
   viewport:{width:800,height:510,pixelsPerMetre:80},timeLimitSeconds:30,initialGravity:2,failOnFall:true,
 
   environment:{restitution:0,friction:0},
@@ -14,12 +14,12 @@ export const catchCup: LevelDefinition = {
   ],
   guideLines:[],exit:{id:'cup',label:'CATCH',x:505,y:140,width:240,height:136,condition:{kind:'settle',seconds:.8,maxSpeed:.15}},
   instructions:{
-    objective:'Launch high, then let the cup keep the ball',
-    hint:'Send launch pad bounce 1.1 to start. While the ball flies, send cup bounce 0 before it lands inside. Stay still in the cup for 0.8 seconds. The two blue surfaces have separate rules.',
-    sceneDescription:'A protected ball moves right, falls onto launch-pad (Launch pad, 发射板), then flies toward a raised open cup. cup-base (Cup base, cup, 杯底, 接球杯) is initially very bouncy. Gravity, horizontal acceleration, restitution and friction are editable. Launch pad and cup base have independent local material overrides; global surface values are defaults and do not replace local overrides. The gray cup walls are preset. The green cup interior requires complete containment and speed at most 0.15 m/s for 0.8 seconds. Falling below the red boundary fails.',
-    canvasHeading:'BOUNCE TO ARRIVE. SOFTEN TO STAY.',readyCaption:'TWO BLUE SURFACES. TWO DIFFERENT JOBS.',
+    objective:'Make the launch pad bouncy and the cup soft',
+    hint:'Set launch pad bounce to 1.1 and cup bounce to 0. Each rule changes its own surface. You can send both before the first impact; the cup confirms the catch automatically.',
+    sceneDescription:'A local-surface tutorial. A protected ball moves right, falls onto launch-pad (Launch pad, 发射板), then flies toward a raised open cup. cup-base (Cup base, cup, 杯底, 接球杯) is initially very bouncy. Gravity, horizontal acceleration, restitution and friction are editable. Launch pad and cup base have independent local material overrides; global surface values are defaults and do not replace local overrides. Both surface rules may be sent before the first impact; execution timing is not the lesson. The gray cup walls are preset. The green cup interior automatically confirms complete containment and speed at most 0.15 m/s for 0.8 seconds. Falling below the red boundary fails.',
+    canvasHeading:'TUTORIAL / LOCAL SURFACE RULES',readyCaption:'TWO SURFACES. TWO SEPARATE RULES.',
     exampleMessages:['Set launch pad bounce to 1.1','Set cup bounce to 0'],
     suggestedMessages:['Set launch pad bounce to 1.1','Set cup bounce to 0'],
-    exampleNotice:'Send the launch-pad rule first, then soften the cup during the flight. The ball must settle inside.',
+    exampleNotice:'Prepare both rules and send them before the first impact. Watch the launch pad rebound and the cup absorb the landing.',
   },
 };

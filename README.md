@@ -18,7 +18,7 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 | 2 · Collisions | 02.1 A Little More Bounce | 修改地面弹性，反弹进入高处出口 |
 | 2 · Collisions | 02.2 Not Too High | 两次反弹，第一次强、第二次弱 |
 | 2 · Collisions | 02.3 Brake Before the Edge | 青色摩擦跑道，完整停靠滑块 |
-| 2 · Collisions | 02.4 Catch, Don’t Bounce | 分别调整发射板与杯底，收球并停留 |
+| 2 · Collisions | 02.4 Catch Tutorial | 短教学：分别修改发射板与杯底，可以提前设置 |
 | 3 · Devices | 03.1 A Little Stored Energy | 学习面包机的压缩、蓄力与释放 |
 | 3 · Devices | 03.2 Catch the Breeze | 学习向上的风场 |
 | 3 · Devices | 03.3 The Last Order | 组合传送带、面包机、风扇和感应开门 |
