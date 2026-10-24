@@ -32,6 +32,13 @@ describe('three playable chapters',()=>{
     const world=new PhysicsWorld(bounce);
     try{apply(world,`Set surface bounce to ${value}`);advance(world);expect(world.won,JSON.stringify(world.snapshot())).toBe(true);}finally{world.destroy();}
   });
+  it.each([575,600,625,650])('accepts a range of gravity-off moments at x=%s',threshold=>{
+    const world=new PhysicsWorld(gravityLab);
+    try{apply(world,'add gravity');world.start();let sent=false;for(let i=0;i<3600 && world.running;i++){if(!sent&&world.ball.position.x>=threshold){apply(world,'stop gravity');sent=true;}world.step();}expect(world.won).toBe(true);}finally{world.destroy();}
+  });
+  it('requires a change of timing in the teaching ramp instead of winning with gravity left on',()=>{
+    const world=new PhysicsWorld(gravityLab);try{apply(world,'add gravity');advance(world);expect(world.won).toBe(false);}finally{world.destroy();}
+  });
   it.each([0,60,120,240])('accepts a generous bounce timing window: tick %s',tick=>{
     const world=new PhysicsWorld(bounce);
     try{advance(world,tick);apply(world,'Set surface bounce to 0.9');advance(world);expect(world.won).toBe(true);}finally{world.destroy();}

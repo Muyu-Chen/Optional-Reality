@@ -27,7 +27,7 @@ export const gravityLab: LevelDefinition = {
     { from: ramp[56], to: [555, 454] },
     { from: [45, 455], to: [770, 455] },
   ],
-  exit: { id: 'exit', label: 'EXIT', x: 728, y: 253, width: 49, height: 68 },
+  exit: { id: 'exit', label: 'EXIT', x: 728, y: 240, width: 49, height: 68 },
   instructions: {
     objective: 'Touch the exit',
     hint: 'Send “add gravity” to begin. Send “stop gravity” as the ball leaves the track.',
