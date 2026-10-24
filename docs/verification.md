@@ -2,7 +2,7 @@
 
 ## 自动检查
 
-- `npm test`：最新为 28 个测试文件、286 项测试通过。
+- `npm test`：最新为 32 个测试文件、340 项测试通过。
 - `npm run build`：TypeScript 类型检查及 Vite 生产构建通过。
 - `git diff --check`：通过。
 - `.env` 被 Git 忽略；使用本地真实密钥检查受跟踪文件，未发现密钥内容。
@@ -53,7 +53,15 @@
 - 新关浏览器检查使用独立本地端口 3107，未向真实模型发送请求；API 新增能力由模拟供应商测试验证。线上站点不属于这轮关卡交付。
 - 本地截图保存于被忽略的 `.localwork/`：`multi-bounce-complete.png`、`friction-runway-complete.png`、`friction-runway-ready.png`、`catch-cup-complete.png`。
 
-## 真实模型验收
+## 共享物理量、纠错与限幅
+
+- 全八关共享重力、水平加速度、表面弹性/摩擦，设备和 preset 结构仍单独保护；保留独立初始材质和三关的稳定解法。
+- 在独立工作目录与端口 3002 检查本轮改动，避免覆盖并行三关开发。完整 340 项测试、类型检查和构建通过，覆盖真实加速度单位、关闭后惯性、反转、只读、未知目标、有限值限幅、非有限值拒绝、相对结果、原子性及消息重试。
+- 浏览器输入 add acceleration right word：本地 Ready，显示 Understood as: add acceleration rightward。输入 set fan power to 10：本地 Ready，显示 Requested 10 → limited to 2；准备未启动世界，发送后字幕确认实际风力 2，下一条补位。
+- 实际发送两条消息后暂停，水平加速度箭头与字幕确认向右 1 m/s²；Try again 恢复初始规则、时间与两条 Ready 消息，调整信息保留。截图 `.localwork/rule-limits-ready.png` 为本地诊断，不提交。
+- 此轮自由语言响应使用模拟 API 验证 understoodAs 与 adjustments 协议；上述两个实际浏览器例子无需模型。未为本轮改动额外调用真实模型或发布线上站点。
+
+## 真实模型验收（此前记录）
 
 与模拟 API 自动测试分开进行，使用本地后端配置的 `deepseek-flash`：
 

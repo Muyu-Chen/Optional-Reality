@@ -4,9 +4,9 @@ import { initialRules, ruleContext } from '../levels/rules';
 import { applyRules, validateRuleState } from '../../../shared/rules';
 import { PhysicsWorld } from './world';
 
-const level={...bounce,editableWorldProperties:['gravity' as const],tracks:[
-  {id:'pad',label:'Launch pad',aliases:['pad'],points:[[40,420],[350,420]] as const,thickness:12,material:{restitution:.2},editableProperties:['restitution' as const]},
-  {id:'wall',points:[[700,100],[700,420]] as const,thickness:12,material:{restitution:0,friction:.3},editableProperties:[]},
+const level={...bounce,tracks:[
+  {id:'pad',label:'Launch pad',aliases:['pad'],points:[[40,420],[350,420]] as const,thickness:12,material:{restitution:.2}},
+  {id:'wall',points:[[700,100],[700,420]] as const,thickness:12,material:{restitution:0,friction:.3},preset:true},
 ]};
 
 describe('independent surface materials', () => {

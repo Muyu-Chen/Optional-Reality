@@ -27,6 +27,6 @@ describe('geometry chapter queue and retry flow', () => {
   it('moves through the new levels in sequence using Next level', async () => {
     await startGame('bounce');await click('Load starter messages ↳');await click('Send now');await advance(3600);
     await click('Next level →');expect(lab().world.level.id).toBe('multi-bounce');
-    expect(screen.getByText('You can change: Gravity · Surface bounce')).toBeTruthy();expect(rows()).toHaveLength(0);
+    expect(screen.getByText(/You can change:.*Horizontal acceleration/)).toBeTruthy();expect(rows()).toHaveLength(0);
   });
 });

@@ -49,6 +49,8 @@
 
 `shared/surface-target.ts` 从场景名称与别名解析局部表面；不识别的目标不退化为全局修改。关卡定义只放数据，目标判定与绘图均不通过关卡 ID 选择行为。
 
+`shared/command-language.ts` 只处理保守拼写归一化，`acceleration-command.ts` 解析加速度与单位；`rule-limits.ts` 对已知属性限幅并生成调整记录。客户端准备、API 编译和执行共享该策略，规则快照校验仍严格。`physics/acceleration-renderer.ts` 独立绘制水平力方向，不推进模拟。
+
 ## 后续修改
 
 - 新增小关：按 [关卡说明](../client/src/levels/README.md) 添加独立配置并注册，不把布局硬编码进游戏组件。

@@ -1,10 +1,10 @@
 import { realityBreakdown } from './reality-breakdown';
 import type { LevelDefinition } from './types';
 
-// Familiar transport and airflow are preset; the only new control is the toaster.
+// Device lesson: transport and airflow are preset; baseline physics stays available.
 export const toaster: LevelDefinition = {
   ...realityBreakdown,id:'toaster',stage:1,title:'A Little Stored Energy',
-  editableWorldProperties:[],editableSurfaceProperties:[],editableDevices:['spring-main'],
+  editableDevices:['spring-main'],
   devices:realityBreakdown.devices!.filter(device=>!['sensor','gate','rotor'].includes(device.kind)).map(device=>device.kind === 'conveyor' ? {...device,speed:1.5} : device.kind === 'fan' ? {...device,power:.45} : device),
   instructions:{...realityBreakdown.instructions,
     objective:'Use the toaster to launch the loaf to pickup',

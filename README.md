@@ -19,11 +19,11 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 | 2 · Collisions | 02.2 Not Too High | 两次反弹，第一次强、第二次弱 |
 | 2 · Collisions | 02.3 Brake Before the Edge | 青色摩擦跑道，完整停靠滑块 |
 | 2 · Collisions | 02.4 Catch, Don’t Bounce | 分别调整发射板与杯底，收球并停留 |
-| 3 · Devices | 03.1 A Little Stored Energy | 只调整面包机，认识压缩、蓄力与释放 |
-| 3 · Devices | 03.2 Catch the Breeze | 只调整向上的风场 |
+| 3 · Devices | 03.1 A Little Stored Energy | 学习面包机的压缩、蓄力与释放 |
+| 3 · Devices | 03.2 Catch the Breeze | 学习向上的风场 |
 | 3 · Devices | 03.3 The Last Order | 组合传送带、面包机、风扇和感应开门 |
 
-等级定义能力上限，每个小关可固定部分参数。新增三个几何关保留重力控制，先学习规则本身再进入主题场景。转轮运行层已保留，更多机关组合、自然元素和自由沙盒后续扩展。
+等级安排教学顺序；基础物理量各关一致，布局和提示引导新的概念。预设设备与结构单独标记。转轮运行层已保留，更多机关组合、自然元素和自由沙盒后续扩展。
 
 ## 游戏操作
 
@@ -36,11 +36,13 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 - 面包机每次接触会蓄力约 0.6 秒；首次额外暂停教学，Continue 后恢复。重试不重复打断，菜单可重看教学。
 - 暂停菜单切换小关，通关后可进入下一关。界面以英语为主，支持中英文输入。
 
-基础例子：`add gravity`、`stop gravity`、`reverse gravity`、`Set surface bounce to 0.9`、`Set toaster power to 2`、`Set fan power to 0.45`。不同关卡只允许其声明的属性；任务小球或面包不能被直接移动或修改速度。
+基础例子：`add gravity`、`stop gravity`、`reverse gravity`、`add acceleration rightward`、`Set surface bounce to 0.9`、`Set toaster power to 2`、`Set fan power to 0.45`。设备需要实际存在且可编辑；任务物体不能被直接移动或修改速度。
 
 物理特性使用固定视觉语言：蓝色回弹纹、青色摩擦纹、橙色推动箭头、紫色重力方向。输入窗列出本关可修改项；设备的 Editable / Preset 与特性颜色分开。新增三关的玩法与验证见 [几何关卡说明](./docs/geometry-levels.md)，后续机关见 [机关设计提案](./docs/physics-mechanisms.md)。
 
 所有关卡共享重力、水平加速度、弹性和摩擦，教学提示推荐解法而不禁用基础物理量。`add acceleration right word` 会纠正为 `add acceleration rightward`，队列保留原文并展示理解结果。消息语义见 [共享物理规则与消息理解](./docs/command-language.md)。
+
+超出范围的有限数值由共享代码限幅，例如 fan power 10 → 2。队列显示原请求与实际值，等待 Send now；未知对象、受保护目标和非有限值仍拒绝。
 
 ## 本地运行
 

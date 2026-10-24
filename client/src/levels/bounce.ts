@@ -4,7 +4,7 @@ export const bounce: LevelDefinition = {
   id: 'bounce', number: 2, stage: 1, title: 'A Little More Bounce',
   viewport: { width: 800, height: 510, pixelsPerMetre: 80 },
   timeLimitSeconds: 30, initialGravity: 1,
-  editableWorldProperties: ['restitution'], editableSurfaceProperties: ['restitution'],
+
   environment: { restitution: .1, friction: 0 },
   ball: { id: 'ball-A', label: 'BALL A', position: [120,130], velocity: [1.5,0], radius: 16, restitution: 0 },
   tracks: [{ id: 'bounce-floor', feature: 'bounce', points: [[60,427],[760,427]], thickness: 14 }],

@@ -1,4 +1,3 @@
-import type { PropertyName } from '../../../shared/rules';
 export type Point = readonly [x: number, y: number];
 
 export interface Line {
@@ -12,7 +11,7 @@ export interface TrackDefinition {
   readonly aliases?: readonly string[];
   readonly feature?: 'bounce' | 'friction';
   readonly material?: { readonly restitution?: number; readonly friction?: number };
-  readonly editableProperties?: readonly PropertyName[];
+  readonly preset?: boolean;
   readonly points: readonly Point[];
   readonly thickness: number;
 }
@@ -33,8 +32,6 @@ export interface LevelDefinition {
   readonly stage?: number;
   readonly title: string;
   readonly presentation?: 'bakery';
-  readonly editableWorldProperties?: readonly PropertyName[];
-  readonly editableSurfaceProperties?: readonly PropertyName[];
   readonly editableDevices?: readonly string[];
   readonly tutorials?: readonly { readonly id: string; readonly deviceId: string; readonly title: string; readonly body: string }[];
   readonly viewport: {

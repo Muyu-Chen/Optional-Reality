@@ -41,7 +41,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
         <span data-testid="active-gravity">
           {telemetry.gravity === 0 ? 'g = 0' : `g ${telemetry.gravity > 0 ? '↓' : '↑'} ${Math.abs(telemetry.gravity).toFixed(1)} m/s²`}
         </span>
-        {!!world?.rules.values.world?.acceleration_x && <span>Acceleration {world.rules.values.world.acceleration_x > 0 ? '→' : '←'} {Math.abs(world.rules.values.world.acceleration_x)} m/s²</span>}
+        {!!world?.rules.values.world?.acceleration_x && <span aria-label="Horizontal acceleration">aₓ {world.rules.values.world.acceleration_x > 0 ? '→' : '←'} {Math.abs(world.rules.values.world.acceleration_x)} m/s²</span>}
         <span>{game.stateLabel}</span>
       </div>
       {showRules && <RulesDrawer level={level} gravity={telemetry.gravity} rules={world?.rules}

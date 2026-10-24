@@ -35,9 +35,10 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
     expect(result.messages[0].operations[0]).toMatchObject({target:'cup-base',value:0});
     const prompt=JSON.parse(String(fetcher.mock.calls[0][1]?.body)).messages[1].content;
     expect(prompt).toContain('Launch pad');expect(prompt).toContain('Cup base');expect(prompt).toContain('杯底');
-    for(const target of ['world','cup-left','ball-A']) {
+    for(const target of ['cup-left','ball-A']) {
       await expect(compileRules(input,config,undefined,provider(answer([{type:'set_property',target,property:'restitution',value:0}])))).rejects.toThrow();
     }
+    await expect(compileRules(input,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:0}])))).resolves.toMatchObject({messages:[{operations:[{target:'world',value:0}]}]});
     expect(input.rules).toEqual(initialRules(catchCup));
   });
   it('sends the requested model and JSON format, and preserves relative multi-operation commands', async () => {

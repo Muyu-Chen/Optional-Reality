@@ -8,7 +8,7 @@ import { applyBatch, prepareMessage } from '../client/src/domain/queue';
 
 const context = ruleContext(realityBreakdown);
 describe('environment rule semantics', () => {
-  it('keeps relative operations relative until execution, and validates the final range', () => {
+  it('keeps relative operations relative until execution, and limits the final value', () => {
     const state = initialRules(realityBreakdown);
     state.values['belt-main'].conveyor_speed = 1;
     const operations = [{ type: 'scale_property', target: 'belt-main', property: 'conveyor_speed', factor: 2 }];

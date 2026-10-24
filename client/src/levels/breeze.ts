@@ -3,7 +3,7 @@ import type { LevelDefinition } from './types';
 
 export const breeze: LevelDefinition = {
   ...realityBreakdown,id:'breeze',stage:2,title:'Catch the Breeze',tutorials:[],
-  editableWorldProperties:[],editableSurfaceProperties:[],editableDevices:['fan-main'],
+  editableDevices:['fan-main'],
   devices:realityBreakdown.devices!.filter(device=>!['sensor','gate','rotor'].includes(device.kind)).map(device=>device.kind === 'conveyor' ? {...device,speed:1.5} : device.kind === 'spring' ? {...device,power:2} : device),
   instructions:{...realityBreakdown.instructions,
     objective:'Use the updraft to carry the loaf to pickup',
