@@ -2,9 +2,9 @@
 
 每个小关导出只读 `LevelDefinition`，只定义数据。物理、绘图、输入与模型请求分别放在各自运行层。
 
-`progression.ts` 定义三个等级及能力上限：1 运动，2 碰撞，3 机关。`catalog.ts` 按顺序注册五个小关：`gravity-lab`、`bounce`、`toaster`、`breeze`、`reality-breakdown`。
+`progression.ts` 定义三个等级及能力上限：1 运动，2 碰撞，3 机关。`catalog.ts` 按顺序注册八个小关：`gravity-lab`、`bounce`、`multi-bounce`、`friction-runway`、`catch-cup`、`toaster`、`breeze`、`reality-breakdown`。
 
-`number` 是等级，`stage` 是同级的小关编号。`levelLabel()` 统一生成 01、02、03.1 等显示标签。等级与小关不同；后续可以增加 2.2 摩擦关，不必让每个新布局都成为新等级。
+`number` 是等级，`stage` 是同级的小关编号。`levelLabel()` 统一生成 01、02.1、03.1 等显示标签。新增三个关卡属于 02.2–02.4；旧 `bounce` ID 不变，只补上 02.1 的显示编号。
 
 ## 主要字段
 
@@ -20,14 +20,17 @@
 | `editableDevices` | 允许修改的设备 ID；省略时允许本等级内的设备 |
 | `tutorials` | 首次机关接触的教学信息，独立于模型规则 |
 | `presentation` | 当前可选面包店画风，其余使用几何物理绘图 |
-| `tracks[].feature` | 可选 `bounce`，强调表面回弹特性；不改变碰撞规则或编辑权限 |
+| `tracks[].feature` | 可选 `bounce / friction`，强调表面特性；不改变碰撞规则或编辑权限 |
 | `tracks[].material / editableProperties` | 表面自己的初始材质与修改权限；局部值覆盖世界默认值 |
 | `tracks[].label / aliases` | 模型与本地命令可使用的表面名称、别名 |
 | `ball.shape` | 可选受保护滑块尺寸；未设置时仍是圆球 |
 | `exit.condition` | 可选 settle：完整进入目标、速度低于 maxSpeed（m/s）并连续停留 seconds；省略时接触即通关 |
+| `openEdges` | 指定左右开放边缘，不创建隐形侧墙；摩擦跑道右侧开放 |
 | `instructions` | 目标、提示、场景别名、例子与输入建议 |
 
 坐标原点在左上角，位置和尺寸使用世界坐标，速度使用 m/s，重力使用 m/s²。显示缩放与留给浮动控件的空间不改变物理。
+
+滑块约束旋转，实际使用矩形刚体；停留目标允许 0.5 世界像素的接触穿透误差，不接受仅擦边或高速经过。暂停不推进停留时间，离开或超速清零，重试重建目标进度。三关的验证窗口见 [几何关卡说明](../../../docs/geometry-levels.md)。
 
 所有初始状态都要经过数值校验，但不等于玩家可以修改。`rules.ts` 生成状态范围和编辑权限，后端与执行器共同读取它；模型也收到这些权限。场景别名应写清，例如 toaster 是 spring-main、bell 是 sensor-gate。
 

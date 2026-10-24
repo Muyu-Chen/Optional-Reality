@@ -10,17 +10,20 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 
 ## 当前可玩内容
 
-面向 SBUHacks 2026，已实现三个等级、五个递进小关：
+面向 SBUHacks 2026，已实现三个等级、八个递进小关：
 
 | 等级 | 小关 | 主要学习内容 |
 | --- | --- | --- |
 | 1 · Motion | 01 Gravity Lab | 零重力起步，沿斜坡运动，在离轨时取消重力 |
-| 2 · Collisions | 02 A Little More Bounce | 修改地面弹性，反弹进入高处出口 |
+| 2 · Collisions | 02.1 A Little More Bounce | 修改地面弹性，反弹进入高处出口 |
+| 2 · Collisions | 02.2 Not Too High | 两次反弹，第一次强、第二次弱 |
+| 2 · Collisions | 02.3 Brake Before the Edge | 青色摩擦跑道，完整停靠滑块 |
+| 2 · Collisions | 02.4 Catch, Don’t Bounce | 分别调整发射板与杯底，收球并停留 |
 | 3 · Devices | 03.1 A Little Stored Energy | 只调整面包机，认识压缩、蓄力与释放 |
 | 3 · Devices | 03.2 Catch the Breeze | 只调整向上的风场 |
 | 3 · Devices | 03.3 The Last Order | 组合传送带、面包机、风扇和感应开门 |
 
-等级定义能力上限，每个小关可固定部分参数。转轮运行层已保留，但不放进当前主线；摩擦小关、更多机关组合、自然元素和自由沙盒后续扩展。
+等级定义能力上限，每个小关可固定部分参数。新增三个几何关保留重力控制，先学习规则本身再进入主题场景。转轮运行层已保留，更多机关组合、自然元素和自由沙盒后续扩展。
 
 ## 游戏操作
 
@@ -35,7 +38,7 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 
 基础例子：`add gravity`、`stop gravity`、`reverse gravity`、`Set surface bounce to 0.9`、`Set toaster power to 2`、`Set fan power to 0.45`。不同关卡只允许其声明的属性；任务小球或面包不能被直接移动或修改速度。
 
-物理特性使用固定视觉语言：蓝色回弹纹、橙色推动箭头、紫色重力方向。输入窗列出本关可修改项；设备的 Editable / Preset 与特性颜色分开。后续十四种机关与几何关卡组合见 [机关设计提案](./docs/physics-mechanisms.md)。
+物理特性使用固定视觉语言：蓝色回弹纹、青色摩擦纹、橙色推动箭头、紫色重力方向。输入窗列出本关可修改项；设备的 Editable / Preset 与特性颜色分开。新增三关的玩法与验证见 [几何关卡说明](./docs/geometry-levels.md)，后续机关见 [机关设计提案](./docs/physics-mechanisms.md)。
 
 ## 本地运行
 

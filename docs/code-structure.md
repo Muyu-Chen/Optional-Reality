@@ -32,6 +32,7 @@
 | `physics/devices.ts` | 接触判断、风场、传送带、蓄力、转轮和感应开门 |
 | `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
 | `physics/geometry-renderer.ts` | 前两级几何场景绘图 |
+| `physics/actor-renderer.ts`、`surface-renderer.ts`、`goal-renderer.ts` | 分别绘制任务物体、真实材质纹理、接触/停留目标；由几何场景组合 |
 | `physics/visual-language.ts` | 跨场景的特性配色、力箭头、重力与回弹纹；只读取状态 |
 | `physics/bakery-renderer.ts` | 组合面包店背景、机关、面包与轨迹 |
 | `physics/bakery/room.ts` | 静态背景绘画 |
@@ -46,6 +47,8 @@
 
 `shared/rules.ts` 保存声明式操作与校验，`shared/commands.ts` 做简单本地解析，`shared/compiler.ts` 定义编译协议。服务端由 `app.ts` 处理 HTTP，`compiler.ts` 负责场景权限与提示词，`ai-client.ts` 适配模型请求，`config.ts` 读取后端环境变量。
 
+`shared/surface-target.ts` 从场景名称与别名解析局部表面；不识别的目标不退化为全局修改。关卡定义只放数据，目标判定与绘图均不通过关卡 ID 选择行为。
+
 ## 后续修改
 
 - 新增小关：按 [关卡说明](../client/src/levels/README.md) 添加独立配置并注册，不把布局硬编码进游戏组件。
@@ -53,4 +56,4 @@
 - 修改消息交互：显示改 `components/`，队列操作改 `useMessageQueue`，编译与取消改 `usePreparedMessages` / `CompilationSession`。
 - 修改发送与重试：改 `useGameSession`，继续验证消息与世界状态一致、旧请求失效、教学暂停不被绕过。
 
-本次重构没有增加依赖或更改关卡目标。验证使用 `npm test`、`npm run build` 与浏览器操作，记录见 [验收说明](./verification.md)。
+这些模块与新增关卡没有引入额外依赖。验证使用 `npm test`、`npm run build` 与浏览器操作，记录见 [验收说明](./verification.md)。
