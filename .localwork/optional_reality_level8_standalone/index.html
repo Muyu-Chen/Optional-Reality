@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>街角面包店 · 最后一单 — Optional Reality L08</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#233a31;background:#edf0e8;--ink:#253b31;--green:#3c654b;--muted:#718275;--line:#d3dbcf;--panel:#fcfdf8;--pale:#e9eee5;--lime:#d5eb8d}
+*{box-sizing:border-box}body{margin:0}button,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.42}.shell{max-width:1420px;margin:auto;padding:18px 25px 40px}.mast{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:4px 0 17px;border-bottom:1px solid var(--line)}.brand{font-size:20px;font-weight:800;letter-spacing:-.055em}.brandmark{display:inline-grid;place-items:center;background:var(--ink);color:#f5f8ee;border-radius:9px;width:31px;height:31px;font-size:16px;letter-spacing:-.06em;margin-right:8px}.meta{font-family:ui-monospace,monospace;color:#607769;font-size:11px;letter-spacing:.13em}.eyebrow{font:700 11px ui-monospace,monospace;color:#6a806f;letter-spacing:.15em}.heading{display:flex;justify-content:space-between;gap:18px;align-items:flex-end;padding:25px 0 19px}.heading h1{font-size:clamp(28px,3vw,42px);letter-spacing:-.07em;margin:7px 0 6px;line-height:1.09}.heading p{margin:0;color:#62786a;line-height:1.55;font-size:14px;max-width:670px}.badge{background:#e4ecd7;padding:8px 11px;font-size:11px;font-weight:700;border-radius:40px;color:#426c4a;white-space:nowrap}.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(325px,.9fr);gap:15px}.panel{border:1px solid #d7ded3;background:var(--panel);border-radius:17px;box-shadow:0 7px 24px #2743340a;overflow:hidden}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:17px 19px;border-bottom:1px solid #e0e6dc}.panel-head h2{font-size:16px;margin:0;letter-spacing:-.03em}.panel-head span{font:12px ui-monospace,monospace;color:#6d8271}.canvas-wrap{padding:12px 13px 4px;position:relative}#world{display:block;width:100%;aspect-ratio:960 / 540;background:#f7faf2;border-radius:9px;border:1px solid #d6dfd1}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#e0e7dc;border-top:1px solid #e0e7dc}.stat{background:#fbfdf7;padding:14px 13px}.stat small{display:block;font-size:10px;color:#87988a;text-transform:uppercase;font-family:ui-monospace,monospace;letter-spacing:.12em;margin-bottom:6px}.stat strong{font-size:16px}.controls{display:flex;gap:8px;flex-wrap:wrap;padding:14px 17px}.primary{background:#2c4938;color:#fff;border:none;border-radius:9px;padding:11px 15px;font-weight:700;font-size:13px}.secondary{background:white;color:#3d5d49;border:1px solid #cddacf;border-radius:9px;padding:10px 14px;font-size:13px;font-weight:650}.side-pad{padding:17px}.side-pad p{font-size:13px;color:#697e6d;margin:6px 0 11px;line-height:1.5}.prompt{width:100%;min-height:99px;resize:vertical;border-radius:9px;background:#f8faf5;padding:13px;border:1px solid #c8d5c9;outline:none;color:#293f33;font-size:13px;line-height:1.55}.prompt:focus{border-color:#80a98c;box-shadow:0 0 0 3px #b4d4b53b}.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.rule-status{background:#f1f5ed;border:1px solid #dfebd9;border-radius:10px;padding:12px 14px;margin-top:11px;font-size:12px;line-height:1.6;min-height:52px}.rule-status.error{background:#fff0e9;color:#965339;border-color:#f3d4c4}.rule-status.success{background:#eaf4e4;color:#3b6b44}.examples{display:grid;gap:7px;margin:14px 0 0}.chip{display:block;text-align:left;background:#f6f9f3;border:1px solid #dae3d7;border-radius:8px;padding:8px 10px;color:#557463;font-size:12px;line-height:1.4}.chip:hover{border-color:#9ebba0;background:#eef5e8}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.config{border:1px solid #dee7da;background:#f7faf4;border-radius:10px;padding:12px}.config strong{display:block;font-size:13px}.config small{color:#7a8f7b;display:block;font-size:11px;margin-top:4px}.separator{height:1px;background:#e2e8df;margin:16px 0}.log{list-style:none;padding:0;margin:0;display:grid;gap:8px;max-height:160px;overflow:auto}.log li{font:12px ui-monospace,monospace;color:#5a7362;border-left:3px solid #b7cbb7;padding-left:9px}.help{font-size:12px;line-height:1.65;color:#6b8072;margin:15px 0 0}.footer{padding:17px 3px;color:#788779;font-size:12px;line-height:1.6}.footer strong{color:#536c58}.victory{color:#24743a}.footer a{color:#376548}.status-dot{display:inline-block;width:8px;height:8px;background:#b1c1ad;border-radius:50%;margin-right:6px}.status-dot.live{background:#61ad70}.status-dot.win{background:#72bf83}.status-dot.lose{background:#e49b70}
+@media(max-width:960px){.layout{grid-template-columns:1fr}.heading{align-items:flex-start}.badge{display:none}}@media(max-width:560px){.shell{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.meta{font-size:9px}.heading{padding-top:20px}.grid2{grid-template-columns:1fr}.controls>*{flex:1}}
+/* Bakery scene: quiet materials, warm daylight, one sage accent. */
+:root{color:#3c352c;background:#f3efe7;--ink:#3c352c;--green:#596349;--muted:#8a8173;--line:#ded7cb;--panel:#fffdf8;--pale:#f0ece3;--lime:#e8e4d6;font-family:"PingFang SC","Microsoft YaHei",ui-sans-serif,system-ui,sans-serif}
+.shell{max-width:1480px;padding:16px 26px 30px}.mast{padding:2px 0 15px}.brand{font-weight:750;font-size:18px;letter-spacing:-.04em}.brandmark{background:#66513d;color:#fff9eb;border-radius:7px}.meta{color:#8c7e6d;letter-spacing:.09em}.heading{padding:22px 0 20px}.heading h1{font-family:"Songti SC","Noto Serif CJK SC",serif;font-weight:700;letter-spacing:.025em;font-size:36px;margin:7px 0 10px}.heading p{color:#817463;font-size:13px;max-width:770px;line-height:1.8}.eyebrow{color:#8b775e;font-size:10px;letter-spacing:.13em}.badge{background:#e9e9dd;border:1px solid #dbdecd;color:#666a50;border-radius:5px;font-weight:500;font-size:11px}.layout{grid-template-columns:minmax(0,1.9fr) minmax(300px,.85fr);align-items:start;gap:18px}.panel{border-color:#ddd4c7;background:var(--panel);border-radius:12px;box-shadow:0 5px 20px #60462b05}.panel-head{padding:15px 18px;border-color:#e8e1d6}.panel-head h2{font-size:14px;font-weight:650}.panel-head span{color:#928371;font-size:10px}.canvas-wrap{padding:10px 10px 0}#world{background:#f5eee1;border-color:#e2d7c5;border-radius:6px}.stats{background:#e7dfd2;border-color:#e7dfd2;margin-top:10px}.stat{background:#fbf8f1;padding:13px 15px}.stat small{color:#968775;letter-spacing:.04em;font-size:10px;margin-bottom:5px}.stat strong{font-size:14px;font-weight:600}.controls{padding:14px;gap:7px}.primary{background:#596349;color:#fffdf6;border-radius:6px;padding:11px 16px;font-size:12px}.primary:hover{background:#455138}.secondary{background:#fffdf8;border-color:#d8cebf;color:#73624f;border-radius:6px;font-size:12px;padding:10px 13px}.secondary:hover{background:#f5efe3}.side-pad{padding:16px}.side-pad p{color:#857763;font-size:12px;line-height:1.8}.prompt{background:#faf6ee;border-color:#d9cebb;color:#493f32;border-radius:6px;min-height:84px;font-size:12px}.prompt:focus{border-color:#8c967b;box-shadow:0 0 0 3px #87946b14}.rule-status{background:#f4f0e6;border-color:#e7dece;border-radius:6px;color:#806c54;font-size:12px;padding:11px 12px;min-height:0}.rule-status.success{background:#edf0e4;border-color:#dce2cd;color:#566449}.rule-status.error{background:#f5eae1;border-color:#e5d0bc;color:#9a6041}.examples{gap:6px;margin-top:10px}.chip{border-color:#e4dbce;background:#fcfaf5;color:#75664f;border-radius:5px;font-size:11px;padding:8px 10px}.chip:hover{background:#eeeadd;border-color:#bac2a8}.grid2{gap:6px}.config{background:#f9f6ee;border-color:#e8dfd1;padding:10px;border-radius:6px}.config strong{font-size:11px;color:#73624d}.config small{color:#928069}.separator{background:#e9e1d6;margin:16px 0}.log li{color:#8b765d;border-color:#c8b48e;font-size:11px;line-height:1.5}.help{color:#92816e;font-size:11px}.footer{color:#a18f7a;font-size:10px;padding:17px 1px}.footer strong{color:#7d6a52}.status-dot{background:#c7bba6}.status-dot.live,.status-dot.win{background:#88946c}.status-dot.lose{background:#ba8c69}.scene-caption{padding:10px 14px 3px;display:flex;justify-content:space-between;gap:12px;color:#a18b6e;font-size:10px;line-height:1.7}.scene-caption strong{color:#7b684f;font-weight:500}.order-slip{margin:0 14px 14px;padding:13px 15px;background:#f5f0e4;border:1px dashed #d7c5a5;border-radius:4px;display:flex;gap:14px;align-items:center}.order-number{font:600 24px Georgia,serif;color:#a58c65;border-right:1px solid #ded0b7;padding-right:14px}.order-slip p{margin:0;color:#8b775b;font-size:11px;line-height:1.8}.order-slip strong{color:#6c5942;font-weight:600}.keyboard-note{font-size:10px;color:#a3937b}.story-note{color:#93816a;font-size:11px;margin:0 0 13px;line-height:1.8}.tip-line{color:#9c876c;font-size:10px;margin:0 0 10px}
+@media(min-width:961px){aside.panel{max-height:calc(100vh - 30px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#d6cbb9 transparent;position:sticky;top:15px}}
+@media(max-width:960px){.layout{grid-template-columns:1fr}.heading h1{font-size:32px}.heading p{max-width:100%}.heading{padding-top:20px}.shell{padding:14px 18px}.badge{display:none}}
+@media(max-width:560px){.shell{padding:12px}.heading h1{font-size:28px}.meta{font-size:8px}.stats{grid-template-columns:repeat(2,1fr)}.controls>*{flex:1}.scene-caption{flex-direction:column;gap:0}.order-slip{gap:10px}.grid2{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body><div class="shell">
+ <header class="mast"><div class="brand"><span class="brandmark">or</span> Optional Reality</div><div class="meta">EVERYDAY EXPERIMENTS / LEVEL 08</div></header>
+ <div class="heading"><div><div class="eyebrow">THE CORNER BAKERY · 最后一单</div><h1>街角面包店</h1><p>打烊前，还有一份面包没送到取餐口。让传送台、烤面包机和风接力，把它送到等候的纸袋里。<br><strong>你可以改变小店里的物理规律，但不能直接移动面包。</strong></p></div><span class="badge">暖木柜台 / 一点不寻常的物理</span></div>
+ <div class="layout">
+  <section class="panel"><div class="panel-head"><h2>小店里的物理接力</h2><span><span id="liveDot" class="status-dot"></span><span id="stateLabel">等待开工</span></span></div><div class="canvas-wrap"><canvas id="world" width="960" height="540" aria-label="暖木色面包店的侧面场景：圆面包、传送台、弹簧烤面包机、风扇、通风叶轮、感应铃与取餐卷帘。点击机关可填写对应指令。"></canvas></div>
+   <div class="scene-caption"><strong>试着点击店里的机关，给它写一条新规则。</strong><span>先准备，再开工。重试时会保留你的规则。</span></div>
+   <div class="stats"><div class="stat"><small>本轮用时</small><strong id="clock">00:00</strong></div><div class="stat"><small>剩余指令</small><strong id="quota">100 / 100</strong></div><div class="stat"><small>取餐卷帘</small><strong id="gate">待感应</strong></div><div class="stat"><small>面包在哪儿</small><strong id="coreState">传送台上</strong></div></div>
+   <div class="controls"><button class="primary" id="play">开始营业 →</button><button class="secondary" id="resetRun">再试一次</button><button class="secondary" id="undo">撤销规则</button><button class="secondary" id="resetAll">重新布置</button></div>
+   <div class="order-slip"><span class="order-number">08</span><p><strong>今日最后一单：圆面包 × 1</strong><br>跨过柜台之间的空隙，经过感应铃，再送入右侧的取餐纸袋。别让面包掉到地上。</p></div>
+  </section>
+  <aside class="panel"><div class="panel-head"><h2>给小店写一条规则</h2><span>RECIPE FOR REALITY</span></div><div class="side-pad"><div class="eyebrow">01 / 改变一点日常</div><p>把传送台调快一点？让烤面包机弹得更高？每条有效规则消耗 1 次指令，应用后立即生效。</p>
+   <textarea class="prompt" id="prompt" spellcheck="false" aria-label="物理规则" placeholder='例如：Set conveyor speed to 1.5'></textarea>
+   <div class="row" style="margin-top:8px"><button class="primary" id="apply">应用规则 <span aria-hidden="true">↗</span></button><span class="keyboard-note">⌘ / Ctrl + Enter</span></div>
+   <div class="rule-status" id="notice" role="status">先从传送台和烤面包机开始，再想想：怎样让面包越过空隙、叫醒取餐口？</div>
+   <div class="separator"></div><div class="eyebrow">02 / 点击一张小配方</div><div class="examples">
+    <button class="chip" data-prompt="Set conveyor speed to 1.5">01 · 传送台　conveyor speed → 1.5</button>
+    <button class="chip" data-prompt="Set spring power to 2">02 · 烤面包机　spring power → 2</button>
+    <button class="chip" data-prompt="Set fan power to 0.45">03 · 小风扇　fan power → 0.45</button>
+    <button class="chip" data-prompt="When the core touches the sensor, open the gate">04 · 取餐铃　经过感应区时，打开卷帘</button>
+    <button class="chip" data-prompt="Make the wheel spin clockwise at speed 1">05 · 通风叶轮　wheel speed → 1</button>
+    <button class="chip" data-prompt="Set the platform bounce to 0.7">柜台弹性　bounce → 0.7</button>
+    <button class="chip" data-prompt="Set the floor friction to 0.2">台面摩擦　friction → 0.2</button>
+    <button class="chip" data-prompt="Set gravity to 1">店内重力　gravity → 1</button>
+   </div>
+   <div class="separator"></div><div class="eyebrow">03 / 小店当前的规律</div><div id="envGrid" class="grid2"></div>
+   <div class="separator"></div><div class="eyebrow">刚刚写过的规则</div><ol id="history" class="log"><li>还没有新规则。</li></ol>
+   <p class="help">沿用原版离线规则解析器。上方配方可直接使用；指令中的 <strong>core</strong> 代表画面里的圆面包。重复尝试会保留规则；重新布置会恢复初始场景。</p>
+  </div></aside>
+ </div><footer class="footer"><strong>Optional Reality · Level 08 / 街角面包店</strong>　独立场景实验 · 保留原版碰撞、机关、100 次指令与通关条件 · 无外部素材或网络依赖</footer>
+</div>
+<script>
+(()=>{
+'use strict';
+const canvas=document.getElementById('world'), ctx=canvas.getContext('2d');
+const $=id=>document.getElementById(id);
+const INITIAL=Object.freeze({gravity:1,bounce:0.22,friction:0.12,conveyor:0,spring:0,fan:0,wheel:0,gateTrigger:false});
+let env={...INITIAL},commandCount=0,history=[],time=0,ball={x:160,y:407,vx:0,vy:0,r:13},running=false,won=false,lost=false,gateOpened=false,launchDone=false,trail=[],wheelAngle=0,accumulator=0,lastTime=0,resetRunCount=0;
+const MAX_COMMANDS=100, STEP=1/120, TIME_LIMIT=24;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const bakeryNotices={
+ 'Factory, command history and energy core have been reset.':'小店恢复原样。新的一单，从这里开始。',
+ 'Simulation running. Rules can be applied while it moves.':'小店开工了。你也可以在面包移动时应用新规则。',
+ 'Simulation paused.':'歇一会儿。可以继续调整规则，再接着试。',
+ 'Replayed from the original core position; your environment rules remain active.':'面包回到起点，你的小店配方仍然有效。',
+ 'FACTORY RESTORED! The energy core reached EXIT through environmental rules.':'叮！圆面包已送到取餐口。最后一单完成。',
+ 'Time expired. Adjust rules and replay.':'等得太久啦。调整一下规则，再试一次。',
+ 'Core fell into the maintenance shaft. Change the environment and replay.':'面包掉到柜台之间了。调整规则，再试一次。',
+ 'There is no rule to undo.':'还没有需要撤销的规则。',
+ 'Command quota exhausted. Reset all to start over.':'100 次指令已经用完。点击「重新布置」再开始。',
+ 'Directly changing the energy core is not allowed. Modify the factory instead.':'不能直接改变面包。试着修改传送台、烤面包机或风扇。',
+ 'Enter a physical rule.':'先写一条物理规则，或点选下面的小配方。',
+ 'The gate can only be automated through the sensor condition, not opened directly.':'取餐卷帘需要感应铃触发。试试「经过感应区时，打开卷帘」配方。',
+ 'Unsupported rule. Try conveyor, spring, fan, wheel, gravity, bounce, friction or the sensor-to-gate condition.':'这条规则暂时不支持。可使用下方配方，再调整其中的数值。'
+};
+function setNotice(s,kind=''){const n=$('notice');n.textContent=bakeryNotices[s]||s.replace(/^Rule applied: /,'已应用：').replace(/^Undid: /,'已撤销：');n.className='rule-status '+kind;}
+function resetScene(){time=0;ball={x:160,y:407,vx:0,vy:0,r:13};running=false;won=false;lost=false;gateOpened=false;launchDone=false;wheelAngle=0;trail=[];accumulator=0;resetRunCount++;sync();draw();}
+function parse(text){
+ const q=text.trim().toLowerCase().replace(/[“”"']/g,'').replace(/[.。!?！？，,]+$/g,'');
+ if(!q)return {error:'Enter a physical rule.'};
+ if(/(core|ball|energy\s*ball|task\s*object|能量球|小球).*(mass|velocity|teleport|speed|size|position|delete|传送|直接|速度|质量)/i.test(q)||/teleport|delete (the )?(core|ball)|move the (core|ball) directly/i.test(q))return {error:'Directly changing the energy core is not allowed. Modify the factory instead.'};
+ const numeric= q.match(/-?\d+(?:\.\d+)?/); const v=numeric?Number(numeric[0]):null;
+ const between=(x,lo,hi)=> Number.isFinite(x)&&x>=lo&&x<=hi;
+ const set=(key,value,label,lo,hi)=>between(value,lo,hi)?{key,value,label:`${label} → ${value}`}:{error:`${label}: valid range ${lo} to ${hi}.`};
+ if(/sensor|感应器|传感器/.test(q)&&/gate|门|闸/.test(q)&&/when|touch|碰|触|当/.test(q))return {key:'gateTrigger',value:true,label:'Sensor contact will open the gate'};
+ if(/gate|闸门/.test(q))return {error:'The gate can only be automated through the sensor condition, not opened directly.'};
+ if(/conveyor|belt|传送带/.test(q))return set('conveyor',/reverse|反转/.test(q)?-(env.conveyor||1):/stop|关闭|停止/.test(q)?0:v??1.5,'Conveyor speed',-3,3);
+ if(/spring|弹簧/.test(q))return set('spring',/stop|关闭/.test(q)?0:v??2,'Spring launch power',0,3);
+ if(/fan|wind|风扇|风力/.test(q))return set('fan',/stop|off|关闭|停止/.test(q)?0:v??0.45,'Fan power',-2,2);
+ if(/wheel|rotor|spin|rotate|旋转|转盘|叶轮/.test(q)){let n=v??1;if(/counterclockwise|anticlockwise|逆时针|reverse|反向/.test(q))n=-Math.abs(n);if(/clockwise|顺时针/.test(q))n=Math.abs(n);if(/stop|停止/.test(q))n=0;return set('wheel',n,'Wheel angular speed',-3,3);}
+ if(/friction|摩擦/.test(q))return set('friction',v??0.2,'Floor friction',0,1);
+ if(/bounce|elastic|restitution|弹性|反弹/.test(q))return set('bounce',v??0.7,'Platform restitution',0,1.5);
+ if(/gravity|重力/.test(q)){let n=/reverse|反转|upward|向上/.test(q)?-Math.abs(v??1):/stop|off|zero|关闭|停止/.test(q)?0:v??1;return set('gravity',n,'Gravity multiplier',-2,2);}
+ return {error:'Unsupported rule. Try conveyor, spring, fan, wheel, gravity, bounce, friction or the sensor-to-gate condition.'};
+}
+function apply(){const q=$('prompt').value;const r=parse(q);if(r.error){setNotice(r.error,'error');return false;}if(commandCount>=MAX_COMMANDS){setNotice('Command quota exhausted. Reset all to start over.','error');return false;}
+ history.push({text:q.trim(),key:r.key,before:env[r.key],after:r.value});env[r.key]=r.value;commandCount++;$('prompt').value='';setNotice('Rule applied: '+r.label,'success');sync();return true;}
+function undo(){if(!history.length){setNotice('There is no rule to undo.');return;}const last=history.pop();env[last.key]=last.before;commandCount=Math.max(0,commandCount-1);if(last.key==='gateTrigger'&&!env.gateTrigger)gateOpened=false;setNotice('Undid: '+last.text);sync();}
+function resetAll(){env={...INITIAL};history=[];commandCount=0;resetScene();setNotice('Factory, command history and energy core have been reset.');}
+function update(dt){if(!running||won||lost)return;
+ time+=dt;wheelAngle+=env.wheel*dt*2.4;
+ let ax=0,ay=640*env.gravity;
+ const inFan=ball.x>515&&ball.x<818&&ball.y>130&&ball.y<438;
+ if(inFan){ay-=360*env.fan;ax+=28*env.fan;}
+ // Current conveyor belt is a motorized ground section. Its effect applies equally to anything touching it.
+ const contactFloor=ball.y+ball.r>=420-0.1 && ball.x>64&&ball.x<495;
+ const onBelt=contactFloor&&ball.x>=143&&ball.x<=452;
+ if(onBelt){const target=138*env.conveyor;ax+=(target-ball.vx)*7.5;}
+ else if(contactFloor){ax-=ball.vx*env.friction*8;}
+ ball.vx+=ax*dt;ball.vy+=ay*dt;
+ const lastX=ball.x,lastY=ball.y;
+ ball.x+=ball.vx*dt;ball.y+=ball.vy*dt;
+ // Fixed floor and ledge.
+ if((ball.x>64&&ball.x<495)||(ball.x>856&&ball.x<960)){
+  if(ball.y+ball.r>=420&&lastY+ball.r<=420+20&&ball.vy>=0){ball.y=420-ball.r;if(ball.vy>65)ball.vy=-ball.vy*env.bounce;else ball.vy=0;}
+ }
+ // The spring is an environment device; its velocity impulse can only occur on contact.
+ if(!launchDone&&env.spring>0&&ball.x+ball.r>=452&&ball.x-ball.r<483&&ball.y>368&&ball.y<426){launchDone=true;ball.vx=240+70*env.spring;ball.vy=-(240+85*env.spring);}
+ // Passive wheel. Spin adds tangential kick only when actually touched.
+ const wheel={x:748,y:180,r:26};let dx=ball.x-wheel.x,dy=ball.y-wheel.y,d=Math.hypot(dx,dy)||.001;
+ if(d<ball.r+wheel.r){let nx=dx/d,ny=dy/d;ball.x=wheel.x+nx*(ball.r+wheel.r+0.3);ball.y=wheel.y+ny*(ball.r+wheel.r+0.3);let radial=ball.vx*nx+ball.vy*ny;if(radial<0){ball.vx-=(1+env.bounce)*radial*nx;ball.vy-=(1+env.bounce)*radial*ny;}ball.vx+=-ny*env.wheel*115;ball.vy+=nx*env.wheel*115;}
+ // Contact sensor: only a previously defined conditional rule can open the gate.
+ const distSensor=Math.hypot(ball.x-698,ball.y-255);
+ if(env.gateTrigger&&distSensor<56+ball.r)gateOpened=true;
+ // Gate is a closed static wall until unlocked. It does not directly modify the ball.
+ if(!gateOpened&&ball.x+ball.r>833&&ball.x-ball.r<855&&ball.y+ball.r>148&&ball.y-ball.r<425){
+  if(lastX+ball.r<=833+3){ball.x=833-ball.r;ball.vx=-Math.abs(ball.vx)*Math.max(.2,env.bounce);}
+  else if(lastX-ball.r>=855-3){ball.x=855+ball.r;ball.vx=Math.abs(ball.vx)*Math.max(.2,env.bounce);}
+  else {ball.y=lastY;ball.vy*=-.25;}
+ }
+ // Simple room bounds; falling through the chasm fails the current attempt.
+ if(ball.x-ball.r<0){ball.x=ball.r;ball.vx=Math.abs(ball.vx)*.25;}
+ if(ball.x+ball.r>960){ball.x=960-ball.r;ball.vx=-Math.abs(ball.vx)*.25;}
+ if(ball.y-ball.r<100){ball.y=100+ball.r;ball.vy=Math.abs(ball.vy)*.25;}
+ if(ball.x>897&&ball.y+ball.r>215&&ball.y-ball.r<348&&ball.x-ball.r<949){won=true;running=false;setNotice('FACTORY RESTORED! The energy core reached EXIT through environmental rules.','success');}
+ if(ball.y-ball.r>530||time>=TIME_LIMIT-STEP/2){lost=true;running=false;setNotice(time>=TIME_LIMIT?'Time expired. Adjust rules and replay.':'Core fell into the maintenance shaft. Change the environment and replay.','error');}
+ if(Math.round(time*60)%3===0){trail.push([ball.x,ball.y]);if(trail.length>165)trail.shift();}
+}
+function roundRect(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
+function text(t,x,y,size=13,color='#4d6454',weight='500'){ctx.font=`${weight} ${size}px ui-monospace, monospace`;ctx.fillStyle=color;ctx.fillText(t,x,y);}
+// Presentation only: the standalone simulation and rule parser stay untouched.
+function strokePath(points,color='#b9a58a',width=1){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();}
+function oval(x,y,rx,ry,color){ctx.fillStyle=color;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();}
+function bakeryText(t,x,y,size=12,color='#8b7358',weight='500'){ctx.font=`${weight} ${size}px "PingFang SC", "Microsoft YaHei", system-ui, sans-serif`;ctx.fillStyle=color;ctx.fillText(t,x,y);}
+function deviceTag(n,label,x,y,width=106){roundRect(x,y,width,25,4,'#fffaf0');bakeryText(n,x+7,y+17,10,'#ae8e60','700');bakeryText(label,x+29,y+17,12,'#79674e','600');}
+function drawBread(x,y,r,rotation=0){
+ ctx.save();ctx.translate(x,y);ctx.rotate(rotation);
+ oval(0,2,r+1,r-1,'#936536');oval(0,-1,r,r-1,'#c99a5b');oval(-3,-4,r*.72,r*.54,'#dbb67b');
+ ctx.strokeStyle='#f3dfb6';ctx.lineWidth=2.4;ctx.lineCap='round';
+ for(let i=-1;i<=1;i++){ctx.beginPath();ctx.moveTo(-5+i*5,-6);ctx.lineTo(-8+i*5,0);ctx.stroke();}
+ oval(4,5,1.1,.7,'#9c6d3c');oval(-6,4,.9,.6,'#9c6d3c');ctx.restore();
+}
+function drawBakeryRoom(){
+ ctx.fillStyle='#f5edde';ctx.fillRect(0,0,960,540);
+ // Plaster wall and the shop's timber picture rail.
+ ctx.fillStyle='#eee3cf';ctx.fillRect(0,100,960,384);
+ ctx.fillStyle='#f7f1e7';ctx.fillRect(0,101,500,228);
+ ctx.fillStyle='#e6d9c3';ctx.fillRect(0,329,500,155);
+ for(let x=11;x<500;x+=32)strokePath([[x,332],[x,482]],'#daceb7');
+ ctx.fillStyle='#c6b18f';ctx.fillRect(0,327,500,5);
+ ctx.fillStyle='#b89a6d';ctx.fillRect(0,97,960,5);
+ // Small engraved sign, not a laboratory HUD.
+ bakeryText('THE CORNER BAKERY',28,37,19,'#5d4a34','700');
+ bakeryText('一间小店，一场关于物理的即兴实验。',28,61,12,'#998368');
+ roundRect(788,22,145,51,5,'#e9dfcd');bakeryText('ORDER 08',804,44,12,'#806a4d','700');bakeryText('圆面包 × 1  /  等待取餐',804,61,10,'#9b8260');
+ strokePath([[28,80],[933,80]],'#d9cbb6');
+ // Street-facing window: quiet buildings, striped awning, evening light.
+ roundRect(43,125,243,195,5,'#b69a73');roundRect(50,132,229,181,2,'#dfdfce');
+ ctx.fillStyle='#d4d4c0';ctx.fillRect(53,209,100,101);ctx.fillStyle='#c5c8b5';ctx.fillRect(166,186,109,124);
+ ctx.fillStyle='#e9e6d8';for(let x=66;x<263;x+=39){ctx.fillRect(x,224,15,25);ctx.fillRect(x,266,15,25);}
+ oval(224,169,19,19,'#eee4c5');
+ ctx.fillStyle='#f3e5c8';ctx.fillRect(51,133,227,20);
+ for(let x=52;x<275;x+=35){ctx.fillStyle='#a8ad94';ctx.fillRect(x,133,17,20);}
+ ctx.fillStyle='#c2a780';ctx.fillRect(158,153,5,160);ctx.fillRect(51,219,227,5);
+ roundRect(35,312,260,9,2,'#bba17b');
+ // A soft sun patch keeps the otherwise restrained room warm.
+ ctx.fillStyle='#fffbec35';ctx.beginPath();ctx.moveTo(53,225);ctx.lineTo(158,225);ctx.lineTo(451,410);ctx.lineTo(209,410);ctx.closePath();ctx.fill();
+ // Herbs and a ceramic cup on the window ledge.
+ roundRect(69,290,23,22,3,'#ad9470');strokePath([[80,293],[80,266]],'#8e9870',2);
+ oval(73,279,9,4,'#929c79');oval(88,271,9,4,'#a1aa85');oval(75,266,7,3,'#929c79');
+ roundRect(230,294,21,18,3,'#f9f3e7');ctx.strokeStyle='#c4b59e';ctx.lineWidth=2;ctx.beginPath();ctx.arc(253,302,6,-Math.PI/2,Math.PI/2);ctx.stroke();
+ // Open shelf, flour tin, loaf and jars.
+ ctx.fillStyle='#b49670';ctx.fillRect(322,184,157,7);strokePath([[332,191],[332,207],[345,191]],'#a68964',2);strokePath([[467,191],[467,207],[454,191]],'#a68964',2);
+ roundRect(330,143,30,40,3,'#e2d8c2');roundRect(328,140,34,6,2,'#aa9270');bakeryText('FLOUR',334,168,7,'#8b7657','700');
+ roundRect(369,154,22,29,3,'#d6ccb7');roundRect(368,151,24,5,2,'#8a8e70');drawBread(420,173,13,-.25);drawBread(447,171,14,.2);
+ // Today's chalk menu sits behind the interactive objects.
+ roundRect(329,225,144,107,3,'#b19469');roundRect(335,231,132,95,1,'#626957');
+ bakeryText('今日出炉',355,253,14,'#f0ead8','600');strokePath([[348,263],[453,263]],'#a3a88e');
+ bakeryText('圆面包   1 份',348,283,11,'#e3dfca');bakeryText('最后一单，别迟到。',348,307,10,'#c5c9af');
+ // Warm white tiles in the cooling / service bay.
+ ctx.fillStyle='#ede8da';ctx.fillRect(500,103,332,317);
+ for(let y=103;y<421;y+=34){strokePath([[500,y],[832,y]],'#ddd5c5');for(let x=500+(Math.floor(y/34)%2)*27;x<832;x+=55)strokePath([[x,y],[x,y+34]],'#ddd5c5');}
+ // Exhaust hood. The interactive rotor remains at its original coordinates.
+ roundRect(532,112,266,24,3,'#b8b8a4');roundRect(552,118,226,8,2,'#999f8b');
+ strokePath([[545,139],[812,139]],'#c8c7b5');
+ // Service hatch frame: its shutter is the original gate at x=833.
+ ctx.fillStyle='#c0a37b';ctx.fillRect(829,140,131,9);ctx.fillRect(855,149,6,271);
+ ctx.fillStyle='#ddd5bf';ctx.fillRect(861,149,99,271);
+ roundRect(872,164,76,33,3,'#f8f0dc');bakeryText('取 餐 口',883,186,14,'#806c4d','600');
+ // Bag target exactly wraps the original exit rectangle (897,213,55,137).
+ ctx.fillStyle='#d4b580';ctx.beginPath();ctx.moveTo(897,238);ctx.lineTo(904,213);ctx.lineTo(914,220);ctx.lineTo(924,213);ctx.lineTo(936,220);ctx.lineTo(945,213);ctx.lineTo(952,238);ctx.lineTo(952,350);ctx.lineTo(897,350);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#bb9863';ctx.fillRect(897,239,7,111);ctx.fillStyle='#e0c695';ctx.fillRect(904,239,41,111);
+ strokePath([[916,252],[916,237],[936,237],[936,252]],'#a18354',2);
+ roundRect(908,267,33,39,2,'#ece0c4');bakeryText('08',914,291,17,'#947b53','600');bakeryText('EXIT',909,326,11,'#9b8054','600');
+ // Counter bodies stop precisely at the original collision edges.
+ roundRect(55,434,440,47,1,'#b39268');
+ for(let x=68;x<400;x+=137){roundRect(x,443,123,29,2,'#bd9e75');strokePath([[x+6,446],[x+116,446]],'#cbae84');roundRect(x+49,448,25,3,1,'#806c50');}
+ ctx.fillStyle='#cfb48c';ctx.fillRect(55,420,440,14);ctx.fillStyle='#e1c8a0';ctx.fillRect(55,420,440,4);
+ roundRect(856,434,104,47,1,'#b39268');roundRect(864,444,89,29,2,'#bea17a');ctx.fillStyle='#d6ba91';ctx.fillRect(856,420,104,14);
+ // Open aisle, not a false solid platform across the gap.
+ ctx.fillStyle='#d9cdb9';ctx.fillRect(0,483,960,57);
+ for(let x=-30;x<990;x+=104)strokePath([[x,484],[x-28,540]],'#c6b89e');strokePath([[0,510],[960,510]],'#c9bca5');
+ ctx.fillStyle='#af98744d';ctx.fillRect(55,478,440,5);ctx.fillRect(856,478,104,5);
+ // Background linen basket, low enough to avoid implying a platform.
+ roundRect(615,470,113,47,4,'#b9a889');for(let y=479;y<515;y+=9)strokePath([[619,y],[725,y]],'#cbbb9b',2);
+ ctx.fillStyle='#e8dfce';ctx.beginPath();ctx.moveTo(626,473);ctx.lineTo(634,459);ctx.lineTo(655,467);ctx.lineTo(687,461);ctx.lineTo(712,473);ctx.closePath();ctx.fill();
+ bakeryText('柜台之间是空隙，别掉下去。',577,449,12,'#a28d6e');
+}
+function draw(){
+ ctx.clearRect(0,0,960,540);ctx.lineCap='round';ctx.lineJoin='round';drawBakeryRoom();
+ // 01: bakery conveyor. Its upper edge matches the existing y=420 floor.
+ roundRect(140,420,311,17,8,'#646b58');roundRect(145,421,301,5,2,'#939781');
+ ctx.save();ctx.beginPath();ctx.rect(148,421,294,13);ctx.clip();
+ const beltOffset=((time*env.conveyor*30)%24+24)%24;
+ for(let x=128;x<458;x+=24)strokePath([[x+beltOffset,423],[x+7+beltOffset,432]],'#b7b59b',2);ctx.restore();
+ for(let x=151;x<449;x+=28){oval(x,431,4,4,'#464e40');oval(x,431,1.5,1.5,'#a5ac91');}
+ deviceTag('01','传送台',205,451,106);
+ // 02: toaster housing and the visible spring beneath its pop-up tray.
+ const pop=launchDone?7:0;roundRect(437,389,49,31,6,'#c5c3ad');roundRect(443,385-pop,36,7,3,'#787d6a');
+ ctx.strokeStyle='#9a7d55';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(457,414);for(let i=0;i<5;i++)ctx.lineTo(457+(i%2?6:-5),411-i*(3+pop*.25));ctx.stroke();
+ roundRect(478,400,6,5,2,'#858571');oval(444,407,2.4,2.4,env.spring?'#9d9c68':'#aaa48a');
+ strokePath([[486,406],[496,406],[496,419]],'#9a8f76',2);deviceTag('02','烤面包机',384,451,103);
+ // 03: an upward-facing cooling fan, with a restrained true influence outline.
+ if(env.fan!==0){ctx.fillStyle='#84906b0b';ctx.fillRect(515,131,303,285);}
+ ctx.setLineDash([3,9]);ctx.strokeStyle=env.fan!==0?'#a0a78a88':'#c0bba044';ctx.lineWidth=1;ctx.strokeRect(515,131,303,285);ctx.setLineDash([]);
+ roundRect(538,410,33,6,3,'#8b947b');roundRect(548,399,12,14,3,'#a6ad91');oval(550,394,22,22,'#8c957b');oval(550,394,18,18,'#d6d9c5');
+ ctx.save();ctx.translate(550,394);ctx.rotate(time*env.fan*8);
+ for(let i=0;i<3;i++){ctx.rotate(Math.PI*2/3);oval(0,-8,5,9,'#9da88b');}oval(0,0,4,4,'#748164');ctx.restore();
+ ctx.strokeStyle='#b8c0a5';ctx.lineWidth=1;for(let i=-1;i<=1;i++)strokePath([[536+i*6,378],[552+i*6,410]],'#b8c0a5');
+ deviceTag('03','冷却风扇',522,346,105);
+ if(env.fan!==0){ctx.save();ctx.beginPath();ctx.rect(515,131,303,285);ctx.clip();
+  for(let j=0;j<5;j++){let fy=402-((time*Math.abs(env.fan)*100+j*47)%255);if(env.fan<0)fy=147+((time*Math.abs(env.fan)*100+j*47)%255);let fx=579+j*43;strokePath([[fx,fy+12],[fx+3,fy],[fx,fy-12]],'#909e7466',1.5);}ctx.restore();
+ }
+ // 05: ventilation wheel, still a solid circle with the original 26px radius.
+ roundRect(711,144,74,73,5,'#c7c7b5');oval(748,180,29,29,'#959e87');oval(748,180,26,26,'#e1e2d1');
+ ctx.save();ctx.translate(748,180);ctx.rotate(wheelAngle);
+ for(let i=0;i<6;i++){ctx.rotate(Math.PI/3);oval(0,-13,6,12,'#a3ae92');}oval(0,0,7,7,'#7e8b6d');ctx.restore();
+ ctx.strokeStyle='#919a83';ctx.lineWidth=1;ctx.beginPath();ctx.arc(748,180,26,0,Math.PI*2);ctx.stroke();bakeryText('通风叶轮',718,232,11,'#8c8e75');
+ // 04: bell / sensor. Its outer ring displays the actual 56px contact zone.
+ ctx.setLineDash([2,7]);ctx.strokeStyle=gateOpened?'#8b9b7199':env.gateTrigger?'#b59c7188':'#bfb49b66';ctx.lineWidth=1;ctx.beginPath();ctx.arc(698,255,56,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+ oval(698,255,17,17,'#ccb688');oval(698,254,13,13,'#e2c99b');strokePath([[698,244],[698,254],[705,257]],'#9c8359',1.5);oval(698,240,3,2,'#987d51');
+ roundRect(677,274,42,4,2,'#a79066');deviceTag('04',gateOpened?'已叫号':'取餐铃',652,302,103);
+ if(gateOpened){bakeryText('叮！',718,256,15,'#7d8b62','600');}
+ // Service shutter: drawn at exactly the original gate geometry.
+ roundRect(833,147,22,gateOpened?26:273,1,'#a4a58c');
+ const gateHeight=gateOpened?26:273;for(let y=152;y<147+gateHeight;y+=8)strokePath([[836,y],[852,y]],'#7f856d');
+ bakeryText(gateOpened?'请取餐 →':'等一声「叮」',859,382,11,gateOpened?'#647b4f':'#9a896d','600');
+ // Flour trail: visible but quiet, never confused with a platform.
+ if(trail.length>1){ctx.save();ctx.setLineDash([2,7]);ctx.strokeStyle='#ab8b5b77';ctx.lineWidth=1.7;ctx.beginPath();trail.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();ctx.restore();}
+ // The round bread uses the unchanged core coordinates and collision radius.
+ oval(ball.x,421,ball.r*clamp(1-(407-ball.y)/400,.2,1),2.5,'#7f614529');drawBread(ball.x,ball.y,ball.r,ball.x/ball.r*.38);
+ // Subtle hints are attached to the actual countertop and pickup point.
+ bakeryText('起点',143,389,10,'#9d8869');bakeryText('THE LAST ORDER · 物理照常，日常不一样。',27,530,10,'#9b8769');
+ if(won||lost){
+  ctx.fillStyle='#f9f4e8cc';ctx.fillRect(195,195,566,126);roundRect(208,205,542,106,6,'#fffaf0');
+  bakeryText(won?'叮！最后一份面包，刚刚好。':'差一点。换个配方，再来一次。',231,244,23,won?'#65744f':'#93734d','700');
+  bakeryText(won?'纸袋装好，今天也顺利打烊。':'调整小店的规律，点击「再试一次」。',232,278,14,'#9b8669');
+ }
+}
+
+function sync(){ $('clock').textContent=`00:${String(Math.floor(time)).padStart(2,'0')}`;$('quota').textContent=`${MAX_COMMANDS-commandCount} / ${MAX_COMMANDS}`;$('gate').textContent=gateOpened?'已开启':'待感应';$('coreState').textContent=won?'已装袋':lost?'待重试':launchDone?'空中接力':'传送台上';$('stateLabel').textContent=won?'订单完成':lost?'再试一次':running?'正在接力':'等待开工';$('liveDot').className='status-dot '+(won?'win':lost?'lose':running?'live':'');$('play').textContent=running?'暂停一下':won||lost?'请重试':time?'继续接力 →':'开始营业 →';$('play').disabled=won||lost;$('undo').disabled=!history.length;
+ const specs=[['店内重力',env.gravity.toFixed(2)+' ×'],['柜台弹性',env.bounce.toFixed(2)],['台面摩擦',env.friction.toFixed(2)],['传送台',env.conveyor.toFixed(2)],['烤面包机弹力',env.spring.toFixed(2)],['冷却风扇',env.fan.toFixed(2)],['通风叶轮',env.wheel.toFixed(2)],['感应铃联动',env.gateTrigger?'已启用':'未启用']];$('envGrid').innerHTML=specs.map(([n,v])=>`<div class="config"><strong>${n}</strong><small>${v}</small></div>`).join('');$('history').innerHTML=history.length?history.slice(-8).reverse().map((h,i)=>{const li=document.createElement('li');li.textContent=h.text;return li.outerHTML;}).join(''):'<li>还没有新规则。</li>';
+}
+$('play').addEventListener('click',()=>{if(won||lost)return;running=!running;setNotice(running?'Simulation running. Rules can be applied while it moves.':'Simulation paused.');sync();});
+$('apply').addEventListener('click',apply);$('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();apply();}});
+$('resetRun').addEventListener('click',()=>{resetScene();setNotice('Replayed from the original core position; your environment rules remain active.');});
+$('undo').addEventListener('click',undo);$('resetAll').addEventListener('click',resetAll);
+document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('prompt').value=button.dataset.prompt;$('prompt').focus();}));
+// Canvas shortcuts only prepare an existing command; they never apply rules or move the bread.
+const bakeryDevices=[
+ {x:832,y:145,w:28,h:279,title:'取餐卷帘 · 用感应铃规则开启',command:'When the core touches the sensor, open the gate'},
+ {x:640,y:199,w:115,h:134,title:'取餐铃 · 面包经过后开卷帘',command:'When the core touches the sensor, open the gate'},
+ {x:710,y:144,w:77,h:91,title:'通风叶轮 · 点击准备转速规则',command:'Make the wheel spin clockwise at speed 1'},
+ {x:384,y:382,w:114,h:100,title:'烤面包机 · 点击准备弹簧规则',command:'Set spring power to 2'},
+ {x:520,y:344,w:109,h:77,title:'冷却风扇 · 点击准备风力规则',command:'Set fan power to 0.45'},
+ {x:140,y:420,w:302,h:18,title:'传送台 · 点击准备速度规则',command:'Set conveyor speed to 1.5'},
+ {x:205,y:451,w:106,h:25,title:'传送台 · 点击准备速度规则',command:'Set conveyor speed to 1.5'}
+];
+function bakeryDeviceAt(event){const r=canvas.getBoundingClientRect();const x=(event.clientX-r.left)*960/r.width,y=(event.clientY-r.top)*540/r.height;return bakeryDevices.find(d=>x>=d.x&&x<=d.x+d.w&&y>=d.y&&y<=d.y+d.h);}
+canvas.addEventListener('pointermove',event=>{const d=bakeryDeviceAt(event);canvas.style.cursor=d?'pointer':'default';canvas.title=d?d.title:'点击传送台、烤面包机、风扇、感应铃或叶轮，准备一条规则';});
+canvas.addEventListener('click',event=>{const d=bakeryDeviceAt(event);if(!d)return;$('prompt').value=d.command;$('prompt').focus();setNotice('已准备 '+d.title.split(' · ')[0]+' 的配方。可修改数值，再点击「应用规则」。');});
+function frame(timestamp){if(!lastTime)lastTime=timestamp;let delta=Math.min(.05,(timestamp-lastTime)/1000);lastTime=timestamp;if(running){accumulator+=delta;while(accumulator>=STEP&&running){update(STEP);accumulator-=STEP;}sync();}draw();requestAnimationFrame(frame);}
+// Debug API exposed solely to allow deterministic, reproducible browser integration tests.
+window.__optionalRealityTest={parse,applyCommand:(command)=>{$('prompt').value=command;return apply();},start:()=>{running=true;},pause:()=>{running=false;},step:(n=1)=>{running=true;for(let i=0;i<n&&running;i++)update(STEP);sync();draw();},snapshot:()=>({env:{...env},ball:{...ball},running,won,lost,gateOpened,launchDone,commandCount,time,historyLength:history.length}),replay:resetScene,reset:resetAll};
+resetScene();requestAnimationFrame(frame);
+})();
+</script>
+</body></html>
