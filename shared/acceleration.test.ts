@@ -20,6 +20,8 @@ describe('shared physics vocabulary and conservative correction', () => {
     ['set acceleration rightward to 2 m/s²',2],['set horizontal acceleration to -2 m/s^2',-2],
     ['向左添加加速度 0.5',-.5],['stop horizontal acceleration',0],
     ['add accelaration rigth',1],
+    ['横着往左拉一点吧，水平加速度设成 0.5 米每秒平方。',-.5],
+    ['往右增加水平加速度 0.5',.5],
   ])('parses %s consistently', (text,value) => {
     expect(parseCommand(text).operation).toEqual({type:'set_property',target:'world',property:'acceleration_x',value});
   });
@@ -27,12 +29,15 @@ describe('shared physics vocabulary and conservative correction', () => {
     'do not add acceleration rightward','double reverse acceleration','set acceleration rightward 2 3',
     'add acceleration rightward 2 m/s','add acceleration rightward 2 for 3 seconds',
     'add acceleration to the ball rightward','reverse acceleration 2',
+    '往左和往右添加水平加速度',
   ])('does not guess a conflicting, protected or incomplete instruction: %s', text => {
     expect(parseCommand(text).error).toBeDefined();
   });
   it('uses gravity for vertical acceleration without inventing a second vertical force', () => {
     expect(parseCommand('add acceleration upward').operation).toEqual({type:'set_gravity',acceleration:-1});
     expect(parseCommand('set acceleration downward to 2').operation).toEqual({type:'set_gravity',acceleration:2});
+    expect(parseCommand('往上增加加速度 0.5').operation).toEqual({type:'set_gravity',acceleration:-.5});
+    expect(parseCommand('往下增加加速度 0.5').operation).toEqual({type:'set_gravity',acceleration:.5});
   });
   it('preserves original input and shows a correction before execution', () => {
     const message=prepareMessage('typo','add acceleration right word',ruleContext(gravityLab),initialRules(gravityLab));

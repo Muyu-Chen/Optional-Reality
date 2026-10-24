@@ -5,8 +5,8 @@ export function parseAcceleration(text: string): ParsedCommand | undefined {
   if (!/\bacceleration\b|加速度/.test(text)) return;
   if (/\b(?:not|never|dont|don't|without|unless|except)\b|不要|不能|除了/.test(text)) return { error: 'Negated or conditional instructions need explicit clarification.' };
   if ((text.match(/\b(?:reverse|double|halve)\b|反转|翻倍|减半/g) || []).length > 1) return { error: 'Use one relative acceleration change per message.' };
-  const left = /\bleft(?:ward)?\b|向左/.test(text), right = /\bright(?:ward)?\b|向右/.test(text);
-  const up = /\bup(?:ward)?\b|向上/.test(text), down = /\bdown(?:ward)?\b|向下/.test(text);
+  const left = /\bleft(?:ward)?\b|[向往]左/.test(text), right = /\bright(?:ward)?\b|[向往]右/.test(text);
+  const up = /\bup(?:ward)?\b|[向往]上/.test(text), down = /\bdown(?:ward)?\b|[向往]下/.test(text);
   const horizontal = /\bhorizontal\b|水平/.test(text), vertical = /\bvertical\b|竖直|垂直/.test(text);
   if ([left, right, up, down].filter(Boolean).length > 1 || (horizontal && (vertical || up || down)) || (vertical && (left || right))) {
     return { error: 'Choose one acceleration direction per message.' };
