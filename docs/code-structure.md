@@ -1,0 +1,52 @@
+# 代码模块与修改入口
+
+按职责拆分模块，关卡配置、界面、消息准备、规则执行与逐帧模拟各有入口。`App.tsx` 只选择关卡，`Game.tsx` 只组合游戏界面。
+
+## 前端交互
+
+| 位置 | 职责 |
+| --- | --- |
+| `client/src/App.tsx` | URL 与当前关卡，切关时重建游戏会话 |
+| `client/src/game/Game.tsx` | 组合 Canvas、HUD、队列、输入窗和弹窗 |
+| `game/useGameSession.ts` | 发送、撤销、重试、重置，以及执行后的字幕与提示 |
+| `game/useGameWorld.ts` | 创建和销毁 CanvasLab，接收低频遥测 |
+| `game/useGameControls.ts` | 暂停菜单、恢复与 Escape 快捷键 |
+| `game/useMessageQueue.ts` | 输入、编辑、删除、排序、多选和示例消息 |
+| `game/usePreparedMessages.ts` | 本地准备、AI 准备、状态和队列存储 |
+| `client/src/api/compilation-session.ts` | 编译请求身份、取消、场景与队列版本 |
+| `client/src/components/` | 独立显示组件，通过 props 接收状态和事件 |
+| `client/src/domain/` | 纯队列操作、真实执行反馈与存储格式 |
+
+消息输入不直接调用物理引擎。`usePreparedMessages` 产出待发操作，`useGameSession` 在玩家发送时调用世界，成功后才消费消息和产生字幕。队列更改、重试和卸载都会使旧编译失效。
+
+`styles.css` 只保留有序导入。`styles/` 中按 HUD、队列、输入、反馈、菜单和教学拆分样式；`responsive.css` 保存主要断点。调整导入顺序前检查覆盖关系，Canvas 使用的 `--scene-*` 留白必须与 HUD 一致。
+
+## 场景与物理
+
+| 位置 | 职责 |
+| --- | --- |
+| `client/src/levels/` | 关卡数据、等级能力、初始规则和可修改权限 |
+| `physics/scene-bodies.ts` | 按关卡创建轨道、边界与任务物体，保留刚体插入顺序 |
+| `physics/world.ts` | 固定时间步、规则应用、历史、教学与成败状态 |
+| `physics/devices.ts` | 接触判断、风场、传送带、蓄力、转轮和感应开门 |
+| `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
+| `physics/geometry-renderer.ts` | 前两级几何场景绘图 |
+| `physics/bakery-renderer.ts` | 组合面包店背景、机关、面包与轨迹 |
+| `physics/bakery/room.ts` | 静态背景绘画 |
+| `physics/bakery/devices.ts` | 各机关的状态绘图，读取运行层状态 |
+| `physics/bakery/bread.ts`、`drawing.ts` | 面包绘制与画布基础函数 |
+
+以上 `physics/` 均位于 `client/src/`。绘图不能推进模拟、修改规则或发起模型请求。React 不承接每一物理帧的位置更新。
+
+## 规则与服务端
+
+`shared/rules.ts` 保存声明式操作与校验，`shared/commands.ts` 做简单本地解析，`shared/compiler.ts` 定义编译协议。服务端由 `app.ts` 处理 HTTP，`compiler.ts` 负责场景权限与提示词，`ai-client.ts` 适配模型请求，`config.ts` 读取后端环境变量。
+
+## 后续修改
+
+- 新增小关：按 [关卡说明](../client/src/levels/README.md) 添加独立配置并注册，不把布局硬编码进游戏组件。
+- 新增机关：先定义规则权限与运行行为，再添加对应绘图；界面只提供输入和反馈。
+- 修改消息交互：显示改 `components/`，队列操作改 `useMessageQueue`，编译与取消改 `usePreparedMessages` / `CompilationSession`。
+- 修改发送与重试：改 `useGameSession`，继续验证消息与世界状态一致、旧请求失效、教学暂停不被绕过。
+
+本次重构没有增加依赖或更改关卡目标。验证使用 `npm test`、`npm run build` 与浏览器操作，记录见 [验收说明](./verification.md)。

@@ -3,8 +3,9 @@ import type { LevelDefinition } from '../levels/types';
 import { initialRules, ruleContext } from '../levels/rules';
 import { applyRules, type Operation, type RuleState } from '../../../shared/rules';
 import { DeviceRuntime } from './devices';
+import { createSceneBodies } from './scene-bodies';
 
-const { Engine, Bodies, Body, Composite } = Matter;
+const { Engine, Composite } = Matter;
 export const STEP_MS = 1000 / 120;
 
 function touchesExit({ x, y }: Matter.Vector, radius: number, exit: LevelDefinition['exit']) {
@@ -37,42 +38,20 @@ export class PhysicsWorld {
   rules: RuleState;
   readonly devices: DeviceRuntime;
   private history: { before: RuleState; operations: readonly Operation[]; text: string }[] = [];
-  private readonly surfaces = new Map<string, Matter.Body[]>();
+  private readonly surfaces: Map<string, Matter.Body[]>;
   get commandCount() { return this.history.length; }
 
   constructor(readonly level: LevelDefinition, seenTutorials: Iterable<string> = []) {
     this.seenTutorials = new Set(seenTutorials);
-    const { viewport, ball, initialGravity } = level;
+    const { viewport, initialGravity } = level;
     this.rules = initialRules(level);
     this.gravity = initialGravity;
     this.limitTicks = Math.round(level.timeLimitSeconds * 1000 / STEP_MS);
     this.engine = Engine.create({ gravity: { x: 0, y: initialGravity, scale: viewport.pixelsPerMetre / 1_000_000 } });
-    const surface = { isStatic: true, friction: 0, restitution: 0 };
-    const rails: Matter.Body[] = [];
-    for (const track of level.tracks) {
-      const first = rails.length;
-      const material = { ...surface, label: track.id };
-      for (let i = 0; i < track.points.length - 1; i++) {
-        const [a, b] = [track.points[i], track.points[i + 1]];
-        rails.push(Bodies.rectangle((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, Math.hypot(b[0] - a[0], b[1] - a[1]) + 2, track.thickness, { ...material, angle: Math.atan2(b[1] - a[1], b[0] - a[0]) }));
-      }
-      for (const [x, y] of track.points) rails.push(Bodies.circle(x, y, track.thickness / 2, material));
-      this.surfaces.set(track.id, rails.slice(first));
-    }
-    this.ball = Bodies.circle(...ball.position, ball.radius, { friction: 1, frictionStatic: 0, frictionAir: 0, restitution: ball.restitution, label: ball.id });
-    // Matter normalises velocity to its 60 Hz reference step.
-    Body.setVelocity(this.ball, {
-      x: ball.velocity[0] * viewport.pixelsPerMetre / 60,
-      y: ball.velocity[1] * viewport.pixelsPerMetre / 60,
-    });
-    const { width, height } = viewport;
-    Composite.add(this.engine.world, [
-      ...rails, this.ball,
-      ...(!level.failOnFall ? [Bodies.rectangle(width / 2, height + 18, width + 72, 36, { ...surface, label: 'boundary-bottom' })] : []),
-      Bodies.rectangle(-18, height / 2, 36, height * 2, { ...surface, label: 'boundary-left' }),
-      Bodies.rectangle(width + 18, height / 2, 36, height * 2, { ...surface, label: 'boundary-right' }),
-      Bodies.rectangle(width / 2, (level.ceilingY ?? 0) - 18, width + 72, 36, { ...surface, label: 'boundary-top' }),
-    ]);
+    const scene = createSceneBodies(level);
+    this.ball = scene.ball;
+    this.surfaces = scene.surfaces;
+    Composite.add(this.engine.world, scene.bodies);
     this.devices = new DeviceRuntime(level, this.engine, this.ball);
     this.syncRules();
   }

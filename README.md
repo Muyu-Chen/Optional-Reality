@@ -65,12 +65,14 @@ npm start
 React + TypeScript + Vite 管理界面；Matter.js + Canvas 2D 运行、绘制世界；Express 调用可配置的 OpenAI 兼容 API；Zod 共享并校验规则。Web 首发，暂不做 Electron、数据库或 3D。
 
 - `client/src/levels/`：独立关卡、等级与编辑权限。
+- `client/src/game/`：游戏会话、队列交互、AI 准备与世界生命周期。
+- `client/src/components/`、`styles/`：独立界面组件与分模块样式。
 - `client/src/physics/`：固定时间步长、设备、机关状态和独立绘图。
 - `client/src/domain/`：消息队列、执行历史与真实变化字幕。
 - `shared/`：声明式操作、状态与编译协议。
 - `server/src/`：模型适配、提示词、场景权限及 HTTP。
 
-完整设计与开发要求见 [游戏设计约定](./docs/game-design.md)，当前进度见 [dev-todo.md](./dev-todo.md)，新增关卡见 [关卡说明](./client/src/levels/README.md)，API 配置见 [server/README.md](./server/README.md)。
+完整设计与开发要求见 [游戏设计约定](./docs/game-design.md)，模块职责见 [代码结构](./docs/code-structure.md)，当前进度见 [dev-todo.md](./dev-todo.md)，新增关卡见 [关卡说明](./client/src/levels/README.md)，API 配置见 [server/README.md](./server/README.md)。
 
 面包店绘图改编自 yihanzhao231 的 `temp/1024-zyh@30d802f`，物理和指令统一使用本项目运行层。旧关卡 ID `reality-breakdown` 保留。
 
