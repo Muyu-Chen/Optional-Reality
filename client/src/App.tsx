@@ -1,20 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
-import { applyOperation, describeOperation } from '../../shared/commands';
-import { applyBatch, prepareMessage, type AppliedEvent, type Message } from './domain/queue';
+import { describeOperation } from '../../shared/commands';
+import { applyRules } from '../../shared/rules';
+import { applyBatch, messageOperations, prepareMessage, type AppliedEvent, type Message } from './domain/queue';
 import { gravityLab } from './levels/gravity-lab';
+import { initialRules, ruleContext } from './levels/rules';
+import { compilerStatus, prepareWithAI } from './api/compiler';
 import { CanvasLab } from './physics/canvas-lab';
 import { initialTelemetry, STEP_MS, type Telemetry } from './physics/world';
 
 const level = gravityLab;
 const STORAGE_KEY = `optional-reality.${level.id}.messages.v1`;
 const INITIAL = initialTelemetry(level);
+const context = ruleContext(level);
+const localMessage = (messageId: string, text: string) => prepareMessage(messageId, text, context, initialRules(level));
 const id = () => crypto.randomUUID();
 function loadMessages(): Message[] {
   try {
     const saved: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
     if (!Array.isArray(saved)) return [];
     return saved.filter((text): text is string => typeof text === 'string' && text.length > 0 && text.length <= 240)
-      .slice(0, 24).map(text => prepareMessage(id(), text));
+      .slice(0, 24).map(text => localMessage(id(), text));
   } catch { return []; }
 }
 function acceleration(value: number) { return `${Math.abs(value).toFixed(1)} m/s²`; }
@@ -32,6 +37,11 @@ export default function App() {
   const [events, setEvents] = useState<AppliedEvent[]>([]);
   const [notice, setNotice] = useState(`${level.initialGravity === 0 ? 'Zero gravity.' : `Initial gravity = ${level.initialGravity} m/s².`} Your first sent message starts the ${level.timeLimitSeconds}-second experiment.`);
   const [storageAvailable, setStorageAvailable] = useState(true);
+  const [api, setApi] = useState({ configured: false, model: '' });
+  const [preparing, setPreparing] = useState(false);
+  const requestRef = useRef<AbortController | null>(null);
+  const queueRevision = useRef(0);
+  const sceneVersion = useRef(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const labRef = useRef<CanvasLab | null>(null);
 
@@ -46,8 +56,17 @@ export default function App() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.map(message => message.text))); }
     catch { setStorageAvailable(false); }
   }, [messages]);
+  useEffect(() => {
+    const controller = new AbortController();
+    compilerStatus(controller.signal).then(setApi).catch(() => {});
+    return () => { controller.abort(); requestRef.current?.abort(); };
+  }, []);
 
-  function updateMessages(next: Message[]) { messageRef.current = next; setMessages(next); }
+  function updateMessages(next: Message[]) {
+    requestRef.current?.abort(); requestRef.current = null; setPreparing(false);
+    queueRevision.current++;
+    messageRef.current = next; setMessages(next);
+  }
   function toggleSelection(messageId: string) {
     setSelected(previous => { const next = new Set(previous); next.has(messageId) ? next.delete(messageId) : next.add(messageId); return next; });
   }
@@ -55,12 +74,13 @@ export default function App() {
     const text = input.trim();
     if (!text) return;
     if (!editing && messageRef.current.length >= 24) { setNotice('The demo holds 24 messages. Remove a message to add another.'); return; }
-    const entry = prepareMessage(editing || id(), text);
+    const entry = localMessage(editing || id(), text);
+    if (entry.status === 'error' && api.configured) entry.status = 'draft';
     const next = editing ? messageRef.current.map(message => message.id === editing ? entry : message) : [...messageRef.current, entry];
     updateMessages(next);
     if (editing) setSelected(previous => new Set([...previous].filter(value => value !== editing)));
     setInput(''); setEditing(null);
-    setNotice(entry.status === 'ready' ? 'Message saved and parsed. Its rule will only apply when you send it.' : 'Message saved. Edit it to use a command recognised by this demo.');
+    setNotice(entry.status === 'ready' ? 'Message prepared locally. Its rule will only apply when you send it.' : 'Message saved. Use Prepare with AI to interpret it, or edit a local command.');
   }
   function removeMessage(messageId: string) {
     updateMessages(messageRef.current.filter(message => message.id !== messageId));
@@ -79,44 +99,78 @@ export default function App() {
   }
   function send(ids: string[]) {
     const lab = labRef.current;
-    if (!lab || lab.world.won || lab.world.timedOut) return;
+    if (!lab || preparing || lab.world.won || lab.world.timedOut) return;
     try {
-      const result = applyBatch(messageRef.current, ids, lab.world.gravity, lab.world.tick);
-      lab.world.setGravity(result.gravity);
+      const result = applyBatch(messageRef.current, ids, lab.world.rules, lab.world.tick, context);
+      lab.world.applyMessages(result.events.map(event => ({ text: event.text, operations: event.operations })));
       if (!lab.world.started) lab.world.start();
       updateMessages(result.messages);
       setEvents(previous => [...previous, ...result.events]);
       setSelected(previous => new Set([...previous].filter(value => !ids.includes(value))));
       lab.report();
       const rule = result.gravity === 0 ? 'gravity = 0' : `${result.gravity > 0 ? 'downward' : 'upward'} gravity, a = ${acceleration(result.gravity)}`;
-      setNotice(`${ids.length === 1 ? 'Message sent' : `${ids.length} messages sent in queue order`}. Now ${rule}.${lab.world.running ? '' : ' Resume to see the result.'}`);
+      const changesOnlyGravity = result.events.every(event => event.operations.every(operation => operation.type === 'set_gravity' || operation.type === 'reverse_gravity'));
+      setNotice(`${ids.length === 1 ? 'Message sent' : `${ids.length} messages sent in queue order`}. ${changesOnlyGravity ? `Now ${rule}.` : 'Environment rules applied.'}${lab.world.running ? '' : ' Resume to see the result.'}`);
     } catch (error) { setNotice(error instanceof Error ? error.message : 'The batch could not be sent.'); }
   }
   function toggleSimulation() {
     const lab = labRef.current;
-    if (!lab || !lab.world.started || lab.world.won || lab.world.timedOut) return;
+    if (!lab || preparing || !lab.world.started || lab.world.won || lab.world.timedOut) return;
     if (lab.world.running) { lab.world.pause(); setNotice('Simulation paused. You can still prepare and send messages.'); }
     else { lab.world.start(); setNotice(lab.world.gravity === 0 ? 'Simulation running with zero gravity. Send a prepared message to change it.' : 'Simulation resumed. Your next message is waiting for you.'); }
     lab.report();
   }
   function resetWorld() {
+    sceneVersion.current++;
     labRef.current?.reset();
-    updateMessages(messageRef.current.map(message => prepareMessage(message.id, message.text)));
+    updateMessages(messageRef.current.map(message => localMessage(message.id, message.text)));
     setSelected(new Set()); setEvents([]);
-    setNotice('World reset. Initial gravity restored. Your messages are kept and ready for another run.');
+    setNotice('World reset. Messages kept; prepare AI messages again before sending.');
   }
   function loadExample() {
-    updateMessages(level.instructions.exampleMessages.map(text => prepareMessage(id(), text)));
+    updateMessages(level.instructions.exampleMessages.map(text => localMessage(id(), text)));
     setNotice(level.instructions.exampleNotice);
+  }
+  async function prepareQueue() {
+    const lab = labRef.current;
+    if (!lab || preparing || requestRef.current) return;
+    const pending = messageRef.current.filter(message => message.status !== 'sent');
+    if (!pending.length) return;
+    lab.world.pause(); lab.report();
+    const controller = new AbortController();
+    requestRef.current = controller; setPreparing(true);
+    const request = {
+      requestId: id(), levelId: level.id, sceneVersion: sceneVersion.current, queueRevision: queueRevision.current,
+      messages: pending.map(({ id, text }) => ({ id, text })), rules: structuredClone(lab.world.rules),
+    };
+    setNotice('Preparing messages with AI. The experiment is paused; rules stay unchanged.');
+    try {
+      const result = await prepareWithAI(request, controller.signal);
+      if (controller.signal.aborted || requestRef.current !== controller || sceneVersion.current !== request.sceneVersion || queueRevision.current !== request.queueRevision) return;
+      let preview = lab.world.rules;
+      for (const message of result.messages) preview = applyRules(preview, message.operations, context);
+      const compiled = new Map(result.messages.map(message => [message.id, message.operations]));
+      updateMessages(messageRef.current.map(message => compiled.has(message.id) ? {
+        id: message.id, text: message.text, status: 'ready', operations: compiled.get(message.id), source: 'ai',
+      } : message));
+      setNotice('AI preparation complete. Review the parsed rules, then send when ready. The experiment remains paused.');
+    } catch (error) {
+      if (controller.signal.aborted || requestRef.current !== controller) return;
+      setNotice(error instanceof Error ? error.message : 'AI preparation failed. Messages and rules are unchanged.');
+    } finally {
+      if (requestRef.current === controller) { requestRef.current = null; setPreparing(false); }
+    }
   }
 
   const ready = messages.filter(message => message.status === 'ready');
   const chosen = messages.filter(message => selected.has(message.id) && message.status === 'ready');
   const toSend = chosen.length ? chosen : ready.slice(0, 1);
   let batchGravity = telemetry.gravity;
-  for (const message of toSend) if (message.operation) batchGravity = applyOperation(batchGravity, message.operation);
+  let previewError = '';
+  try { let preview = labRef.current?.world.rules || initialRules(level); for (const message of toSend) preview = applyRules(preview, messageOperations(message), context); batchGravity = preview.gravity; }
+  catch (error) { previewError = error instanceof Error ? error.message : 'Rules need preparing again.'; }
   const ended = telemetry.won || telemetry.timedOut;
-  const canSend = !ended && toSend.length > 0;
+  const canSend = !ended && !preparing && !previewError && toSend.length > 0;
   const pending = messages.filter(message => message.status !== 'sent');
   const stateLabel = telemetry.won ? 'Complete' : telemetry.timedOut ? 'Time’s up' : telemetry.running ? 'Running' : telemetry.started ? 'Paused' : 'Ready';
   const secondsLeft = Math.max(0, Math.ceil(level.timeLimitSeconds - telemetry.tick * STEP_MS / 1000));
@@ -127,7 +181,7 @@ export default function App() {
       <div className="header-links"><span className="demo-badge"><span className="dot"/> INTERACTIVE DEMO</span><a href="/">Project home <Arrow/></a></div>
     </header>
     <main>
-      <div className="lab-heading"><div><p className="eyebrow">{String(level.number).padStart(2, '0')} / {level.title.toUpperCase()}</p><h1>Your messages. Your physics.</h1><p className="intro">Prepare your messages. Send the first to begin.</p></div><div className="parser-note"><span className="small-orbit" aria-hidden="true">✳</span><div><strong>Local parser demo</strong><span>Three commands. No model API yet.</span></div></div></div>
+      <div className="lab-heading"><div><p className="eyebrow">{String(level.number).padStart(2, '0')} / {level.title.toUpperCase()}</p><h1>Your messages. Your physics.</h1><p className="intro">Prepare your messages. Send the first to begin.</p></div><div className="parser-note"><span className="small-orbit" aria-hidden="true">✳</span><div><strong>{api.configured ? 'AI compiler connected' : 'Local commands available'}</strong><span>{api.configured ? api.model : 'Add your server API key to enable AI.'}</span></div></div></div>
       <div className="workbench">
         <section className="panel messages-panel" aria-labelledby="messages-title">
           <div className="panel-heading"><div><p className="eyebrow">01 / PREPARE</p><h2 id="messages-title">Message queue <span className="count">{messages.length}</span></h2></div><button className="text-button" disabled={!messages.length} onClick={() => { updateMessages([]); setSelected(new Set()); setEditing(null); setInput(''); setNotice('Message queue cleared. The world is unchanged.'); }}>Clear</button></div>
@@ -138,15 +192,17 @@ export default function App() {
               const number = String(index + 1).padStart(2, '0');
               const pendingIndex = pending.findIndex(item => item.id === message.id);
               return <article className={`message-card ${selected.has(message.id) ? 'selected' : ''} ${toSend.some(item => item.id === message.id) && !ended ? 'next-message' : ''} ${message.status}`} key={message.id}>
-                <div className="message-top"><label className="selection-label"><input type="checkbox" aria-label={`Select message ${number}`} disabled={message.status !== 'ready'} checked={selected.has(message.id)} onChange={() => toggleSelection(message.id)}/><span>MESSAGE {number}</span></label><span className={`status-tag ${message.status}`}>{message.status === 'error' ? 'Edit needed' : message.status === 'sent' ? 'Sent' : 'Ready'}</span></div>
+                <div className="message-top"><label className="selection-label"><input type="checkbox" aria-label={`Select message ${number}`} disabled={message.status !== 'ready'} checked={selected.has(message.id)} onChange={() => toggleSelection(message.id)}/><span>MESSAGE {number}</span></label><span className={`status-tag ${message.status}`}>{message.status === 'error' ? 'Needs preparation' : message.status === 'sent' ? 'Sent' : message.status === 'draft' ? 'Draft' : message.source === 'ai' ? 'AI ready' : 'Local ready'}</span></div>
                 <p className="message-content">{message.text}</p>
-                <div className={`message-rule ${message.status === 'error' ? 'error-copy' : ''}`}><span aria-hidden="true">↳</span><p>{message.operation ? <><strong>{describeOperation(message.operation).title}</strong><span>{describeOperation(message.operation).detail}</span></> : message.error}</p></div>
-                <div className="message-actions">{message.status !== 'sent' ? <><button aria-label={`Move message ${number} earlier`} disabled={pendingIndex <= 0} onClick={() => moveMessage(message.id, -1)}>↑</button><button aria-label={`Move message ${number} later`} disabled={pendingIndex === pending.length - 1} onClick={() => moveMessage(message.id, 1)}>↓</button><button className="edit-button" onClick={() => { setEditing(message.id); setInput(message.text); }}>Edit</button></> : <button className="edit-button" disabled={messages.length >= 24} onClick={() => updateMessages([...messageRef.current, prepareMessage(id(), message.text)])}>Queue again</button>}<button className="delete-button" aria-label={`Delete message ${number}`} onClick={() => removeMessage(message.id)}>×</button></div>
+                <div className={`message-rule ${message.status === 'error' ? 'error-copy' : ''}`}><span aria-hidden="true">↳</span><div>{messageOperations(message).length ? messageOperations(message).map((operation, index) => <p key={index}><strong>{describeOperation(operation).title}</strong><span>{describeOperation(operation).detail}</span></p>) : <p>{message.status === 'draft' ? 'Waiting for AI preparation.' : message.error}</p>}</div></div>
+                <div className="message-actions">{message.status !== 'sent' ? <><button aria-label={`Move message ${number} earlier`} disabled={pendingIndex <= 0} onClick={() => moveMessage(message.id, -1)}>↑</button><button aria-label={`Move message ${number} later`} disabled={pendingIndex === pending.length - 1} onClick={() => moveMessage(message.id, 1)}>↓</button><button className="edit-button" onClick={() => { setEditing(message.id); setInput(message.text); }}>Edit</button></> : <button className="edit-button" disabled={messages.length >= 24} onClick={() => updateMessages([...messageRef.current, localMessage(id(), message.text)])}>Queue again</button>}<button className="delete-button" aria-label={`Delete message ${number}`} onClick={() => removeMessage(message.id)}>×</button></div>
               </article>;
             })}
           </div>
           <div className="send-controls">
-            {toSend.length > 0 && <p className="send-preview">{toSend.length > 1 ? 'Batch result' : 'On send'}: <strong>{batchGravity === 0 ? 'gravity = 0' : `${batchGravity > 0 ? 'downward' : 'upward'} · ${acceleration(batchGravity)}`}</strong>{toSend.length > 1 && <span>Applied in queue order, with no time between messages.</span>}</p>}
+            {previewError && <p className="error-copy">{previewError}</p>}
+            <button className="outline-button prepare-button" disabled={preparing || !pending.length} onClick={prepareQueue}>{preparing ? 'Preparing…' : 'Prepare with AI'}</button>
+            {toSend.length > 0 && <p className="send-preview">{toSend.length > 1 ? 'Batch result' : 'On send'}: <strong>{toSend.every(message => messageOperations(message).every(operation => operation.type === 'set_gravity' || operation.type === 'reverse_gravity')) ? batchGravity === 0 ? 'gravity = 0' : `${batchGravity > 0 ? 'downward' : 'upward'} · ${acceleration(batchGravity)}` : `${toSend.reduce((count, message) => count + messageOperations(message).length, 0)} environment operations`}</strong>{toSend.length > 1 && <span>Applied in queue order, with no time between messages.</span>}</p>}
             <button className="primary-button send-button" disabled={!canSend} onClick={() => send(toSend.map(message => message.id))}>{chosen.length > 1 ? 'Send all selected' : 'Send next message'} <Arrow/></button>
             <p className="send-hint">{ended ? 'Reset to try another run.' : !telemetry.started ? `Your first send starts the ${level.timeLimitSeconds}-second countdown.` : telemetry.running ? 'Send when the moment is right.' : 'Paused. Resume to see the result.'}</p>
           </div>
@@ -163,7 +219,7 @@ export default function App() {
           <div className="panel-heading"><div><p className="eyebrow">02 / OBSERVE</p><h2 id="simulation-title">The experiment</h2></div><span className={`world-status ${telemetry.running ? 'running' : ''}`}><span className="dot"/>{stateLabel}</span></div>
           <div className="gravity-readout"><div><span className="readout-label">ACTIVE GRAVITY</span><strong data-testid="active-gravity">{telemetry.gravity === 0 ? '0' : `${telemetry.gravity > 0 ? '↓' : '↑'} ${Math.abs(telemetry.gravity).toFixed(1)}`} <small>m/s²</small></strong></div><div className={`countdown ${secondsLeft <= 5 ? 'urgent' : ''}`}><span className="readout-label">TIME LEFT</span><strong data-testid="time-left">{secondsLeft}<small> s</small></strong></div></div>
           <div className="canvas-frame"><canvas ref={canvasRef} width={level.viewport.width} height={level.viewport.height} aria-label={level.instructions.sceneDescription} role="img"/></div>
-          <div className="simulation-controls"><div><button className="outline-button" onClick={toggleSimulation} disabled={!telemetry.started || ended}>{telemetry.started && !telemetry.running ? '▶ Resume' : 'Ⅱ Pause'}</button><button className="reset-button" onClick={resetWorld}>↺ Reset</button></div><span className="tick-label">{events.length} {events.length === 1 ? 'message' : 'messages'} sent</span></div>
+          <div className="simulation-controls"><div><button className="outline-button" onClick={toggleSimulation} disabled={!telemetry.started || ended || preparing}>{telemetry.started && !telemetry.running ? '▶ Resume' : 'Ⅱ Pause'}</button><button className="reset-button" onClick={resetWorld}>↺ Reset</button></div><span className="tick-label">{events.length} {events.length === 1 ? 'message' : 'messages'} sent</span></div>
           <div className={`mission ${telemetry.won ? 'completed' : ''} ${telemetry.timedOut ? 'expired' : ''}`}><span aria-hidden="true">{telemetry.won ? '✓' : telemetry.timedOut ? '↺' : '↗'}</span><div><strong>{telemetry.won ? 'You reached the exit.' : telemetry.timedOut ? 'Time’s up. Try another timing.' : `${level.instructions.objective} within ${level.timeLimitSeconds} seconds.`}</strong><p>{telemetry.won || telemetry.timedOut ? 'Reset to try again with the same messages.' : level.instructions.hint}</p></div></div>
         </section>
       </div>

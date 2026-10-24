@@ -11,6 +11,15 @@ export interface TrackDefinition {
   readonly thickness: number;
 }
 
+export interface Rect { readonly x: number; readonly y: number; readonly width: number; readonly height: number }
+export type DeviceDefinition =
+  | { readonly kind: 'conveyor'; readonly id: string; readonly area: Rect; readonly speed: number }
+  | { readonly kind: 'spring'; readonly id: string; readonly area: Rect; readonly power: number; readonly launchBase: Point; readonly launchPerPower: Point }
+  | { readonly kind: 'fan'; readonly id: string; readonly area: Rect; readonly power: number; readonly acceleration: Point }
+  | { readonly kind: 'rotor'; readonly id: string; readonly position: Point; readonly radius: number; readonly angularSpeed: number }
+  | { readonly kind: 'sensor'; readonly id: string; readonly position: Point; readonly radius: number }
+  | { readonly kind: 'gate'; readonly id: string; readonly area: Rect };
+
 // Level files contain data only; Matter bodies and rendering state belong to the runtime.
 export interface LevelDefinition {
   readonly id: string;
@@ -23,6 +32,11 @@ export interface LevelDefinition {
   };
   readonly timeLimitSeconds: number;
   readonly initialGravity: number;
+  readonly devices?: readonly DeviceDefinition[];
+  readonly commandLimit?: number;
+  readonly failOnFall?: boolean;
+  readonly ceilingY?: number;
+  readonly environment?: { readonly restitution: number; readonly friction: number };
   readonly ball: {
     readonly id: string;
     readonly label: string;
