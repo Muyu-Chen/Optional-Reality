@@ -2,7 +2,7 @@
 
 ## 自动检查
 
-- `npm test`：最新为 32 个测试文件、340 项测试通过。
+- `npm test`：最新为 35 个测试文件、374 项测试通过；限定当前源码目录，排除 `.localwork` 内旧源码备份。
 - `npm run build`：TypeScript 类型检查及 Vite 生产构建通过。
 - `git diff --check`：通过。
 - `.env` 被 Git 忽略；使用本地真实密钥检查受跟踪文件，未发现密钥内容。
@@ -60,6 +60,13 @@
 - 浏览器输入 add acceleration right word：本地 Ready，显示 Understood as: add acceleration rightward。输入 set fan power to 10：本地 Ready，显示 Requested 10 → limited to 2；准备未启动世界，发送后字幕确认实际风力 2，下一条补位。
 - 实际发送两条消息后暂停，水平加速度箭头与字幕确认向右 1 m/s²；Try again 恢复初始规则、时间与两条 Ready 消息，调整信息保留。截图 `.localwork/rule-limits-ready.png` 为本地诊断，不提交。
 - 此轮自由语言响应使用模拟 API 验证 understoodAs 与 adjustments 协议；上述两个实际浏览器例子无需模型。未为本轮改动额外调用真实模型或发布线上站点。
+
+## 统一能力目录与模型兜底
+
+- `shared/physics-capabilities.ts` 统一八项已实现属性的范围、单位、目标种类、基础词汇和显示名称，模型提示包含相同目录、五类操作语义和 schema。所有关卡共用系统前缀，关卡数据在动态状态和玩家文本之前。
+- 新增 34 项测试：八关的截图错词本地准备与执行、八关全部基础属性的正负越界限幅、不存在设备/任务物体保护、八关模拟供应商编译、固定前缀稳定，以及八关真实 React + Matter 中的长尾表达 AI 准备、发送和重试复用。
+- `npm test` 为当前源码 35 文件、374 项通过；类型检查与生产构建通过。发现并排除了 `.localwork` 旧源码备份造成的重复测试计数，备份内容没有改动。
+- 长尾语言用受控 API 响应验证流程，不等同于真实模型理解率或缓存命中实测；本轮未额外调用真实模型，也未部署线上站点。
 
 ## 真实模型验收（此前记录）
 
