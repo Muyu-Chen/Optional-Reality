@@ -1,4 +1,5 @@
 import { musicBeatSeconds, notesAtBeat, type MusicNote } from './music-score';
+import { musicLoopBeats } from './music-patterns';
 
 export interface MusicPlayback {
   play(): Promise<boolean>;
@@ -37,7 +38,7 @@ export class MusicEngine implements MusicPlayback {
       const master = context.createGain();
       const filter = context.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.value = 1800;
+      filter.frequency.value = 2200;
       filter.Q.value = .4;
       master.gain.value = 0;
       filter.connect(master);
@@ -57,7 +58,7 @@ export class MusicEngine implements MusicPlayback {
     if (this.timer !== undefined) return true;
     this.master!.gain.cancelScheduledValues(context.currentTime);
     this.master!.gain.setValueAtTime(0, context.currentTime);
-    this.master!.gain.linearRampToValueAtTime(.45, context.currentTime + .4);
+    this.master!.gain.linearRampToValueAtTime(.3, context.currentTime + .4);
     this.nextBeatTime = context.currentTime + .04;
     this.schedule();
     this.timer = setInterval(() => this.schedule(), 125);
@@ -103,8 +104,8 @@ export class MusicEngine implements MusicPlayback {
     // A throttled timer must not try to replay a backlog of notes at once.
     if (this.nextBeatTime < context.currentTime) this.nextBeatTime = context.currentTime + .04;
     while (this.nextBeatTime < context.currentTime + .35) {
-      for (const note of notesAtBeat(this.beat)) this.scheduleNote(note, this.nextBeatTime);
-      this.beat = (this.beat + 1) % 32;
+      for (const note of notesAtBeat(this.beat)) this.scheduleNote(note, this.nextBeatTime + (note.offset || 0));
+      this.beat = (this.beat + 1) % musicLoopBeats;
       this.nextBeatTime += musicBeatSeconds;
     }
   }
@@ -114,7 +115,9 @@ export class MusicEngine implements MusicPlayback {
     const voice = context.createOscillator();
     const gain = context.createGain();
     voice.type = note.waveform;
-    voice.frequency.value = 440 * 2 ** ((note.pitch - 69) / 12);
+    const frequency = (pitch: number) => 440 * 2 ** ((pitch - 69) / 12);
+    voice.frequency.setValueAtTime(frequency(note.pitch), time);
+    if (note.endPitch !== undefined) voice.frequency.exponentialRampToValueAtTime(frequency(note.endPitch), time + note.duration);
     gain.gain.setValueAtTime(0, time);
     gain.gain.linearRampToValueAtTime(note.gain, time + note.attack);
     gain.gain.exponentialRampToValueAtTime(.0001, time + note.duration);

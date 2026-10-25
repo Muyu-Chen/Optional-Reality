@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MusicEngine } from './music-engine';
+import { musicBeatSeconds } from './music-score';
+import { musicLoopBeats } from './music-patterns';
 
 function audioGraph() {
   const parameter = () => ({ value: 0, setValueAtTime: vi.fn(), cancelScheduledValues: vi.fn(),
@@ -33,15 +35,48 @@ describe('music audio graph lifecycle', () => {
     expect(factory).not.toHaveBeenCalled();
     await engine.play();
     expect(factory).toHaveBeenCalledOnce();
-    expect(voices).toHaveLength(5); // Three pad voices, one bass and one melody.
-    expect(gains[0].gain.linearRampToValueAtTime).toHaveBeenCalledWith(.45, .4);
+    expect(voices).toHaveLength(4); // Short bass, soft kick, offbeat tap and melody.
+    expect(gains[0].gain.linearRampToValueAtTime).toHaveBeenCalledWith(.3, .4);
     expect(vi.getTimerCount()).toBe(1);
     await engine.play();
     expect(factory).toHaveBeenCalledOnce();
-    expect(context.createOscillator).toHaveBeenCalledTimes(5);
+    expect(context.createOscillator).toHaveBeenCalledTimes(4);
     expect(vi.getTimerCount()).toBe(1);
     engine.dispose();
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('schedules short offbeat notes and percussion pitch falls at their own start times', async () => {
+    const { engine, voices, gains } = audioGraph();
+    await engine.play();
+    const starts = voices.map(voice => voice.start.mock.calls[0][0]);
+    expect(starts.filter(time => time > .04)).toEqual([.04 + musicBeatSeconds / 2]);
+    const tap = voices[2], kick = voices[1];
+    expect(tap.frequency.setValueAtTime.mock.calls[0][1]).toBe(.04 + musicBeatSeconds / 2);
+    expect(tap.frequency.exponentialRampToValueAtTime.mock.calls[0][1]).toBe(.04 + musicBeatSeconds / 2 + .035);
+    expect(kick.frequency.exponentialRampToValueAtTime.mock.calls[0][0]).toBeLessThan(kick.frequency.setValueAtTime.mock.calls[0][0]);
+    expect(gains.slice(1).every(gain => gain.gain.linearRampToValueAtTime.mock.calls[0][1] < .5)).toBe(true);
+    engine.pause();
+    for (const voice of voices) expect(voice.disconnect).toHaveBeenCalledOnce();
+    engine.dispose();
+  });
+
+  it('restarts the same phrase at the loop boundary without accumulating overlapping schedulers', async () => {
+    const { engine, context, voices } = audioGraph();
+    await engine.play();
+    for (let beat = 1; beat <= musicLoopBeats; beat++) {
+      // Real browsers end these short voices before the next beat.
+      for (const voice of voices) {
+        if (voice.onended) { const ended = voice.onended; voice.onended = null; ended(); }
+      }
+      context.currentTime = beat * musicBeatSeconds;
+      vi.advanceTimersByTime(125);
+    }
+    const first = voices[0].frequency.setValueAtTime.mock.calls[0][0];
+    const repeated = voices.at(-4)!.frequency.setValueAtTime.mock.calls[0][0];
+    expect(repeated).toBe(first);
+    expect(vi.getTimerCount()).toBe(1);
+    engine.dispose(); expect(vi.getTimerCount()).toBe(0);
   });
 
   it('stops all active and scheduled notes on mute and reuses the same graph on resume', async () => {
@@ -101,7 +136,7 @@ describe('music audio graph lifecycle', () => {
     context.currentTime = 120;
     vi.advanceTimersByTime(125);
     expect(voices.length).toBeLessThan(12);
-    for (const voice of voices.slice(5)) expect(voice.start.mock.calls[0][0]).toBeGreaterThan(120);
+    for (const voice of voices.slice(4)) expect(voice.start.mock.calls[0][0]).toBeGreaterThan(120);
     engine.dispose();
     expect(first.stop).toHaveBeenCalledOnce();
   });
