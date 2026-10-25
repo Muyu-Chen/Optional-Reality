@@ -29,6 +29,7 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 ## 游戏操作
 
 - `/demo/` 从开始界面进入游戏，独立关卡页按三个章节展示九关；保留 `?level=...` 直达入口。继续最近小关会开启新一轮并保留消息草稿，通关后记录本机最佳星数。
+- 线上主入口为 [optionalreality.site](https://optionalreality.site/)，`www.optionalreality.site` 与 `muuyyy.cfd` 同样可用：根目录直接游戏，`/intro` 为介绍页，原 `/demo/` 保留。三个域名共用一张自动续期的 SAN 证书，配置与备份见 [域名和路由记录](./deploy/domains-and-routing.md)。
 - 全屏场景，右下半透明输入窗；**Enter 仅排队**，**Shift+Enter 只立即应用当前输入**，不连带执行旧消息。
 - Let It Roll、One More Turn 与 A Little More Bounce 首访显示居中的三步图示教学，模拟保持暂停；Let's play 只关闭并保留原队列。设置中的 How to play 可重看，刷新或重试不强制重复。
 - 消息自动解析，桌面侧栏优先呈现三条可操作摘要：18px 正文、彩色规则图标、28px 高的 **Send now** 和小删除按钮。小箭头展开完整原文、Understood as 与限幅详情；批量发送在管理菜单中。

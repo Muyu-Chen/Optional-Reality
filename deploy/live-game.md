@@ -1,5 +1,9 @@
 # 线上游戏 — 2026-10-25
 
+## 最新域名与入口
+
+三个域名 `optionalreality.site`、`www.optionalreality.site`、`muuyyy.cfd` 已共用一张 SAN 证书，根目录为游戏，`/intro` 为介绍页，旧 `/demo/` 保留。单证书续期演练、三个域名证书链与同源 API 验证通过。此轮静态 current 改为 `20261025T043627Z-domains-optional-reality-game`；应用仍为下述 `9f4c2e8`。配置、备份和回退见 [域名与路由记录](./domains-and-routing.md)，下面保留此前游戏版本的发布历史。
+
 ## 当前版本：蒸汽朋克入口、生活背景与关卡画廊
 
 - 地址：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，固定应用版本 `9f4c2e8ec0fd368c54ac2b516fcd4180ada24659`，release `20261025T040224Z-9f4c2e8`（UTC；本地日期 2026-10-25）。
