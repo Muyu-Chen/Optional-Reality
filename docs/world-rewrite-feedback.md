@@ -36,7 +36,9 @@ Four Gemini checks passed with the same values, including a named cup base and r
 
 ## One rescue overtime
 
-After the normal 30 simulated seconds, an unfinished actor still in the play area receives exactly one additional 30-second period. The physical world continues from its current state. Four fixed collision walls appear at the existing play-area edges; their translucent rim fades in over 0.5 simulation seconds. The rim is preset and read-only. It is not an invisible wall during normal time.
+After the normal 30 simulated seconds, an unfinished actor still in the play area receives exactly one additional 30-second period. The physical world continues from its current state. The rescue area extends 20% of the original level width to the right and 20% of its height above the top. Left and bottom world coordinates stay fixed; tracks, stars and the exit are not moved. Four fixed collision walls enclose this larger rectangle. Their translucent rim fades in while the camera eases out over 0.5 simulation seconds. The left wall finishes at the screen's left edge; framing retains the configured top/right HUD insets. Reduced motion shows the final framing immediately. Pause freezes both the reveal and the physics.
+
+Collision faces, out-of-bounds checks, foreground clipping and the visible rim use the same `playAreaBounds`. Camera fitting is separate in `physics/scene-framing.ts`; it never changes physical coordinates or depends on browser size for containment. The rim is preset and read-only. It is not an invisible wall during normal time.
 
 - Pauses, API waits and teaching stops do not consume either period.
 - A full escape before overtime remains a failure. Overtime does not resurrect a failed run.
@@ -44,6 +46,7 @@ After the normal 30 simulated seconds, an unfinished actor still in the play are
 - No second extension occurs. At the end of overtime, the run times out unless the final tick reaches the goal.
 - Overtime completion awards `max(0, collectedStars - 1)`. The HUD retains actual pickups; settlement shows the earned stars and the one-star deduction. Local best scores store the earned count.
 - Try again removes the walls, resets the timer and clears the penalty. Messages remain ready under the existing retry rules.
+- Try again also restores the normal scene framing. The extra area exists only during overtime; normal-time escape conditions stay unchanged.
 
 For custom/test levels, their configured normal duration is respected; the one extension remains 30 seconds.
 
@@ -51,4 +54,6 @@ For custom/test levels, their configured normal duration is respected; the one e
 
 Implementation snapshot `9f74388`, tested independently from other work-in-progress changes: 107 Vitest files / 1,036 tests, 13 diagram-animation checks, TypeScript and production build passed. A parallel run under heavy local load hit interaction timeouts; the affected 37 checks and the full frozen snapshot subsequently passed with one worker. No timeout assertion was weakened.
 
-Browser checks confirmed qualitative preparation displaying upward 0.5 m/s², rule execution and pause, and the single overtime ending at 60 simulated seconds with the translucent rim still visible. Four isolated Gemini requests confirmed the shared preset values and concrete interpretations without changing production provider settings. This feature set has not been deployed yet.
+Browser checks confirmed qualitative preparation displaying upward 0.5 m/s², rule execution and pause, and the single overtime ending at 60 simulated seconds with the translucent rim still visible. Four isolated Gemini requests confirmed the shared preset values and concrete interpretations without changing production provider settings. Deployment status is tracked in the [release notes](../deploy/live-game.md).
+
+The expanded rescue area and screen-aligned left wall were subsequently checked with 77 focused tests across seven files, covering real edge/corner collisions, a rotated sliding block, travel beyond the old rectangle, HUD fitting at multiple sizes and pixel densities, reduced motion, pause/retry, the same-engine reference branch and the overtime scoring flow. TypeScript and production build passed. Browser play confirmed the new rim/framing and the retry restoring the normal scene. These later boundary changes are local until separately deployed.
