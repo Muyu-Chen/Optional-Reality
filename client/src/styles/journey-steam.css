@@ -13,7 +13,6 @@
 .journey-shell .journey-button--secondary { background:linear-gradient(135deg,#fff4d9,#f0ddaf);border-color:#b09563;color:#5f563b;box-shadow:0 3px 0 #91724233 }
 .journey-shell .journey-footer { border-top:1px solid #a3824d44;padding-top:14px }
 .journey-shell .journey-art-caption { color:#826c45 }
-.journey-shell--levels { background-image:radial-gradient(ellipse at 90% 4%,#c8c8a785,transparent 60%),linear-gradient(135deg,#f5ead0,#e9e5cf) }
 .journey-shell .journey-chapter { border-color:#b69a6566;border-radius:12px;background:#fff3d9 }
 .journey-shell .journey-chapter.is-current { background:linear-gradient(135deg,#397359,#234f43);border-color:#a38146;box-shadow:0 4px 0 #6e56342b }
 .journey-shell .journey-chapter-number { font-variant-numeric:tabular-nums }
@@ -30,8 +29,8 @@
 @keyframes journey-gauge { 50% { rotate:18deg } }
 @media(prefers-reduced-motion:reduce) { .journey-shell .steam-cog,.journey-shell .steam-puff,.journey-shell .steam-gauge-needle { animation:none } }
 
-/* Sky palette for the title; chapter cards keep their workshop treatment. */
-.journey-shell--title {
+/* Shared sky palette for the title and level selection. */
+.journey-shell--title,.journey-shell--levels {
   background-color:#dcedf5;
   background-image:radial-gradient(ellipse at 75% 38%,#f4fbffb3,transparent 58%),linear-gradient(150deg,#e6f5fc,#cde5f2);
 }
@@ -51,3 +50,5 @@
   mask-image:none;
   filter:none;
 }
+
+.journey-shell--levels .journey-header,.journey-shell--levels .journey-footer { border-color:#608ba733 }
