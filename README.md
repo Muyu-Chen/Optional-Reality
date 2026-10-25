@@ -8,6 +8,14 @@ The core loop: observe the scene → write a message → parse and queue it → 
 
 AI compiles the player's intent into supported declarative operations, while Matter.js simulates the physical world. You decide when a rule takes effect: turning gravity off preserves momentum, and operations such as reversal and doubling read the current value when executed. The model does not perform per-frame calculations or execute generated JavaScript.
 
+## Gameplay Demo
+
+A 47-second loop shows chapter selection, automatic character-by-character input, and real three-star completions in Motion, Collisions, and Devices. Open the [looping player](https://optionalreality.site/showcase/), or [watch / download the 720p MP4](./site/showcase/gameplay-loop.mp4). [Playback and recording notes](./site/showcase/README.md) include local playback, chapter timestamps, and captions.
+
+[![Looping gameplay demo: level selection, typed rules, and three-star completions](./site/showcase/preview.gif)](./site/showcase/gameplay-loop.mp4)
+
+Read [AI Usage](./AI_USAGE.md) for player instructions, the local-parser / LLM boundary, server configuration, AI-assisted development, generated-art credits, and demo provenance.
+
 ## Playable Content
 
 Built for SBUHacks 2026, the game includes three chapters and fifteen progressively structured levels. The six new Motion and Collisions puzzles are described in [Motion and Collision Expansion](./docs/motion-collision-expansion.md) and are live on all three domains; see the [deployment record](./deploy/motion-collision-levels.md).
@@ -39,7 +47,7 @@ Chapters organize the teaching sequence. Basic physical properties remain consis
 - The scene fills the screen, with a translucent input panel at the bottom right. **Enter only queues a message. Shift+Enter immediately applies only the current input**, without executing older queued messages.
 - Entering or retrying a level displays a three-second [initial-state briefing](./docs/initial-state-briefing.md) showing initial motion, acceleration, surfaces, and device states. It appears after any tutorial closes and does not start the simulation timer.
 - Model results rejected by validation receive [one conversational AI repair attempt](./docs/compilation-repair.md). A valid second interpretation becomes Ready and is labeled **AI revised interpretation** for the player to review before choosing **Send now**. Repaired results are never applied automatically, even when requested with Shift+Enter.
-- First visits to Let It Roll, One More Turn, and A Little More Bounce show a centered, illustrated three-step tutorial while the simulation stays paused. **Let's play** dismisses it without replacing the queue. **How to play** in settings reopens it; refreshing or retrying does not force a repeat.
+- First visits to Let It Roll, One More Turn, A Little More Bounce, and the three bakery levels show a centered, illustrated three-step tutorial while the simulation stays paused. **Let's play** dismisses it without replacing the queue. **How to play** in settings reopens it; refreshing or retrying does not force a repeat.
 - Messages are parsed automatically. The desktop sidebar prioritizes three actionable summaries, with 18px body text, colored rule icons, a 28px-high **Send now** button, and a small delete button. Expand a message to see its full text, **Understood as**, and clamping details. Batch sending is available in the management menu.
 - Batch compilation returns an independent result for each message: valid messages become Ready, and errors mark only the affected row without blocking other Ready messages. Editing and retrying retain reusable results. See [Per-Message Compilation Results](./docs/compilation-results.md) for the protocol and request-wide error boundaries.
 - The local AST supports explicit compound instructions, doubling, halving, reversal, and multiple targets, such as `Set both the launch pad and the cup base bounce to 0.5 and stop gravity`. If the whole sentence cannot be parsed locally, it is sent to the configured model, currently Gemini in production. When Shift+Enter requires AI, the world pauses, then applies the successfully parsed message once; failures keep the message. Ordinary Enter leaves parsed messages waiting for the player to send them.
@@ -51,7 +59,7 @@ Chapters organize the teaching sequence. Basic physical properties remain consis
 - While waiting for AI, you can **Cancel** or send another Ready message. A canceled response cannot pause the game again. Unfinished messages can be prepared individually with **Prepare**; the complete network request has a maximum wait of 35 seconds.
 - During normal time, all four edges of every level are open. A ball or block that fully leaves the fixed play area triggers **Out of bounds** and can be reset with **Try again**. Objects still partly inside can be recovered; cup walls and tracks retain real collisions.
 - **Try again** restores the initial world and command budget, makes messages pending again, and retains parsed operations so you can compare different execution timings.
-- On contact, the toaster charges for approximately 0.6 seconds. Its first activation pauses for a teaching moment; **Continue** resumes the simulation. Retrying does not repeat the interruption, and the menu can replay the teaching sequence.
+- A powered toaster charges for approximately 0.6 seconds on contact. All three bakery levels pause on first contact for a teaching moment, even when the toaster is off; rules can be sent while paused, and **Continue** resumes the simulation. Retrying does not repeat the interruption, and the menu can replay the teaching sequence.
 - Switch levels from the pause menu, or proceed to the next level after completion. Results use large, separate stars to distinguish collected and missed stars, with different feedback for ordinary completion and full score.
 - After the first interaction, quiet original background music and event sound effects can play. **Music on/off** and **Sound effects on/off** in pause settings are independent and remember your choices. Leaving the tab stops existing audio, and changing levels does not stack playback.
 - The interface is primarily English and accepts both English and Chinese input, with readable text sizes and contrast for the interface and scene labels.
