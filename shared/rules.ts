@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { limitAbsoluteOperation, limitValue } from './rule-limits';
 import { PHYSICS_CAPABILITIES, PROPERTY_NAMES } from './physics-capabilities';
 import { ACCELERATION_RANGE, accelerationAxis, normalizeAccelerationOperation } from './acceleration';
+import { requestedPropertyValue } from './property-change';
 export { ENVIRONMENT_PROPERTIES } from './physics-capabilities';
 
 export const Acceleration = z.number().finite().min(ACCELERATION_RANGE[0]).max(ACCELERATION_RANGE[1]);
@@ -13,6 +14,7 @@ export const OperationSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('reverse_gravity') }).strict(),
   z.object({ type: z.literal('set_property'), target: Id, property: Property, value: z.number().finite() }).strict(),
   z.object({ type: z.literal('scale_property'), target: Id, property: Property, factor: z.number().finite() }).strict(),
+  z.object({ type: z.literal('add_property'), target: Id, property: Property, amount: z.number().finite() }).strict(),
   z.object({ type: z.literal('add_sensor_trigger'), sensor: Id, gate: Id }).strict(),
 ]);
 export type Operation = z.infer<typeof OperationSchema>;
@@ -76,7 +78,7 @@ export function applyRules(current: RuleState, candidates: readonly unknown[], c
     const previous = axis ? next.acceleration[axis] : next.values[target]?.[property]
       ?? (context.targets.find(item => item.id === target)?.kind === 'surface' ? next.values.world?.[property]
         : undefined);
-    const requested = operation.type === 'set_property' ? operation.value : previous === undefined ? NaN : previous * operation.factor;
+    const requested = requestedPropertyValue(operation, previous);
     const value = limitValue(requested,propertyRange(context,target,property));
     checkValue(context, target, property, value);
     if (axis) next.acceleration[axis] = value || 0;

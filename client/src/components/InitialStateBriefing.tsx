@@ -7,6 +7,8 @@ export function InitialStateBriefing({ level, suspended, started }: {
   level: LevelDefinition; suspended: boolean; started: boolean;
 }) {
   const summary = useMemo(() => initialStateSummary(level), [level]);
+  const [x, y] = level.initialAcceleration;
+  const angle = Math.atan2(y, x) * 180 / Math.PI;
   const { visible, dismiss } = useBriefingTimer(suspended, started);
   if (!visible) return null;
   return (
@@ -18,7 +20,7 @@ export function InitialStateBriefing({ level, suspended, started }: {
       <h2>Your starting world</h2>
       <dl>
         <div><dt><span className="briefing-ball" aria-hidden="true" />{summary.actor}</dt><dd>{summary.motion}</dd></div>
-        <div><dt><span className="briefing-acceleration" aria-hidden="true">↗</span>Acceleration</dt><dd>{summary.acceleration}</dd></div>
+        <div><dt><span className="briefing-acceleration" aria-hidden="true" style={{ transform: `rotate(${x || y ? angle : 0}deg)` }}>{x || y ? '→' : '○'}</span>Acceleration</dt><dd>{summary.acceleration}</dd></div>
       </dl>
       <ul className="briefing-surfaces">{summary.surfaces.map((surface, index) => <li key={index}>{surface}</li>)}</ul>
       {!!summary.devices.length && <ul className="briefing-devices">{summary.devices.map((device, index) => <li key={index}>{device}</li>)}</ul>}

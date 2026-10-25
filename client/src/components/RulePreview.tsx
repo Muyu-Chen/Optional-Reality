@@ -5,6 +5,7 @@ function cue(candidate?:Operation) {
   if(!candidate)return {icon:'…',tone:'neutral'};
   const operation=normalizeAccelerationOperation(candidate);
   if(operation.type==='add_sensor_trigger')return {icon:'⌁',tone:'drive'};
+  if(operation.type==='add_property')return {icon:operation.amount<0?'−':'+',tone:accelerationAxis(operation.property)?'acceleration':operation.property==='friction'?'friction':'bounce'};
   const axis=accelerationAxis(operation.property);
   if(axis) {
     const icon=operation.type==='scale_property' ? operation.factor<0?axis==='x'?'↔':'↕':'×'

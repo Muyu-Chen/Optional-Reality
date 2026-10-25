@@ -1,5 +1,6 @@
 import { CompileResponseSchema, type CompileRequest } from '../../../shared/compiler';
 import { withRequestDeadline } from './request-deadline';
+import { ARITHMETIC_HEADER, ARITHMETIC_VERSION } from '../../../shared/arithmetic-protocol';
 
 export async function compilerStatus(signal: AbortSignal): Promise<{ configured: boolean; model: string }> {
   const response = await fetch('/api/status', { signal });
@@ -10,7 +11,7 @@ export async function compilerStatus(signal: AbortSignal): Promise<{ configured:
 export async function prepareWithAI(request: CompileRequest, signal: AbortSignal) {
   return withRequestDeadline(async requestSignal => {
   const response = await fetch('/api/compile', {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request), signal: requestSignal,
+    method: 'POST', headers: { 'content-type': 'application/json', [ARITHMETIC_HEADER]: ARITHMETIC_VERSION }, body: JSON.stringify(request), signal: requestSignal,
   });
   let output: unknown;
   try { output = await response.json(); } catch { throw new Error('The API server is unavailable. Start it with npm run dev or npm start.'); }

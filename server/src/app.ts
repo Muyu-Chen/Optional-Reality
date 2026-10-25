@@ -2,6 +2,8 @@ import express from 'express';
 import { ZodError } from 'zod';
 import { fileURLToPath } from 'node:url';
 import { compileRules } from './compiler';
+import { arithmeticForClient } from './compiler-arithmetic-compatibility';
+import { ARITHMETIC_HEADER, ARITHMETIC_VERSION } from '../../shared/arithmetic-protocol';
 import { CompilerError } from './ai-client';
 import type { AiConfig } from './config';
 
@@ -27,7 +29,7 @@ export function createApp(config: AiConfig, fetcher?: typeof fetch) {
     const abort = () => { if (!res.writableEnded) controller.abort(); };
     req.once('aborted', abort); res.once('close', abort);
     res.set('Cache-Control', 'no-store');
-    try { res.json(await compileRules(req.body, config, controller.signal, fetcher)); }
+    try { res.json(arithmeticForClient(await compileRules(req.body, config, controller.signal, fetcher), req.get(ARITHMETIC_HEADER) === ARITHMETIC_VERSION)); }
     catch (error) {
       if (controller.signal.aborted) return;
       if (error instanceof CompilerError) res.status(error.status).json({ error: error.message });

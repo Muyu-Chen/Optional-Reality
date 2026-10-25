@@ -1,15 +1,16 @@
 import type { Operation, RuleState } from '../../../shared/rules';
 import type { LevelDefinition } from '../levels/types';
 import { accelerationAxis, normalizeAccelerationOperation } from '../../../shared/acceleration';
+import { requestedPropertyValue } from '../../../shared/property-change';
 
 const number = (value: number) => Number(value.toFixed(3)).toString();
 
 function limitingNote(operation: Operation, before: RuleState, actual: number, level: LevelDefinition) {
-  if (operation.type !== 'scale_property') return '';
+  if (operation.type !== 'scale_property' && operation.type !== 'add_property') return '';
   const axis = accelerationAxis(operation.property);
   const prior = axis ? before.acceleration[axis] : before.values[operation.target]?.[operation.property]
     ?? (level.tracks.some(track => track.id === operation.target) ? before.values.world?.[operation.property] : undefined);
-  const requested = prior === undefined ? undefined : prior * operation.factor;
+  const requested = prior === undefined ? undefined : requestedPropertyValue(operation, prior);
   return requested !== undefined && requested !== actual ? ` (limited from ${number(requested)})` : '';
 }
 

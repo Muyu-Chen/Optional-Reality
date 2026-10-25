@@ -10,7 +10,7 @@ export type CanonicalOperation = Exclude<Operation, {type:'set_gravity'} | {type
 export function normalizeAccelerationOperation(operation: Operation): CanonicalOperation {
   if (operation.type === 'set_gravity') return {type:'set_property',target:'world',property:'acceleration_y',value:operation.acceleration};
   if (operation.type === 'reverse_gravity') return {type:'scale_property',target:'world',property:'acceleration_y',factor:-1};
-  if ((operation.type === 'set_property' || operation.type === 'scale_property') && operation.property === 'gravity') return {...operation,property:'acceleration_y'};
+  if ((operation.type === 'set_property' || operation.type === 'scale_property' || operation.type === 'add_property') && operation.property === 'gravity') return {...operation,property:'acceleration_y'};
   return operation;
 }
 

@@ -4,6 +4,7 @@ import { PHYSICS_CAPABILITIES, PROPERTY_NAMES } from '../../shared/physics-capab
 import type { Operation, RuleContext } from '../../shared/rules';
 import type { LevelDefinition } from '../../client/src/levels/types';
 import { SURFACE_SCOPE_POLICY } from './compiler-surface-policy';
+import { ARITHMETIC_POLICY } from './compiler-arithmetic-policy';
 
 // The schema defines the operation set. Type-checking requires a guide for each operation.
 const OPERATION_GUIDE = {
@@ -11,6 +12,7 @@ const OPERATION_GUIDE = {
   reverse_gravity: 'Legacy input alias for scale_property world acceleration_y factor=-1. Preserve velocity.',
   set_property: 'Set a catalog property on a registered editable target. value is the requested finite number.',
   scale_property: 'Multiply the actual property value at Send now by factor (double=2, halve=0.5, reverse=-1); then clamp. Do not precompute.',
+  add_property: 'Add amount to the actual property value at Send now (negative amount subtracts), then clamp. Addition is never multiplication.',
   add_sensor_trigger: 'Register contact with an existing sensor to open an existing gate; repeated identical bindings are deduplicated.',
 } satisfies Record<Operation['type'], string>;
 
@@ -37,6 +39,7 @@ Example JSON: {"messages":[{"id":"m1","operations":[{"type":"set_property","targ
 
 // Same system prefix for all levels. Device descriptions are vocabulary, not permissions.
 export const COMPILER_SYSTEM = COMPILER_RULES
+  + '\n' + ARITHMETIC_POLICY
   + '\n' + SURFACE_SCOPE_POLICY
   + '\nShared physics catalog (identical across every level):\n'
   + JSON.stringify(PROPERTY_NAMES.map(property => {

@@ -39,7 +39,7 @@ describe('initial state descriptions', () => {
       { kind: 'fan' as const, id: 'fan', area: { x: 0, y: 0, width: 10, height: 10 }, power: .5, acceleration: [0, -4] as const },
       { kind: 'rotor' as const, id: 'wheel', position: [0, 0] as const, radius: 10, angularSpeed: -1 },
     ] };
-    expect(initialStateSummary(level).devices).toEqual(['Conveyor Left · 2 m/s', 'Fan Up · 2 m/s²', 'Wheel -1 rad/s']);
+    expect(initialStateSummary(level).devices).toEqual(['Conveyor left · drive 2', 'Fan Up · 2 m/s²', 'Wheel counterclockwise · speed 1']);
   });
   it.each(levels)('can describe $id without mutating its configuration', level => {
     const before = JSON.stringify(level);

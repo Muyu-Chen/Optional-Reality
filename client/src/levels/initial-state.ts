@@ -10,10 +10,10 @@ function vector([x, y]: Point, unit: string) {
 
 function deviceState(device: DeviceDefinition, bakery: boolean): string {
   switch (device.kind) {
-    case 'conveyor': return device.speed ? `Conveyor ${vector([device.speed, 0], 'm/s')}` : 'Conveyor stopped';
+    case 'conveyor': return device.speed ? `Conveyor ${device.speed > 0 ? 'right' : 'left'} · drive ${number(Math.abs(device.speed))}` : 'Conveyor stopped';
     case 'spring': return `${bakery ? 'Toaster' : 'Spring'} ${device.power ? `ready · power ${number(device.power)}` : 'off'}`;
     case 'fan': return device.power ? `Fan ${vector([device.acceleration[0] * device.power, device.acceleration[1] * device.power], 'm/s²')}` : 'Fan off';
-    case 'rotor': return device.angularSpeed ? `Wheel ${number(device.angularSpeed)} rad/s` : 'Wheel stopped';
+    case 'rotor': return device.angularSpeed ? `Wheel ${device.angularSpeed > 0 ? 'clockwise' : 'counterclockwise'} · speed ${number(Math.abs(device.angularSpeed))}` : 'Wheel stopped';
     case 'sensor': return 'Bell waiting';
     case 'gate': return 'Shutter closed';
   }

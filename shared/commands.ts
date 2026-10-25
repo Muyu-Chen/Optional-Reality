@@ -4,10 +4,13 @@ import { normalizeCommand } from './command-language';
 import { parseAcceleration } from './acceleration-command';
 import { PHYSICS_CAPABILITIES } from './physics-capabilities';
 import { normalizeAccelerationOperation } from './acceleration';
+import { parseAdditiveCommand } from './additive-command';
 export { Acceleration, OperationSchema, type Operation } from './rules';
 export type ParsedCommand = { operation: Operation; error?: never } | { operation?: never; error: string };
 
 export function parseCommand(input: string, context?: RuleContext): ParsedCommand {
+  const additive = parseAdditiveCommand(input, context);
+  if (additive) return 'operations' in additive ? { operation: additive.operations[0] } : additive;
   const parsed = parseInput(input,context);
   return parsed.operation ? {operation:normalizeAccelerationOperation(parsed.operation)} : parsed;
 }
@@ -61,6 +64,10 @@ export function applyOperation(current: number, candidate: unknown): number {
   return applyRules(gravityState(current),[operation],GRAVITY_CONTEXT).acceleration.y;
 }
 export function describeOperation(operation: Operation): { title: string; detail: string } {
+  if (operation.type === 'add_property') return {
+    title: `${operation.property.replaceAll('_', ' ')} ${operation.amount < 0 ? '−' : '+'} ${Math.abs(operation.amount)}`,
+    detail: `Add to ${operation.target} at execution time.`,
+  };
   if (operation.type === 'reverse_gravity') return { title: 'Reverse gravity', detail: 'Invert the gravity that is active when sent.' };
   if (operation.type === 'add_sensor_trigger') return { title: 'Sensor → gate', detail: `${operation.sensor} contact opens ${operation.gate}.` };
   if (operation.type === 'scale_property') {
