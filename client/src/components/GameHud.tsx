@@ -2,6 +2,7 @@ import type { LevelDefinition } from '../levels/types';
 import { levelLabel } from '../levels/progression';
 import type { Telemetry } from '../physics/world';
 import { StarProgress } from './StarProgress';
+import { AccelerationIndicator } from './AccelerationIndicator';
 
 interface GameHudProps {
   level: LevelDefinition;
@@ -16,13 +17,16 @@ interface GameHudProps {
 export function GameHud({ level, telemetry, secondsLeft, menuOpen, onRetry, onResume, onOpenMenu }: GameHudProps) {
   const canResume = telemetry.started && !telemetry.running && !menuOpen && !telemetry.tutorialId && !telemetry.won && !telemetry.timedOut;
   return (
-    <header className="game-hud">
+    <header className="game-hud game-hud--with-vector">
       <a href="/" className="game-brand" aria-label="Optional Reality home">or</a>
       <div className="game-title">
         <span>OPTIONAL REALITY / {levelLabel(level)}</span>
         <h1>{level.title}</h1>
         <p>{level.instructions.objective}</p>
-        <StarProgress {...telemetry.stars} />
+        <div className="hud-world-status">
+          <StarProgress {...telemetry.stars} />
+          <AccelerationIndicator acceleration={telemetry.acceleration} />
+        </div>
       </div>
       <div className="hud-controls">
         <span className={`game-clock ${secondsLeft <= 5 ? 'urgent' : ''}`} data-testid="time-left">

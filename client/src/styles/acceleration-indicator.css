@@ -1,0 +1,46 @@
+.game-hud--with-vector .game-title { min-width:0 }
+.hud-world-status { display:flex;align-items:center;gap:7px;margin-top:6px }
+.hud-world-status>.star-progress { margin:0;min-height:28px;flex:none }
+.acceleration-indicator { display:inline-flex;flex:none;vertical-align:middle }
+.acceleration-indicator-content {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  min-height:28px;
+  padding:3px 7px;
+  border:1px solid #8250b538;
+  border-radius:8px;
+  background:#8250b512;
+  color:#724199;
+  font-size:14px;
+  font-weight:700;
+  line-height:1;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap
+}
+.acceleration-indicator-prefix { font-size:12px;font-style:italic }
+.acceleration-indicator-vector { flex:none }
+.acceleration-indicator-unit { margin-left:1px;font-size:11px;font-weight:600 }
+.acceleration-indicator-content--changed { animation:acceleration-changed .6s ease-out both }
+@keyframes acceleration-changed {
+  0%,25% { background:#cdb3ed80;box-shadow:0 0 0 3px #8250b520 }
+  100% { background:#8250b512;box-shadow:0 0 0 0 #8250b500 }
+}
+@media(max-width:700px) {
+  /* Controls share the identity row. Goal and status then use the full title width. */
+  .game-hud--with-vector { display:grid;grid-template-columns:29px minmax(0,1fr) auto;column-gap:8px;row-gap:0 }
+  .game-hud--with-vector .game-brand { grid-column:1;grid-row:1;width:29px;height:29px }
+  .game-hud--with-vector .game-title { grid-column:2 / -1;grid-row:1 }
+  .game-hud--with-vector .game-title>span:first-child { display:flex;align-items:center;min-height:29px;margin-bottom:4px;padding-right:110px }
+  .game-hud--with-vector .game-title>p { max-width:none;line-height:1.35;margin-top:5px }
+  .game-hud--with-vector .hud-controls { grid-column:3;grid-row:1;z-index:1;margin-left:0 }
+  .hud-world-status { gap:6px;margin-top:5px }
+  .acceleration-indicator-content { gap:3px;padding:3px 6px;font-size:13px }
+  .acceleration-indicator-vector { width:16px;height:16px }
+}
+@media(max-width:360px) {
+  .game-hud--with-vector .game-title>span:first-child { font-size:11px }
+}
+@media(prefers-reduced-motion:reduce) {
+  .acceleration-indicator-content--changed { animation:none }
+}
