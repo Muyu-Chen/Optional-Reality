@@ -77,4 +77,16 @@ describe('additive commands preserve arithmetic', () => {
     }
     expect(() => checkAdditiveMeaning('padding 弹力+2', [add(2)])).not.toThrow();
   });
+  it('hands combined arithmetic to AI without accepting a local absolute-value prefix', () => {
+    expect(parseCommand('stop gravity and bounce +2', context)).toHaveProperty('error');
+    expect(parseCommand('bounce +2 and stop gravity', context)).toHaveProperty('error');
+    expect(() => checkAdditiveMeaning('stop gravity and bounce +2', [{ type: 'set_gravity', acceleration: 0 }, add(2)])).not.toThrow();
+    expect(() => checkAdditiveMeaning('stop gravity and bounce +2', [{ type: 'set_gravity', acceleration: 0 }, { type: 'scale_property', target: 'world', property: 'restitution', factor: 2 }])).toThrow();
+  });
+  it('checks every explicit additive clause without treating signed assignments as increments', () => {
+    const friction: Operation = { type: 'add_property', target: 'world', property: 'friction', amount: 2 };
+    expect(() => checkAdditiveMeaning('bounce +2; friction +2', [add(2)])).toThrow();
+    expect(() => checkAdditiveMeaning('bounce +2; friction +2', [add(2), friction])).not.toThrow();
+    expect(() => checkAdditiveMeaning('gravity = +2; bounce +2', [{ type: 'set_gravity', acceleration: 2 }, add(2)])).not.toThrow();
+  });
 });

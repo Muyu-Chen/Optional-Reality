@@ -4,10 +4,12 @@ import type { Operation, RuleContext } from './rules';
 
 const numeric = '[+-]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:e[+-]?\\d+)?';
 const compact = (value: string) => value.toLowerCase().replace(/\s+/g, '').replace(/^the/, '');
+const clauses = (value: string) => value.split(/;|；|,|，|\band\b|\bthen\b|并且|同时|并/i).map(part => part.trim()).filter(Boolean);
 
 /** Explicit arithmetic only. Signed assignments ("gravity = +2") stay absolute. */
 export function additiveIntent(input: string): { subject: string; amount: number } | undefined {
   const text = normalizeCommand(input).trim().replace(/[。.!！]$/, '');
+  if (clauses(text).length !== 1) return;
   let match = text.match(new RegExp(`^(.+?)\\s*([+−-])=\\s*(${numeric})$`, 'i'));
   if (match) return { subject: match[1].trim(), amount: Number(match[3]) * (match[2] === '+' ? 1 : -1) };
   match = text.match(new RegExp(`^(.+?)\\s*\\+\\s*(${numeric})$`, 'i'));
@@ -21,6 +23,8 @@ export function additiveIntent(input: string): { subject: string; amount: number
 // This small arithmetic grammar shares the catalog and target names; unknown
 // subjects go to AI instead of being silently treated as a global surface.
 export function parseAdditiveCommand(input: string, context?: RuleContext): { operations: Operation[] } | { error: string } | undefined {
+  const parts = clauses(input);
+  if (parts.length > 1 && parts.some(part => additiveIntent(part))) return { error: 'Prepare combined arithmetic with AI so every part is understood together.' };
   const intent = additiveIntent(input);
   if (!intent) return;
   if (!Number.isFinite(intent.amount)) return { error: 'Use a finite amount for an additive change.' };
@@ -49,8 +53,13 @@ export function parseAdditiveCommand(input: string, context?: RuleContext): { op
 
 /** Prevent a model from replacing a clear single "+2" request with "×2". */
 export function checkAdditiveMeaning(input: string, operations: readonly Operation[]) {
-  const intent = additiveIntent(input);
-  if (intent && (operations.length !== 1 || operations[0].type !== 'add_property' || operations[0].amount !== intent.amount)) {
-    throw new Error('The prepared rule changed the requested addition or subtraction. Edit or prepare this message again.');
+  const parts = clauses(input), intents = parts.flatMap(part => additiveIntent(part) ?? []);
+  const additions = operations.filter(operation => operation.type === 'add_property');
+  for (const intent of intents) {
+    const index = additions.findIndex(operation => operation.amount === intent.amount);
+    if (index === -1 || (parts.length === 1 && operations.length !== 1)) {
+      throw new Error('The prepared rule changed the requested addition or subtraction. Edit or prepare this message again.');
+    }
+    additions.splice(index, 1);
   }
 }
