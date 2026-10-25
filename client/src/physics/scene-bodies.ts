@@ -23,13 +23,21 @@ function trackBodies(track: TrackDefinition) {
 
 function boundaries(level: LevelDefinition) {
   const { width, height } = level.viewport;
-  return [
+  const walls = [
     ...(!level.failOnFall ? [Bodies.rectangle(width / 2, height + 18, width + 72, 36,
       { ...staticSurface, label: 'boundary-bottom' })] : []),
     ...(!level.openEdges?.includes('left') ? [Bodies.rectangle(-18, height / 2, 36, height * 2, { ...staticSurface, label: 'boundary-left' })] : []),
     ...(!level.openEdges?.includes('right') ? [Bodies.rectangle(width + 18, height / 2, 36, height * 2, { ...staticSurface, label: 'boundary-right' })] : []),
     Bodies.rectangle(width / 2, (level.ceilingY ?? 0) - 18, width + 72, 36, { ...staticSurface, label: 'boundary-top' }),
   ];
+  // Matter.setStatic overwrites construction friction with 1. Hidden containment
+  // walls must stay neutral; only visible, editable surfaces supply friction.
+  for (const wall of walls) {
+    wall.friction = 0;
+    wall.frictionStatic = 0;
+    wall.restitution = 0;
+  }
+  return walls;
 }
 
 // Construction is separate from simulation and rendering. Preserve insertion order
