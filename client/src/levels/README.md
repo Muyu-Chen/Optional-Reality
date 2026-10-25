@@ -2,9 +2,9 @@
 
 每个小关导出只读 `LevelDefinition`，只定义数据。物理、绘图、输入与模型请求分别放在各自运行层。
 
-`progression.ts` 定义三个教学等级：1 运动，2 碰撞，3 机关。`catalog.ts` 按顺序注册九个小关：`gravity-lab`、`one-more-turn`、`bounce`、`multi-bounce`、`friction-runway`、`catch-cup`、`toaster`、`breeze`、`reality-breakdown`。基础环境规则始终共享，不用等级白名单禁用。
+`progression.ts` 定义三个教学等级：1 运动，2 碰撞，3 机关。`catalog.ts` 注册十五个小关：运动章五关、碰撞章七关、机关章三关。基础环境规则始终共享，不用等级白名单禁用。新增 01.3–01.5 和 02.5–02.7 的布局、解法与容错见 [运动与碰撞扩充](../../../docs/motion-collision-expansion.md)。旧关 ID 和已有草稿、成绩键保持稳定。
 
-`number` 是等级，`stage` 是同级的小关编号。`levelLabel()` 统一生成 01、02.1、03.1 等显示标签。新增三个关卡属于 02.2–02.4；旧 `bounce` ID 不变，只补上 02.1 的显示编号。
+`number` 是等级，`stage` 是同级的小关编号。`levelLabel()` 统一生成 01、01.3、02.7 等显示标签。章节和小关顺序由 catalog 决定；选关预览、总星数和 Next level 从实际配置生成，不另存数量或顺序。
 
 ## 主要字段
 
@@ -60,7 +60,7 @@ Enter 只排队，Shift+Enter 只立即应用当前输入；需要 AI 时暂停�
 
 ## 首访操作教学
 
-`onboarding.ts` 为 `gravity-lab`（Let It Roll）、`one-more-turn` 和 `bounce` 提供三步教学数据；不改变 LevelDefinition 的物理状态或权限。首次展示按 `optional-reality:<levelId>:how-to-play:v1` 保存已见，刷新/重试不重复，设置 How to play 可重看。
+`onboarding.ts` 为 `gravity-lab`（Let It Roll）、`one-more-turn` 和 `bounce` 提供三步教学数据；`bakery-onboarding.ts` 为第 3 章三关提供机关图解、真实设备预设／可改状态、示例指令、发送时机与偏差反馈。教程不改变 LevelDefinition 的物理状态或权限。首次展示按 `optional-reality:<levelId>:how-to-play:v1` 保存已见，刷新/重试不重复，设置 How to play 可重看。
 
 教学期间暂停并禁用底层操作；Let's play 只关闭，保留默认或自定义队列。主动加载按钮使用 `lesson.starterMessages`，未声明时使用本关 `exampleMessages`，加载并关闭但不启动模拟。它与 `initialMessages` 的自动首访草稿不同，也与 `tutorials` 的机关接触教学不同。重看后返回暂停设置；打开教学取消待完成的立即应用，迟到解析不能自动发送。
 

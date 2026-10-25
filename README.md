@@ -10,16 +10,22 @@ AI compiles the player's intent into supported declarative operations, while Mat
 
 ## Playable Content
 
-Built for SBUHacks 2026, the game currently includes three chapters and nine progressively structured levels:
+Built for SBUHacks 2026, the game includes three chapters and fifteen progressively structured levels. The six new Motion and Collisions puzzles are described in [Motion and Collision Expansion](./docs/motion-collision-expansion.md) and are live on all three domains; see the [deployment record](./deploy/motion-collision-levels.md).
 
 | Chapter | Level | Main concepts |
 | --- | --- | --- |
 | 1 · Motion | 01 Let It Roll | Start in zero gravity, roll down a ramp, and turn gravity off when leaving the track |
 | 1 · Motion | 01.2 One More Turn | Fall to collect a star, rebound naturally from a passive spring, then change acceleration to reach higher stars |
+| 1 · Motion | 01.3 Bring It Back | Start a rightward drift, brake near the far stars, and return to an exit behind the starting point |
+| 1 · Motion | 01.4 Over the Wall | Lift over a fixed wall, then reverse vertical acceleration to bend the flight toward the exit |
+| 1 · Motion | 01.5 The Side Door | Steer sideways around a shelf while preserving downward momentum |
 | 2 · Collisions | 02.1 A Little More Bounce | A simple rebound reaches the exit; low elasticity followed by upward acceleration collects every star |
 | 2 · Collisions | 02.2 Not Too High | Full-score route: use high elasticity to reach high stars, then increase downward acceleration to return to the exit |
 | 2 · Collisions | 02.3 Brake Before the Edge | Use the cyan friction runway to bring the entire block to rest in the parking area |
 | 2 · Collisions | 02.4 Catch Tutorial | A short lesson in setting launch-pad and cup-base properties independently; both can be prepared in advance |
+| 2 · Collisions | 02.5 Bank Shot | Use a real angled rebound to turn horizontal motion upward in zero gravity |
+| 2 · Collisions | 02.6 Return to Dock | Rebound from the far wall, then use friction to park on the return trip |
+| 2 · Collisions | 02.7 One Last Bounce | Use one floor for a strong rebound, then soften it and add grip for the next landing |
 | 3 · Devices | 03.1 A Little Stored Energy | Learn the toaster's compression, energy storage, and release |
 | 3 · Devices | 03.2 Catch the Breeze | Learn how an upward airflow affects motion |
 | 3 · Devices | 03.3 The Last Order | Combine a conveyor, toaster, fan, and sensor-triggered gate |
@@ -28,7 +34,7 @@ Chapters organize the teaching sequence. Basic physical properties remain consis
 
 ## How to Play
 
-- `/demo/` opens the title screen. The level-selection screen presents nine levels across three chapters, and `?level=...` remains available for direct links. Continuing the most recent level starts a fresh attempt while keeping message drafts. Completed levels save the best star count on the current device.
+- `/demo/` opens the title screen. The level-selection screen presents fifteen levels across three chapters, and `?level=...` remains available for direct links. Continuing the most recent level starts a fresh attempt while keeping message drafts. Completed levels save the best star count on the current device.
 - The main live entry point is [optionalreality.site](https://optionalreality.site/). `www.optionalreality.site` and `muuyyy.cfd` also work: the root opens the game, `/intro` serves the introduction page, and the original `/demo/` route remains available. All three domains share an automatically renewed SAN certificate. Configuration and backups are documented in [Domains and Routing](./deploy/domains-and-routing.md).
 - The scene fills the screen, with a translucent input panel at the bottom right. **Enter only queues a message. Shift+Enter immediately applies only the current input**, without executing older queued messages.
 - Entering or retrying a level displays a three-second [initial-state briefing](./docs/initial-state-briefing.md) showing initial motion, acceleration, surfaces, and device states. It appears after any tutorial closes and does not start the simulation timer.
@@ -120,11 +126,11 @@ See [Game Design](./docs/game-design.md) for design and development requirements
 
 The bakery artwork is adapted from yihanzhao231's `temp/1024-zyh@30d802f`. Physics and commands use the project's shared runtime, and the original level ID `reality-breakdown` is retained.
 
-The static introduction page lives in `site/`. The live game at [muuyyy.cfd/demo/](https://muuyyy.cfd/demo/) includes nine levels, three-star scoring, compact per-message controls, and a unified acceleration vector, with synchronized frontend and backend protocols. Versions, backups, and rollback instructions are recorded in [Live Game Deployment](./deploy/live-game.md); early introduction-page backups are described in [deploy/README.md](./deploy/README.md).
+The static introduction page lives in `site/`. The live game at [muuyyy.cfd/demo/](https://muuyyy.cfd/demo/) includes fifteen levels, three-star scoring, compact per-message controls, and a unified acceleration vector, with synchronized frontend and backend protocols. Versions, backups, and rollback instructions are recorded in [Live Game Deployment](./deploy/live-game.md); early introduction-page backups are described in [deploy/README.md](./deploy/README.md).
 
 The live game calls models only through same-site HTTPS forwarding. The backend listens only on a loopback address, and keys remain on the server. Its health check is `/api/health`. The shared-capability version completed two real-model verification rounds, one local and one live, with 85 commands in each round.
 
-See [Star Gameplay](./docs/star-gameplay.md) for full-score routes, message controls, and vector semantics, and [Phase-Based Physics Puzzles](./docs/phase-puzzles.md) for routes through all nine levels.
+See [Star Gameplay](./docs/star-gameplay.md) for message controls and vector semantics, and [Phase-Based Physics Puzzles](./docs/phase-puzzles.md) for the current fifteen-level routes.
 
 Integrated release `75af06a` deployed scene rendering, continuous passive springs, a live title animation, background ecology, exit absorption, sound effects, message shortcuts, three illustrated lessons, and the expandable rule list. Its independent build passed 616 tests, with public-site three-star routes and real API calls verified. See the [Deployment Notes](./deploy/live-game.md) for the actual live version and [Verification](./docs/verification.md) for the latest checks.
 

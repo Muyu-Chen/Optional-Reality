@@ -58,7 +58,7 @@ MusicControl 与 SoundEffectsControl 统一由暂停设置组合，Game HUD 不�
 | `physics/devices.ts` | 接触判断、风场、传送带、有动力面包机、转轮和感应开门 |
 | `physics/elastic-spring.ts` | 被动弹簧的胡克弹力、阻尼与连续接触；不冻结或硬改物体速度 |
 | `physics/scene-backdrop.ts` | 独立场景背景绘画，保持前景与装饰层次 |
-| `physics/scenery/profiles.ts`、`layout.ts` | 九关纯视觉配置与插画坐标；不改变碰撞、规则或权限 |
+| `physics/scenery/profiles.ts`、`layout.ts` | 各关纯视觉配置与插画坐标；不改变碰撞、规则或权限 |
 | `physics/scenery/living-world.ts`、`water-particles.ts` | 固定步长的远景居民与密集水粒子，暂停和销毁由 Canvas 生命周期统一控制 |
 | `physics/scenery/*-renderer.ts` | 宇宙、山谷、地标、人车与瀑布的独立只读绘图 |
 | `physics/scene-feedback.ts` | 从真实拾取结果生成短时视觉反馈，不回写评分 |
