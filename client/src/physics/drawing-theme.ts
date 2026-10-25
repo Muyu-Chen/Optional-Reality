@@ -20,6 +20,6 @@ export const sceneColours = {
 } as const;
 
 export const sceneFonts = {
-  label: '15px ui-monospace,monospace',
-  small: '14px ui-monospace,monospace',
+  label: '600 15px ui-rounded,system-ui,sans-serif',
+  small: '600 14px ui-rounded,system-ui,sans-serif',
 } as const;

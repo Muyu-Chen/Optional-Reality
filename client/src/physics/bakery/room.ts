@@ -2,8 +2,10 @@
 import { bakeryText, oval, roundRect, strokePath, type Ctx } from './drawing';
 import { drawBread } from './bread';
 import { sceneColours } from '../drawing-theme';
+import type { AmbientFrame } from '../ambient-scenery';
+import { drawAmbientScenery } from '../ambient-scenery-renderer';
 
-export function drawBakeryRoom(ctx: Ctx) {
+export function drawBakeryRoom(ctx: Ctx,ambient?:AmbientFrame,reducedMotion=false) {
  ctx.fillStyle=sceneColours.bakeryBackground;ctx.fillRect(0,0,960,540);
  // Plaster wall and the shop's timber picture rail.
  ctx.fillStyle='#e9d9ba';ctx.fillRect(0,100,960,384);
@@ -19,6 +21,7 @@ export function drawBakeryRoom(ctx: Ctx) {
  strokePath(ctx,[[28,80],[933,80]],'#d9cbb6');
  // Street-facing window: quiet buildings, striped awning, evening light.
  roundRect(ctx,43,125,243,195,5,'#b69a73');roundRect(ctx,50,132,229,181,2,'#dfdfce');
+ if(ambient)drawAmbientScenery(ctx,ambient,reducedMotion,{x:53,y:153,width:222,height:151,detailScale:.65});
  ctx.fillStyle='#d4d4c0';ctx.fillRect(53,209,100,101);ctx.fillStyle='#c5c8b5';ctx.fillRect(166,186,109,124);
  ctx.fillStyle='#e9e6d8';for(let x=66;x<263;x+=39){ctx.fillRect(x,224,15,25);ctx.fillRect(x,266,15,25);}
  oval(ctx,224,169,19,19,'#eee4c5');

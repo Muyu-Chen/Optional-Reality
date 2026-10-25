@@ -5,14 +5,14 @@ import { drawGoal } from './goal-renderer';
 import { drawSurface } from './surface-renderer';
 import { drawGeometrySprings } from './spring-renderer';
 import { sceneColours, sceneFonts } from './drawing-theme';
+import { drawPuzzleBackdrop } from './scene-backdrop';
+import type { AmbientFrame } from './ambient-scenery';
 
 // Each layer reads the same world; no level-specific gameplay lives in drawing.
-export function drawGeometry(ctx: CanvasRenderingContext2D, world: PhysicsWorld, trail: readonly Point[]) {
+export function drawGeometry(ctx: CanvasRenderingContext2D, world: PhysicsWorld, trail: readonly Point[],ambient?:AmbientFrame,reducedMotion=false) {
   const {level}=world, {width,height}=level.viewport;
-  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.fillStyle=sceneColours.grid;
-  for(let x=18;x<width;x+=28)for(let y=18;y<height;y+=28){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
-  ctx.strokeStyle=sceneColours.guide;ctx.lineWidth=1.5;
-  for(const line of level.guideLines){ctx.beginPath();ctx.moveTo(...line.from);ctx.lineTo(...line.to);ctx.stroke();}
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+  drawPuzzleBackdrop(ctx,width,height,ambient,reducedMotion);
   drawGoal(ctx,world);
   for(const track of level.tracks)drawSurface(ctx,track,world.rules);
   drawGeometrySprings(ctx,world);
@@ -20,7 +20,7 @@ export function drawGeometry(ctx: CanvasRenderingContext2D, world: PhysicsWorld,
   drawActor(ctx,world);
   if(level.failOnFall) {
     ctx.fillStyle=sceneColours.danger;ctx.fillRect(0,height-3,width,3);ctx.font=sceneFonts.small;
-    ctx.fillText('FALL = TRY AGAIN',42,height-12);
+    ctx.fillText('Mind the gap',42,height-12);
   }
   ctx.restore();
 }

@@ -20,15 +20,19 @@ function drawFrictionMarks(ctx: CanvasRenderingContext2D, track: TrackDefinition
 }
 
 export function drawSurface(ctx: CanvasRenderingContext2D, track: TrackDefinition, rules: RuleState) {
-  ctx.save();ctx.lineWidth=track.thickness;
+  ctx.save();ctx.lineWidth=track.thickness;ctx.lineCap='round';ctx.lineJoin='round';
+  ctx.shadowColor='#233d3030';ctx.shadowBlur=4;ctx.shadowOffsetY=3;
   ctx.strokeStyle=track.feature ? physicsColours[track.feature] : physicsColours.structure;
   ctx.beginPath();track.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  ctx.save();ctx.translate(0,-track.thickness*.18);ctx.lineWidth=Math.max(1,track.thickness*.22);ctx.strokeStyle='#ffffff65';
+  ctx.beginPath();track.points.forEach(([x,y],i)=>i?ctx.lineTo(x,y):ctx.moveTo(x,y));ctx.stroke();ctx.restore();
   if(track.feature) {
     const property=track.feature==='bounce'?'restitution':'friction';
     const value=rules.values[track.id]?.[property] ?? rules.values.world?.[property] ?? 0;
     if(track.feature==='bounce')drawBounceMarks(ctx,track.points,value);else drawFrictionMarks(ctx,track,value);
     ctx.font=sceneFonts.label;ctx.fillStyle=physicsColours[track.feature];
-    ctx.fillText(`${(track.label || (track.feature==='bounce'?'Bounce surface':'Friction surface')).toUpperCase()} · ${Number(value.toFixed(3))}`,track.points[0][0]+10,track.points[0][1]+track.thickness/2+36);
+    ctx.fillText(track.label || (track.feature==='bounce'?'Bouncy surface':'Grip surface'),track.points[0][0]+10,track.points[0][1]+track.thickness/2+32);
   }
   ctx.restore();
 }

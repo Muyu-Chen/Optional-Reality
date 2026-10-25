@@ -10,7 +10,7 @@ const ramp: Point[] = [
 export const gravityLab: LevelDefinition = {
   id: 'gravity-lab',
   number: 1,
-  title: 'Gravity Lab',
+  title: 'Let It Roll',
   viewport: { width: 800, height: 510, pixelsPerMetre: 80 },
   timeLimitSeconds: 30,
   initialAcceleration:[0,0],
