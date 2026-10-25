@@ -49,7 +49,7 @@ const lessons: Readonly<Record<string, LevelOnboarding>> = {
     starterMessages: ['Set surface bounce to 1'],
     steps: [
       {title:'Prepare the blue surface',diagram:'bank-approach',
-        body:'Blue marks a bouncy surface. “Set surface bounce to 1” is ready in your queue. It takes effect only when you send it.'},
+        body:'Blue marks a bouncy surface. Queue “Set surface bounce to 1”, or use the starter already prepared on your first visit. It takes effect only when you send it.'},
       {title:'Let the angle turn the ball',diagram:'bank-impact',
         body:'Send the rule before contact. The slanted surface redirects rightward motion upward. No upward acceleration is needed.'},
       {title:'Follow the stars',diagram:'bank-exit',
