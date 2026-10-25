@@ -16,6 +16,7 @@
 | `components/MessageCard.tsx`、`RulePreview.tsx` | 紧凑摘要、彩色解析图标、逐条发送与可访问的原文/限幅详情展开 |
 | `components/RuleComposer.tsx` | Enter 仅排队、Shift+Enter 仅应用当前输入，保留输入法组合保护 |
 | `domain/message-storage.ts` | 恢复草稿；无保存记录时载入关卡 initialMessages，保留已保存空列表 |
+| `domain/compilation-results.ts` | 逐条复核编译结果、按 ID 合并 Ready/error，失败不留下旧操作或影响其他行 |
 | `levels/onboarding.ts` | Let It Roll、One More Turn、bounce 的三步教学数据、可选 starterMessages 和按关卡版本化的已见存储 key |
 | `game/useLevelOnboarding.ts` | 首访/重看、暂停、已见状态、教学快捷键与立即应用意图取消 |
 | `components/LevelOnboarding.tsx`、`OnboardingDiagram.tsx` | 全视口教学遮罩、居中卡片、静态 SVG 图示与关闭/加载示例按钮 |
@@ -84,6 +85,8 @@ MusicControl 与 SoundEffectsControl 统一由暂停设置组合，Game HUD 不�
 `components/front-door/` 保存标题、选关、真实配置缩略图和设置；机械 SVG 装饰另在 `SteamDetails`。`game/journey-navigation.ts` 处理 URL，`journey-progress.ts` 校验并保存最近关卡与最佳星数，`useJourney.ts` 组合导航和存储；App 不承担画面或关卡细节。
 
 `shared/rules.ts` 保存声明式操作与校验，`shared/commands.ts` 做简单本地解析，`shared/compiler.ts` 定义编译协议。服务端由 `app.ts` 处理 HTTP，`compiler.ts` 负责场景权限与提示词，`ai-client.ts` 适配模型请求，`config.ts` 读取后端环境变量。
+
+`shared/compilation-message.ts` 独立定义单条结果与模型消息 schema，统一限幅、权限与单条操作的完整验证；`shared/compiler.ts` 只检查整份响应的身份并组合结果。客户端 `domain/compilation-results.ts` 再独立校验与合并，`usePreparedMessages` 负责网络及取消，详见 [逐条编译结果](./compilation-results.md)。
 
 `server/dev-api-proxy.ts` 仅供 Vite 开发服务器读取 `DEV_API_ORIGIN`，把 `/api` 转到指定的已有后端；只允许无凭据、无路径的 HTTPS 或本机 HTTP origin。它不属于模型请求适配层，也不会改变生产 `/api` 或把供应商 key 放入浏览器。
 
