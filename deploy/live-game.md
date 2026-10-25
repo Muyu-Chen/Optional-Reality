@@ -1,6 +1,49 @@
-# 线上游戏 — 2026-10-24
+# 线上游戏 — 2026-10-25
 
-## 当前版本：鸟、加速度反馈、碰撞手感与 Gemini 接口
+## 当前版本：蒸汽朋克入口、生活背景与关卡画廊
+
+- 地址：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，固定应用版本 `9f4c2e8ec0fd368c54ac2b516fcd4180ada24659`，release `20261025T040224Z-9f4c2e8`（UTC；本地日期 2026-10-25）。
+- 应用 current：`/opt/optional-reality/releases/20261025T040224Z-9f4c2e8`；静态 current：`/var/www/muu-tech/releases/20261025T040224Z-9f4c2e8-optional-reality-game`。
+- 开始页与选关采用 Steel and Steam 主题，黄铜机械浮岛、铜管门、齿轮、压力表和少量蒸汽；三章九关有真实几何预览、最近小关与本机最佳星数，保留直达链接。离开关卡取消旧编译，草稿保留。
+- 九关有独立背景配置，行人、汽车与密集水粒子响应加速度；宇宙、山谷地标及晨光/午后/夜晚面包店各有区别。背景固定步长且与任务物理隔离；瀑布最终为 360 个细圆粒子与最多 24 个短寿命溅水。
+- 原创音乐调整为 112 BPM、短音符、弹跳低音与轻合成敲击。开关、偏好、后台暂停及切关不叠加保持原逻辑。
+- 固定提交在独立目录全新安装，83 个 Vitest 文件、728 项测试，加首页 13 项 Node 测试，共 741 项通过；类型检查、生产构建通过。保留原有大于 500kB 的 JS 构建提示。
+- 20 个公网资源 SHA256 与独立构建完全一致。临时 3115 服务真实 Gemini 编译向上 2 通过后成对切换前后端；公网三条消息实际应用为 `(2,20)`、`(2,-20)`、`(2,20)`，正式服务 active，仅监听回环 3001，临时服务已停止。
+- 公网浏览器实际从标题进入选关并游玩 bounce，完成 `.1 → 触地附近向上 1` 的三星路线；返回画廊显示 Cleared 与 Best score 3 of 3，标题显示 3/27。蒸汽朋克主界面截图为 `.localwork/deploy-living-world/live-steam-title.png`，浏览器 warning/error 为空，临时视口已恢复。
+- 线上继续使用 `gemini-3.1-flash-lite`；持久 `.env`、原 DeepSeek key、Gemini key、Node、Apache/TLS 和服务权限均保留。开发机仅通过 Vite 的 DEV_API_ORIGIN 使用线上 API，没有复制真实 key；该选项不改变生产 API。
+
+### 本轮备份与校验
+
+- 服务器：`/var/backups/optional-reality/20261025T040224Z-9f4c2e8/`；本地：`.localwork/backups/living-world-20261025T040224Z-9f4c2e8/`。目录 700、文件 600，两端归档 SHA256 一致；源码备份排除 `.env` 和依赖，旧 release 与旧哈希资源保留。
+- `site.tar.gz`：`c15f2eeac0f841abbec80fe59cdaaa0aab64fb4176e77668bd29f9540eaccc4c`。
+- `app-source.tar.gz`：`a6ca65738cf9915afe4ace1d0fd5f054c4b0a024d5de2753226ff21588d1bb4b`。
+- HTML：`76a27f1f5df6f916d2de88768390017876b5471e96751cfd7b6efd9a0b6210e2`。
+- JS `index-Da5e5YLP.js`：`670cdc3e00dfefaafab32b7740b3a1b848533c9b3596ca9be2bef7c0f59a00af`。
+- CSS `index-ByGujPd4.css`：`f174db223fb32a592ebc7718582f4f9c821ce194c337e7bf653aeca0ba0af8b8`。
+
+### 成对回退到上一版
+
+先核对 current 仍为本轮目录；若后续已有更新则停止。只回退代码，不修改持久 `.env`，上一版支持现有 Gemini 配置。
+
+```sh
+set -eu
+app_root=/opt/optional-reality
+site_root=/var/www/muu-tech
+test "$(readlink -f "$app_root/current")" = "$app_root/releases/20261025T040224Z-9f4c2e8"
+test "$(readlink -f "$site_root/current")" = "$site_root/releases/20261025T040224Z-9f4c2e8-optional-reality-game"
+test -f "$app_root/releases/20261025T030845Z-5e73f8a/server/src/index.ts"
+test -f "$site_root/releases/20261025T030845Z-5e73f8a-optional-reality-game/demo/index.html"
+apache2ctl configtest
+ln -s "$app_root/releases/20261025T030845Z-5e73f8a" "$app_root/.rollback-app-$$"
+mv -Tf "$app_root/.rollback-app-$$" "$app_root/current"
+systemctl restart optional-reality
+curl -fsS --retry 15 --retry-connrefused --retry-delay 1 http://127.0.0.1:3001/api/health
+ln -s "$site_root/releases/20261025T030845Z-5e73f8a-optional-reality-game" "$site_root/.rollback-web-$$"
+mv -Tf "$site_root/.rollback-web-$$" "$site_root/current"
+curl -fsS https://muuyyy.cfd/api/status
+```
+
+## 历史版本：鸟、加速度反馈、碰撞手感与 Gemini 接口
 
 - 游戏：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，应用版本 `5e73f8aba01a5c5d8654425d2efb04b04c1509fe`，release `20261025T030845Z-5e73f8a`（UTC；本地日期 2026-10-24）。
 - 应用 current：`/opt/optional-reality/releases/20261025T030845Z-5e73f8a`；静态 current：`/var/www/muu-tech/releases/20261025T030845Z-5e73f8a-optional-reality-game`。正式服务 active，只监听 `127.0.0.1:3001`，临时 3115 服务已停止。
