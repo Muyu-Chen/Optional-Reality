@@ -1,0 +1,7 @@
+[
+  {"id":"01-world","start":0.6,"end":8.7,"text":"This is Optional Reality. You don't control the ball. You change the rules of its world."},
+  {"id":"02-motion","start":9.0,"end":18.0,"text":"Write a change, then choose when to send it. Brake the drift, keep the momentum, and find your way home."},
+  {"id":"03-collisions","start":19.0,"end":29.1,"text":"Make surfaces bouncier, and turn a collision into a new direction. The physics and three-star finishes are real."},
+  {"id":"04-devices","start":31.0,"end":39.8,"text":"Meet the toaster. Power it up, store energy on contact, then launch the loaf toward the exit."},
+  {"id":"05-invitation","start":40.1,"end":46.4,"text":"Write in any language supported by Google Gemini. Change the rules. Choose the moment."}
+]

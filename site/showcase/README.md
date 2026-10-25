@@ -1,8 +1,8 @@
 # Looping gameplay demo
 
-**47 seconds · 1280 × 720 · 30 fps · silent · seamless opening/closing frame**
+**47 seconds · 1280 × 720 · 30 fps · music + gameplay cues · English narrated edition**
 
-[Download / watch the HD MP4](./gameplay-loop.mp4) · [Looping player](./index.html) · [English captions](./captions.en.vtt) · [中文字幕](./captions.zh.vtt)
+[Download / watch the sound loop](./gameplay-sound.mp4) · [English narrated MP4](./youtube-demo.mp4) · [Looping player](./index.html) · [English captions](./captions.en.vtt) · [中文字幕](./captions.zh.vtt)
 
 ![Looping gameplay preview](./preview.gif)
 
@@ -16,7 +16,7 @@ The footage includes chapter/level selection and visible automatic typing throug
 
 The recording uses the actual browser UI, Matter.js simulation, collision geometry, and scoring. Only the typing and normal control clicks are automated. No body position, velocity, score, timing rule, or permission was modified. The explicit commands are recognized by the local parser, so this video does not demonstrate a live LLM request or claim model latency. See [AI usage and credits](../../AI_USAGE.md).
 
-The MP4 is H.264 with no audio track and fast-start metadata. An MP4 does not itself force every player to repeat; `index.html` sets `autoplay loop muted playsinline`, while `preview.gif` stores an infinite loop. The final title frame matches the opening title frame. The player respects reduced-motion preferences by waiting for Play, and includes native controls, restart, chapter jumps, optional Chinese/English captions, and MP4 download.
+The retained original `gameplay-loop.mp4` is H.264 with no audio track and fast-start metadata. The default player uses the sound edition described below. An MP4 does not itself force every player to repeat; `index.html` sets `autoplay loop muted playsinline`, while `preview.gif` stores an infinite loop. The final title frame matches the opening title frame. The player respects reduced-motion preferences by waiting for Play, and includes native controls, restart, chapter jumps, optional Chinese/English captions, and MP4 download.
 
 To play locally:
 
@@ -34,3 +34,11 @@ python3 scripts/build-demo-video.py .localwork/demo-video-20261025
 ```
 
 This editor preserves capture timestamps, adds short crossfades, and exports the MP4, looping GIF, and poster. No production service is required to play the files.
+
+## Sound editions
+
+- [Website loop](https://optionalreality.site/showcase/): `gameplay-sound.mp4` adds an original instrumental score and reconstructed gameplay cues. Click **Enable sound**, a chapter, or **Restart** to listen. Automatic playback begins muted to comply with browser playback restrictions. The mobile introduction's **Watch the demo** action starts with sound; **Mute sound** remains available.
+- [Narrated presentation](https://optionalreality.site/showcase/narrated.html): `youtube-demo.mp4` adds English Gemini TTS narration, with the music lowered during speech. It plays on request and includes optional English voiceover captions.
+- [Upload description](./youtube-description.txt), [SRT captions](./narration.en.srt), [script](./narration.txt), and [audio provenance](./audio-production.json) accompany the upload-ready file. The original silent master is retained.
+
+Both sound editions preserve the original H.264 video stream without re-encoding and add 48 kHz stereo AAC at 192 kb/s. Rebuild the audio with `python3 scripts/build-demo-audio.py --voice-clips /path/to/generated/wavs`. The script creates the music and cues locally, aligns five supplied voice clips, lowers music under speech, produces subtitles, normalizes loudness, and muxes both MP4s. Generate voice WAVs with `node scripts/generate-demo-voice.mjs /path/to/generated/wavs`, with `GEMINI_API_KEY` already present in the environment. This uses `narration.json` with the model and voice documented in `audio-production.json`; credentials and raw generation requests are not public assets. See [AI Usage](../../AI_USAGE.md#demo-audio-production) for disclosure.

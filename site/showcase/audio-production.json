@@ -1,0 +1,75 @@
+{
+  "duration": 46.833333333333336,
+  "sampleRate": 48000,
+  "channels": 2,
+  "music": {
+    "title": "A Little Different World",
+    "composer": "Optional Reality / Codex-assisted original synthesis",
+    "tempo": 122.98932384341636,
+    "bars": 24,
+    "source": "Original game melody, new procedural arrangement; no third-party samples"
+  },
+  "effects": "Reconstructed in post from the original game oscillator cues; editorial timing",
+  "voice": {
+    "provider": "Google Gemini",
+    "model": "gemini-3.8-flash-tts",
+    "voice": "Kore",
+    "language": "English",
+    "clips": [
+      {
+        "id": "01-world",
+        "start": 0.6,
+        "end": 8.7,
+        "text": "This is Optional Reality. You don't control the ball. You change the rules of its world.",
+        "spokenEnd": 6.169,
+        "sourceSha256": "12470c44330f0dcffbd626dd8d4a6990bcdf087e57e5e218b4d8b1bb8e6a4a93"
+      },
+      {
+        "id": "02-motion",
+        "start": 9.0,
+        "end": 18.0,
+        "text": "Write a change, then choose when to send it. Brake the drift, keep the momentum, and find your way home.",
+        "spokenEnd": 14.809,
+        "sourceSha256": "f43a0ebbfcbdb8734151ec13710883c33b939937f553f739b303e4e6ba2e8f5b"
+      },
+      {
+        "id": "03-collisions",
+        "start": 19.0,
+        "end": 29.1,
+        "text": "Make surfaces bouncier, and turn a collision into a new direction. The physics and three-star finishes are real.",
+        "spokenEnd": 25.178,
+        "sourceSha256": "4470c8e2ef5b28dd07d8552ad5ef5ff81841d9c8492e1552cd70df0e62cd1701"
+      },
+      {
+        "id": "04-devices",
+        "start": 31.0,
+        "end": 39.8,
+        "text": "Meet the toaster. Power it up, store energy on contact, then launch the loaf toward the exit.",
+        "spokenEnd": 36.718,
+        "sourceSha256": "be9d429de4952f5294810fa26a982f33b92c32051f62bad748c8794721498c41"
+      },
+      {
+        "id": "05-invitation",
+        "start": 40.1,
+        "end": 46.4,
+        "text": "Write in any language supported by Google Gemini. Change the rules. Choose the moment.",
+        "spokenEnd": 45.22,
+        "sourceSha256": "09bf28308ed48f86425f72edf61d1b80610eaf3bb31096a806f9b593cb417c14"
+      }
+    ]
+  },
+  "files": {
+    "gameplay-loop.mp4": {
+      "bytes": 2737759,
+      "sha256": "98209565286617b2f53098936c62adc4037f1a555c7adce4e06fd57ec3a8ed9f"
+    },
+    "gameplay-sound.mp4": {
+      "bytes": 3924425,
+      "sha256": "6a1d69b82a839d4fe62ad246d0fdbe8277d97965afa2e4bccfe408f97ab430d3"
+    },
+    "youtube-demo.mp4": {
+      "bytes": 3909530,
+      "sha256": "834012a47b6a9d635703514b57db2930d56010a2c0118031c30641a6acd7a8e1"
+    }
+  }
+}

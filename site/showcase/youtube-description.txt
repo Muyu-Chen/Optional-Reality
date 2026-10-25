@@ -1,0 +1,31 @@
+TITLE
+Optional Reality — Change the Rules. Choose the Moment. | Gameplay Demo
+
+DESCRIPTION
+You don't control the ball. You change the rules of its world.
+
+Optional Reality is a natural-language physics puzzle game. Write in any language supported by Google Gemini, review a supported rule change, and decide when to send it. Keep the momentum, redirect collisions, or power a little bakery toaster. Reach the exit; collect three stars to master the route.
+
+This 47-second demo shows real recorded gameplay with scripted typing and three actual full-score finishes. The explicit recorded commands use the local parser. AI interprets freer language; the physics engine runs the simulation.
+
+Explore on your phone: https://optionalreality.site/intro
+Play on a computer: https://optionalreality.site/
+Source code: https://github.com/Muyu-Chen/Optional-Reality
+AI usage and credits: https://github.com/Muyu-Chen/Optional-Reality/blob/main/AI_USAGE.md
+
+CHAPTERS
+0:00 Meet Optional Reality
+0:05 Motion — Bring It Back
+0:21 Collisions — Bank Shot
+0:32 Devices — A Little Stored Energy
+
+AUDIO CREDITS
+English AI narration: Google Gemini 3.8 Flash TTS, prebuilt Kore voice.
+Original music: “A Little Different World,” composed in code for Optional Reality with Codex assistance; new arrangement of the game's original melody. No third-party samples or music recordings.
+Gameplay cues: reconstructed in post from the game's original synthesized sound designs and timed to the recorded actions.
+
+UPLOAD FILES
+youtube-demo.mp4 — 1280 × 720, 30 fps, H.264 video, stereo AAC audio, 47 seconds.
+narration.en.srt — English voiceover subtitles, uploaded separately in YouTube Studio.
+
+The music/SFX loop shown on the website is gameplay-sound.mp4. The original silent source is gameplay-loop.mp4.

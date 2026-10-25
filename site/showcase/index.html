@@ -6,22 +6,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="A looping gameplay demo of Optional Reality, with level selection, automatic typing and real three-star completions.">
   <title>Gameplay loop — Optional Reality</title>
-  <link rel="stylesheet" href="showcase.css">
+  <link rel="stylesheet" href="showcase.css?v=a6669e39">
 </head>
 <body>
   <main class="wrap">
     <header><a class="brand" href="https://optionalreality.site/"><span class="mark" aria-hidden="true">or</span> OPTIONAL REALITY</a><a class="play" href="https://optionalreality.site/">Play the game ↗</a></header>
     <h1>A message changes the world.</h1>
-    <div class="intro"><p>Three chapters. Visible automatic typing. Real physics, real three-star finishes. Sit back and watch the loop.</p><span class="badge">HD · SILENT · LOOPS</span></div>
+    <div class="intro"><p>Three chapters. Visible automatic typing. Real physics, real three-star finishes. Sit back and watch the loop.</p><span class="badge">HD · MUSIC + SFX · LOOPS</span></div>
     <section class="player" aria-label="Looping gameplay video">
       <video id="demo" controls autoplay loop muted playsinline preload="auto" poster="poster.jpg" aria-label="Optional Reality gameplay demo: level selection, automatic rule input and three full-score completions">
-        <source src="gameplay-loop.mp4" type="video/mp4">
+        <source src="gameplay-sound.mp4" type="video/mp4">
         <track kind="captions" src="captions.en.vtt" srclang="en" label="English">
         <track kind="captions" src="captions.zh.vtt" srclang="zh" label="中文">
-        <p>Your browser does not support this video. <a href="gameplay-loop.mp4">Download the MP4</a>.</p>
+        <p>Your browser does not support this video. <a href="gameplay-sound.mp4">Download the MP4</a>.</p>
       </video>
-      <div class="toolbar"><span class="status" id="status" role="status">Autoplay is muted. The video repeats automatically.</span><div class="toolbar-actions"><button type="button" id="restart">↻ Restart</button><button type="button" id="fullscreen">Fullscreen</button><button type="button" id="captions" aria-pressed="false">中文字幕</button><a href="gameplay-loop.mp4" download>Download MP4 ↓</a></div></div>
+      <div class="toolbar"><span class="status" id="status" role="status">Original music and gameplay cues. Tap Enable sound to listen.</span><div class="toolbar-actions"><button type="button" id="sound" aria-pressed="false">Enable sound</button><button type="button" id="restart">↻ Restart</button><button type="button" id="fullscreen">Fullscreen</button><button type="button" id="captions" aria-pressed="false">English captions</button><a href="gameplay-sound.mp4" download>Download MP4 ↓</a></div></div>
     </section>
+    <p class="editions"><a href="narrated.html">Watch with English narration ↗</a><a href="youtube-demo.mp4" download>Download YouTube-ready MP4 ↓</a><a href="narration.en.srt" download>English subtitles ↓</a></p>
     <nav class="chapters" aria-label="Jump to a demo chapter">
       <button type="button" class="chapter" data-seek="4.6"><span>01 · MOTION</span><strong>Bring It Back</strong><small>Brake a drift. Keep the momentum. Find the way home.</small></button>
       <button type="button" class="chapter" data-seek="20.833333"><span>02 · COLLISIONS</span><strong>Bank Shot</strong><small>Change elasticity and let a real angled collision do the turning.</small></button>
@@ -29,6 +30,6 @@
     </nav>
     <footer><p>Recorded gameplay with scripted input. These examples use the local parser.</p><p><a href="https://github.com/Muyu-Chen/Optional-Reality/blob/main/AI_USAGE.md">AI usage & credits</a><a href="https://github.com/Muyu-Chen/Optional-Reality">GitHub repository ↗</a></p></footer>
   </main>
-  <script src="showcase.js" defer></script>
+  <script src="showcase.js?v=8391a525" defer></script>
 </body>
 </html>
