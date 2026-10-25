@@ -11,8 +11,12 @@
   border-radius:22px;
   background:#fffcf6f7;
   color:var(--ink);
+  opacity:1;
+  transition-property:opacity;
+  transition-timing-function:ease-out;
   animation:briefing-arrive .18s ease-out
 }
+.initial-briefing--fading { opacity:0 }
 .initial-briefing header { display:flex;align-items:center;justify-content:space-between;gap:12px }
 .initial-briefing header>span { color:var(--muted);font-size:12px;font-weight:750;letter-spacing:1.4px }
 .initial-briefing header button { border:0;background:transparent;font-size:24px;line-height:1;padding:2px 6px }
@@ -35,4 +39,4 @@
   .initial-briefing dt { font-size:14px }
   .initial-briefing dd { font-size:16px }
 }
-@media(prefers-reduced-motion:reduce) { .initial-briefing { animation:none } }
+@media(prefers-reduced-motion:reduce) { .initial-briefing { animation:none;transition:none } }

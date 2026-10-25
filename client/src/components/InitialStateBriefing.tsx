@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { LevelDefinition } from '../levels/types';
 import { initialStateSummary } from '../levels/initial-state';
-import { useBriefingTimer } from '../game/useBriefingTimer';
+import { INITIAL_STATE_FADE_MS, useBriefingTimer } from '../game/useBriefingTimer';
 
 export function InitialStateBriefing({ level, suspended, started }: {
   level: LevelDefinition; suspended: boolean; started: boolean;
@@ -9,10 +9,15 @@ export function InitialStateBriefing({ level, suspended, started }: {
   const summary = useMemo(() => initialStateSummary(level), [level]);
   const [x, y] = level.initialAcceleration;
   const angle = Math.atan2(y, x) * 180 / Math.PI;
-  const { visible, dismiss } = useBriefingTimer(suspended, started);
+  const { visible, fading, setHovered, setFocused, dismiss } = useBriefingTimer(suspended, started);
   if (!visible) return null;
   return (
-    <section className="initial-briefing glass" role="status" aria-label="Initial state">
+    <section className={`initial-briefing glass${fading?' initial-briefing--fading':''}`} role="status" aria-label="Initial state"
+      style={{transitionDuration:`${INITIAL_STATE_FADE_MS}ms`}}
+      onMouseEnter={()=>setHovered(true)} onMouseLeave={()=>setHovered(false)}
+      onFocusCapture={()=>setFocused(true)} onBlurCapture={event=>{
+        if(!event.currentTarget.contains(event.relatedTarget))setFocused(false);
+      }}>
       <header>
         <span>BEFORE YOU BEGIN</span>
         <button aria-label="Dismiss initial state" onClick={dismiss}>×</button>
