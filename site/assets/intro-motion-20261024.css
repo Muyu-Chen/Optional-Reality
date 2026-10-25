@@ -1,0 +1,13 @@
+/* Local Canvas illustrations; old GIFs remain available as source assets. */
+.media-frame.diagram-frame { position:relative;background:#fcf5e8;border-color:#d4c4a7;border-radius:12px;box-shadow:0 8px 24px #49371909 }
+.media-frame.diagram-frame .animation { display:none }
+.media-frame.diagram-frame .poster { display:block }
+.diagram-canvas { display:none;width:100%;height:100%;aspect-ratio:16/9 }
+.media-frame.diagram-ready .diagram-canvas { display:block }
+.media-frame.diagram-ready .poster { display:none }
+.media-frame.diagram-static .diagram-canvas { display:none }
+.media-frame.diagram-static .poster { display:block }
+@media(prefers-reduced-motion:reduce) {
+  .media-frame.diagram-frame .diagram-canvas { display:none }
+  .media-frame.diagram-frame .poster { display:block }
+}

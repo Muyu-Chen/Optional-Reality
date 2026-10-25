@@ -10,7 +10,7 @@
 - Optional Reality 介绍页：`/var/www/muu-tech/releases/20261024-optional-reality-intro-spring-rules/`
 - Apache 80/443 的 DocumentRoot：`/var/www/muu-tech/current`
 
-此前的中文介绍页保留在 `20261024-optional-reality-intro/`，首个基础英文版保留在 `20261024-optional-reality-intro-en/`。英文与动画基础版保留在 `20261024-optional-reality-intro-media/`，首屏保留淡色球与连续绿色虚线；当前左侧 GIF 展示悬空、加重力、吃星星、弹簧压缩与回弹、再次下落、反转重力后上升的完整实验。
+此前的中文介绍页保留在 `20261024-optional-reality-intro/`，首个基础英文版保留在 `20261024-optional-reality-intro-en/`。英文与动画基础版保留在 `20261024-optional-reality-intro-media/`，首屏保留淡色球与连续绿色虚线；当时左侧 GIF 展示悬空、加重力、吃星星、弹簧压缩与回弹、再次下落、反转重力后上升的完整实验。
 
 两个站点保存在独立目录，通过 `current` **软链接**选择。目录不使用硬链接；切换时创建临时软链接，再用同目录 `mv -Tf` 原子替换。旧目录始终保留。
 
@@ -55,7 +55,15 @@ ssh -o BatchMode=yes -o User=root muuyyy \
 - 介绍页的本站静态脚本只处理 GitHub 提示与动画暂停，不调用 API、不加载外部字体或资源，沿用现有严格 CSP。
 - 以后上线真实应用时，应单独部署受管理的后端，再按需要添加 API 反代和最小 CSP 调整。
 
-## 替换示意图
+## 当前介绍页动画
+
+介绍页保留原首屏 SVG，下面两张示意图改用本地 Canvas 模块，不再下载 GIF。`intro-motion-20261024.js` 负责入口和暂停，`diagram-player-20261024.js` 管理时钟/可见性/清理，spring、orbit、timeline、paint 文件分别保存绘制和运动。原 PNG 作为无 Canvas 或减少动态效果时的静态后备。两幅图都是概念示意，不与游戏世界连接。
+
+弹簧使用连续胡克弹力和阻尼，不重设接触/释放速度；能量条反映弹性势能，回弹时下降。轨道图采用连续椭圆运动和指向中心的力箭头。隐藏、离屏或手动暂停时停止计时，恢复不追赶丢失帧。部署时需要把整个 `site/` 连同其模块文件一起发布。
+
+`npm run test:diagrams` 验证运动连续性、能量、帧率、暂停、减少动态效果、后备和清理；已包含在 `npm test`。
+
+## 早期示意图文件（保留）
 
 - 首屏斜坡图为 `site/index.html` 中的 SVG，重力标注和水平轨迹可直接编辑。
 - 弹簧：`site/assets/gravity-spring-rules.gif` 与 `gravity-spring-rules-poster.png`。

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "concurrently -k -n api,web \"npm:dev:api\" \"npm:dev:web\"",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --root .",
+    "test": "vitest run --root . && npm run test:diagrams",
+    "test:diagrams": "node --test scripts/intro-animation.test.mjs",
     "check:live": "tsx scripts/check-live-compiler.ts",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 5173",

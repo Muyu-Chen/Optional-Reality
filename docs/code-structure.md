@@ -73,3 +73,7 @@
 - 修改发送与重试：改 `useGameSession`，继续验证消息与世界状态一致、旧请求失效、教学暂停不被绕过。
 
 这些模块与新增关卡没有引入额外依赖。验证使用 `npm test`、`npm run build` 与浏览器操作，记录见 [验收说明](./verification.md)。
+
+## 介绍页示意动画
+
+`site/assets/intro-motion-20261024.js` 绑定两张示意图和暂停按钮；`diagram-player-20261024.js` 管理独立的绘图时钟、DPR、离屏/隐藏暂停、减少动态效果和销毁。`diagram-timeline-20261024.js` 保存弹簧的连续力学时间线，spring/orbit/paint 模块负责绘制。它们不导入游戏运行层、不调用 API。`scripts/intro-animation.test.mjs` 用 Node 原生测试运行，`npm test` 在 Vitest 后自动执行。
