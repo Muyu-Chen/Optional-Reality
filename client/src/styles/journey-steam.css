@@ -43,12 +43,11 @@
 .journey-shell--title .title-illustration { border-radius:32px;object-fit:contain;filter:drop-shadow(0 18px 25px #36637b12) }
 .journey-shell--title .journey-art-caption { bottom:0;color:#456b7b;transform:none }
 
-/* A single clean circular illustration, matching the original title composition. */
+/* The original curved SVG silhouette owns the outline, not a geometric crop. */
 .journey-shell--title .title-illustration {
-  aspect-ratio:1;
-  object-fit:cover;
-  clip-path:circle(50% at 50% 50%);
-  border-radius:50%;
+  aspect-ratio:auto;
+  clip-path:none;
+  border-radius:0;
   mask-image:none;
   filter:none;
 }
