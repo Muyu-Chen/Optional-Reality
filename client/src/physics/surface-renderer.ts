@@ -5,18 +5,20 @@ import { sceneFonts } from './drawing-theme';
 
 function drawFrictionMarks(ctx: CanvasRenderingContext2D, track: TrackDefinition, friction: number) {
   const amount = Math.sqrt(Math.max(0,Math.min(1,friction)));
-  ctx.strokeStyle=physicsColours.friction;ctx.lineWidth=1.5;
+  // Stationary grains sit inside the actual surface, rather than reading as belt treads.
+  ctx.save();ctx.strokeStyle='#def7e8';ctx.lineWidth=1.5;ctx.globalAlpha=.3+.4*amount;
   for(let i=1;i<track.points.length;i++) {
     const [x,y]=track.points[i-1], [ex,ey]=track.points[i];
-    const length=Math.hypot(ex-x,ey-y), dx=(ex-x)/length, dy=(ey-y)/length;
-    const offset=track.thickness/2+3;
-    ctx.beginPath();ctx.moveTo(x+dy*offset,y-dx*offset);ctx.lineTo(ex+dy*offset,ey-dx*offset);ctx.stroke();
-    if(friction<=0)continue;
-    for(let d=8;d<length-8;d+=24-16*amount) {
-      const px=x+dx*d+dy*offset,py=y+dy*d-dx*offset;
-      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+dx*4+dy*(2+6*amount),py+dy*4-dx*(2+6*amount));ctx.stroke();
+    const length=Math.hypot(ex-x,ey-y);
+    if(length<1)continue;
+    const dx=(ex-x)/length,dy=(ey-y)/length,grain=track.thickness*(.04+.22*amount);
+    for(let d=9;d<length-8;d+=23-13*amount) {
+      const px=x+dx*d,py=y+dy*d;
+      ctx.beginPath();ctx.moveTo(px-dx*1.5+dy*grain,py-dy*1.5-dx*grain);
+      ctx.lineTo(px+dx*1.5-dy*grain,py+dy*1.5+dx*grain);ctx.stroke();
     }
   }
+  ctx.restore();
 }
 
 export function drawSurface(ctx: CanvasRenderingContext2D, track: TrackDefinition, rules: RuleState) {

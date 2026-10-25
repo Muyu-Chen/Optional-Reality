@@ -28,9 +28,27 @@ describe('scene-defined surface names', () => {
     const next=applyRules(initialRules(catchCup),[parsed.operation],ruleContext(catchCup));
     expect(next.values.world.restitution).toBe(.5);expect(next.values['cup-base'].restitution).toBe(1.05);
   });
-  it('supports friction both globally and on the named runway', () => {
-    for(const [text,target] of [['Set surface friction to 0.3','world'],['Set runway friction to 0.3','runway']] as const) {
+  it('supports the Grip surface name, its aliases and existing runway messages', () => {
+    for(const [text,target] of [
+      ['Set surface friction to 0.3','world'],
+      ['Set grip surface friction to 0.3','runway'],
+      ['Set grip friction to 0.3','runway'],
+      ['Set friction pad friction to 0.3','runway'],
+      ['设置摩擦表面摩擦为0.3','runway'],
+      ['设置摩擦板摩擦为0.3','runway'],
+      ['Set runway friction to 0.3','runway'],
+      ['设置跑道摩擦为0.3','runway'],
+    ] as const) {
       expect(parseCommand(text,ruleContext(frictionRunway)).operation).toEqual({type:'set_property',target,property:'friction',value:.3});
     }
+  });
+  it('applies the named Grip surface rule without changing environment acceleration', () => {
+    const context=ruleContext(frictionRunway),before=initialRules(frictionRunway);
+    const parsed=parseCommand('Set grip surface friction to 0.3',context);
+    expect(parsed.operation).toBeDefined();
+    const after=applyRules(before,[parsed.operation],context);
+    expect(after.values.runway.friction).toBe(.3);
+    expect(after.acceleration).toEqual(before.acceleration);
+    expect(after.values.world.friction).toBe(before.values.world.friction);
   });
 });
