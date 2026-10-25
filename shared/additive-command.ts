@@ -51,6 +51,7 @@ export function parseAdditiveCommand(input: string, context?: RuleContext): { op
     : { error: 'Prepare this additive change with AI; name one existing target and property clearly.' };
 }
 
+
 /** Prevent a model from replacing a clear single "+2" request with "×2". */
 export function checkAdditiveMeaning(input: string, operations: readonly Operation[]) {
   const parts = clauses(input), intents = parts.flatMap(part => additiveIntent(part) ?? []);
