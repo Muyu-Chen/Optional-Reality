@@ -62,12 +62,12 @@ describe('title screen and chapter selection', () => {
     await click('Continue journey');
     expect(lab()).not.toBe(old); expect(lab().world.tick).toBe(0); expect(lab().world.started).toBe(false);
   });
-  it('offers all nine levels across three chapters, with real previews and no invented locks', async () => {
+  it('offers all fifteen levels across three chapters, with real previews and no invented locks', async () => {
     await openFrontDoor(); await click('Choose a level');
     expect(window.location.search).toBe('?view=levels');
     const chapters = within(screen.getByRole('navigation', { name: 'Chapters' }));
     const seen = new Set<string>();
-    for (const [name, count] of [['Motion', 2], ['Collisions', 4], ['Devices', 3]] as const) {
+    for (const [name, count] of [['Motion', 5], ['Collisions', 7], ['Devices', 3]] as const) {
       await act(async () => fireEvent.click(chapters.getByRole('button', { name: new RegExp(name) })));
       const buttons = screen.getAllByRole('button', { name: /^Play \d/ });
       expect(buttons).toHaveLength(count);
@@ -76,7 +76,7 @@ describe('title screen and chapter selection', () => {
         expect(button.hasAttribute('disabled')).toBe(false); seen.add(button.getAttribute('aria-label')!);
       }
     }
-    expect(seen.size).toBe(9);
+    expect(seen.size).toBe(15);
     await click('Play 03.3 The Last Order');
     expect(lab().world.level.id).toBe('reality-breakdown');
     expect(window.location.search).toBe('?level=reality-breakdown');

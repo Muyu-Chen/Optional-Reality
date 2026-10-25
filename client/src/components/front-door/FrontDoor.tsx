@@ -40,7 +40,7 @@ export function FrontDoor({ view, progress, storageAvailable, onPlay, onTitle, o
             </div>
             {mobile && <aside className="journey-desktop-notice" role={mobileNotice ? 'alert' : 'note'} key={String(mobileNotice)}>
               <strong>Desktop only</strong><p>{mobileNotice ? 'This game cannot be played on a phone. Open this website on a computer with a keyboard and mouse to play.' : 'Enjoy the introduction on your phone. To play, open this website on a computer with a keyboard and mouse.'}</p></aside>}
-            <p className="journey-continue-note">{recent ? <>Return to <strong>{recent.title}</strong>.<br />A fresh attempt; your messages stay with you.</> : 'Nine little worlds. More than one way through.'}</p>
+            <p className="journey-continue-note">{recent ? <>Return to <strong>{recent.title}</strong>.<br />A fresh attempt; your messages stay with you.</> : `${levels.length} little worlds. More than one way through.`}</p>
           </div>
           <div className="journey-title-art"><TitleIllustration /><span className="journey-art-caption">POWERED BY STEAM.<br /><strong>REWRITTEN BY YOU.</strong></span></div>
         </section>}

@@ -17,7 +17,10 @@ export function editableRuleLabels(level: LevelDefinition): string[] {
 
 /** Prefer intuitive wording in the composer; exact values remain in the queue. */
 export function naturalRuleExample(level:LevelDefinition) {
-  if(['bounce','multi-bounce','catch-cup'].includes(level.id))return 'Make all surfaces almost perfectly bouncy';
+  if(['bounce','multi-bounce','catch-cup','bank-shot','one-last-bounce'].includes(level.id))return 'Make all surfaces almost perfectly bouncy';
+  if(level.id==='return-to-dock')return 'Make the return wall very bouncy';
+  if(level.id==='bring-it-back')return 'Give the world a gentle leftward acceleration';
+  if(level.id==='side-door')return 'Give the world a gentle rightward acceleration';
   if(level.id==='friction-runway')return 'Make the surface grippy';
   if(level.id==='reality-breakdown')return 'Make the conveyor much slower';
   return 'Give the ball a gentle upward acceleration';

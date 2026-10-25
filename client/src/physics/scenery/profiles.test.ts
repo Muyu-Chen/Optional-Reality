@@ -14,10 +14,10 @@ function canvas() {
 }
 
 describe('individual level illustration profiles',()=>{
-  it('explicitly covers all nine shipped levels and gives each a different visual signature',()=>{
+  it('explicitly covers every level and gives each a different visual signature',()=>{
     expect(Object.keys(sceneryProfiles).sort()).toEqual(levels.map(level=>level.id).sort());
     const signatures=Object.values(sceneryProfiles).map(({name:_,...art})=>JSON.stringify(art));
-    expect(new Set(signatures).size).toBe(9);
+    expect(new Set(signatures).size).toBe(levels.length);
     expect(sceneryProfile('unknown')).toBe(sceneryProfiles.bounce);
     expect(sceneryProfile('__proto__')).toBe(sceneryProfiles.bounce);
   });

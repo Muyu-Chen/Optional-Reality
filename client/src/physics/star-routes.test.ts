@@ -6,6 +6,7 @@ import { oneMoreTurn } from '../levels/one-more-turn';
 import { prepareMessage, messageOperations } from '../domain/queue';
 import { ruleContext } from '../levels/rules';
 import { PhysicsWorld } from './world';
+import { fullScoreSolution } from '../test/level-solutions';
 
 function apply(world:PhysicsWorld,text:string) {
   const message=prepareMessage(text,text,ruleContext(world.level),world.rules);
@@ -24,19 +25,10 @@ describe('ordinary and full-score routes',()=>{
     const world=new PhysicsWorld(level);let sent=false;
     try{
       expect(world.stars.total).toBeGreaterThanOrEqual(3);
-      if(level.id==='gravity-lab' || level.id==='one-more-turn')apply(world,'add gravity');
-      else if(level.id==='bounce')apply(world,'Set surface bounce to 0');
-      else if(level.id==='multi-bounce')apply(world,'Set surface bounce to 0.9');
-      else if(level.id==='friction-runway')apply(world,'Set surface friction to 0');
-      else for(const text of level.instructions.exampleMessages)apply(world,text);
+      const route=fullScoreSolution(level);
+      for(const text of route.initial)apply(world,text);
       play(world,w=>{
-        if(sent)return;
-        const text=level.id==='gravity-lab'&&w.ball.position.x>=600 ? 'stop gravity'
-          : level.id==='bounce'&&w.ball.position.x>=490 ? 'acceleration upward 2'
-          : level.id==='multi-bounce'&&w.tick>=480 ? 'gravity downward 4'
-          : level.id==='friction-runway'&&w.ball.position.x>=580 ? 'surface friction 0.3'
-          : level.id==='one-more-turn'&&w.devices.firedSprings.size&&w.ball.velocity.y>0&&w.ball.position.y>=330 ? 'reverse gravity' : '';
-        if(text){apply(w,text);sent=true;}
+        if(!sent&&route.transition?.when(w)){apply(w,route.transition.message);sent=true;}
       });
       expect(world.won,JSON.stringify(world.snapshot())).toBe(true);
       expect(world.stars.fullScore,JSON.stringify([...world.stars.collected])).toBe(true);

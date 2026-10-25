@@ -7,7 +7,17 @@ import { multiBounce } from './multi-bounce';
 import { frictionRunway } from './friction-runway';
 import { catchCup } from './catch-cup';
 import { oneMoreTurn } from './one-more-turn';
+import { bringItBack } from './bring-it-back';
+import { overTheWall } from './over-the-wall';
+import { sideDoor } from './side-door';
+import { bankShot } from './bank-shot';
+import { returnToDock } from './return-to-dock';
+import { oneLastBounce } from './one-last-bounce';
 
 // Ordered entry points; the bakery is an advanced experiment, not a required second lesson.
-export const levels = [gravityLab, oneMoreTurn, bounce, multiBounce, frictionRunway, catchCup, toaster, breeze, realityBreakdown] as const;
+export const levels = [
+  gravityLab, oneMoreTurn, bringItBack, overTheWall, sideDoor,
+  bounce, multiBounce, frictionRunway, catchCup, bankShot, returnToDock, oneLastBounce,
+  toaster, breeze, realityBreakdown,
+] as const;
 export const findLevel = (id: string) => levels.find(level => level.id === id);
