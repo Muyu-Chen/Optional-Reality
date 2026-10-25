@@ -10,13 +10,14 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 
 ## 当前可玩内容
 
-面向 SBUHacks 2026，已实现三个等级、八个递进小关：
+面向 SBUHacks 2026，已实现三个等级、九个递进小关：
 
 | 等级 | 小关 | 主要学习内容 |
 | --- | --- | --- |
 | 1 · Motion | 01 Gravity Lab | 零重力起步，沿斜坡运动，在离轨时取消重力 |
-| 2 · Collisions | 02.1 A Little More Bounce | 修改地面弹性，反弹进入高处出口 |
-| 2 · Collisions | 02.2 Not Too High | 两次反弹，第一次强、第二次弱 |
+| 1 · Motion | 01.2 One More Turn | 落下取星、弹簧自动弹出，再改变加速度取得高处星 |
+| 2 · Collisions | 02.1 A Little More Bounce | 直接反弹可通关，低弹性后向上加速可收齐星星 |
+| 2 · Collisions | 02.2 Not Too High | 满分路线：高弹性取高星，再增大向下加速度回到出口 |
 | 2 · Collisions | 02.3 Brake Before the Edge | 青色摩擦跑道，完整停靠滑块 |
 | 2 · Collisions | 02.4 Catch Tutorial | 短教学：分别修改发射板与杯底，可以提前设置 |
 | 3 · Devices | 03.1 A Little Stored Energy | 学习面包机的压缩、蓄力与释放 |
@@ -28,9 +29,10 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 ## 游戏操作
 
 - 全屏场景，右下半透明输入窗；Enter 将消息排队，Shift+Enter 换行。
-- 消息自动解析，右上 **Send now** 执行队首，下一条自动补位。准备消息不改变世界。
+- 消息自动解析，每条旁边都有小号 **Send now** 和删除按钮，可直接选择执行；批量按列表顺序。准备消息不改变世界。
 - 简单指令可本地准备，自由语言使用 DeepSeek Flash。等待 AI 时暂停；执行已准备消息不等待网络。
 - 左侧字幕显示实际修改结果，几秒后淡出。规则参数、提示、批量发送与历史收在菜单里。
+- 每关三颗星；到达出口可过关，收齐后到达出口才获满分，重试恢复全部星星。
 - 首次有效发送开始 30 秒模拟倒计时；普通暂停、API 等待与教学暂停不消耗模拟时间。
 - **Try again** 恢复初始世界和额度，原消息重新待发，保留已解析操作以比较发送时机。
 - 面包机每次接触会蓄力约 0.6 秒；首次额外暂停教学，Continue 后恢复。重试不重复打断，菜单可重看教学。
@@ -40,7 +42,7 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 
 物理特性使用固定视觉语言：蓝色回弹纹、青色摩擦纹、橙色推动箭头、紫色重力方向。输入窗列出本关可修改项；设备的 Editable / Preset 与特性颜色分开。新增三关的玩法与验证见 [几何关卡说明](./docs/geometry-levels.md)，后续机关见 [机关设计提案](./docs/physics-mechanisms.md)。
 
-所有关卡共享重力、水平加速度、弹性和摩擦，教学提示推荐解法而不禁用基础物理量。`add acceleration right word` 会纠正为 `add acceleration rightward`，队列保留原文并展示理解结果。消息语义见 [共享物理规则与消息理解](./docs/command-language.md)。
+所有关卡共享加速度向量、弹性和摩擦；重力是竖直分量的输入别名，方向与强度都由同一向量表示。每个分量允许 -100 至 100 m/s²，向下 20 会保留为 +20。教学提示推荐解法而不禁用基础物理量。`add acceleration right word` 会纠正为 `add acceleration rightward`，队列保留原文并展示理解结果。消息语义见 [共享物理规则与消息理解](./docs/command-language.md)。
 
 基础能力、范围、单位和界面名称统一定义在 `shared/physics-capabilities.ts`。模型在每关收到相同的完整能力说明；关卡只补充对象、别名和预设权限。简单明确的消息走本地解析，口语和未识别错词由模型兜底理解，再由共享代码校验。
 
@@ -89,6 +91,8 @@ React + TypeScript + Vite 管理界面；Matter.js + Canvas 2D 运行、绘制�
 
 面包店绘图改编自 yihanzhao231 的 `temp/1024-zyh@30d802f`，物理和指令统一使用本项目运行层。旧关卡 ID `reality-breakdown` 保留。
 
-静态介绍页位于 `site/`，线上游戏为 [muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，已发布八关及兼容 API 后端。版本、备份与回退见 [线上游戏部署记录](./deploy/live-game.md)；早期介绍页备份见 [deploy/README.md](./deploy/README.md)。
+静态介绍页位于 `site/`，线上游戏为 [muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，已发布八关及兼容 API 后端；本轮九关、星星评分和向量规则尚未重新发布。版本、备份与回退见 [线上游戏部署记录](./deploy/live-game.md)；早期介绍页备份见 [deploy/README.md](./deploy/README.md)。
 
 线上游戏仅通过本站 HTTPS 转发调用模型，后端只监听回环端口，密钥留在服务器；健康检查为 `/api/health`。共享能力版本已完成本地与线上两轮各 85 条真实模型指令验收。
+
+满分路线、消息操作与向量语义见 [星星玩法约定](./docs/star-gameplay.md)；九关的具体路线见 [阶段式物理解谜](./docs/phase-puzzles.md)。

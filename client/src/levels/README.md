@@ -2,7 +2,7 @@
 
 每个小关导出只读 `LevelDefinition`，只定义数据。物理、绘图、输入与模型请求分别放在各自运行层。
 
-`progression.ts` 定义三个教学等级：1 运动，2 碰撞，3 机关。`catalog.ts` 按顺序注册八个小关：`gravity-lab`、`bounce`、`multi-bounce`、`friction-runway`、`catch-cup`、`toaster`、`breeze`、`reality-breakdown`。基础环境规则始终共享，不用等级白名单禁用。
+`progression.ts` 定义三个教学等级：1 运动，2 碰撞，3 机关。`catalog.ts` 按顺序注册九个小关：`gravity-lab`、`one-more-turn`、`bounce`、`multi-bounce`、`friction-runway`、`catch-cup`、`toaster`、`breeze`、`reality-breakdown`。基础环境规则始终共享，不用等级白名单禁用。
 
 `number` 是等级，`stage` 是同级的小关编号。`levelLabel()` 统一生成 01、02.1、03.1 等显示标签。新增三个关卡属于 02.2–02.4；旧 `bounce` ID 不变，只补上 02.1 的显示编号。
 
@@ -12,7 +12,7 @@
 | --- | --- |
 | `id / number / stage / title` | 稳定 ID、等级、小关及名称；消息按 ID 保存 |
 | `viewport` | 世界尺寸与每米坐标数，影响模拟单位与画面缩放 |
-| `timeLimitSeconds / initialGravity` | 模拟时限和初始重力，正数向下 |
+| `timeLimitSeconds / initialAcceleration` | 模拟时限和初始加速度 [x,y]，x 正向右、y 正向下 |
 | `ball` | 出生点、半径、弹性、初始速度；物体受保护 |
 | `tracks / guideLines / exit` | 碰撞轨道、装饰线与接触通关矩形 |
 | `devices` | 传送带、接触弹簧、风场、转轮、传感器和门 |
@@ -24,6 +24,7 @@
 | `tracks[].label / aliases` | 模型与本地命令可使用的表面名称、别名 |
 | `ball.shape` | 可选受保护滑块尺寸；未设置时仍是圆球 |
 | `exit.condition` | 可选 settle：完整进入目标、速度低于 maxSpeed（m/s）并连续停留 seconds；省略时接触即通关 |
+| `stars` | 至少三颗有唯一 ID、位置与拾取半径的星星；收齐可获满分，不锁出口 |
 | `openEdges` | 指定左右开放边缘，不创建隐形侧墙；摩擦跑道右侧开放 |
 | `instructions` | 目标、提示、场景别名、例子与输入建议 |
 
@@ -44,3 +45,5 @@
 面包机使用接触约束蓄力，`chargeSeconds` 为模拟时间；首次 charging 触发教学，Continue 才恢复。重试保留已见教学，Replay teaching 可重新启用。
 
 第三关保留旧 ID `reality-breakdown`。绘图改编自队友的面包店原型；旧 HTML 的独立物理与解析器不属于运行层。转轮有单独测试，但当前主线没有放置，避免一次引入过多机关。
+
+普通与满分路线见 [阶段式关卡](../../../docs/phase-puzzles.md)。星星配置、收集判定、绘图与评分分别位于关卡文件、stars.ts、star-renderer.ts、StarProgress.tsx；新弹簧绘图独立为 spring-renderer.ts。

@@ -29,6 +29,9 @@
 | `physics/scene-bodies.ts` | 按关卡创建轨道、边界与任务物体，保留刚体插入顺序 |
 | `physics/world.ts` | 固定时间步、规则应用、历史、教学与成败状态 |
 | `physics/goal.ts` | 独立的形状接触、完整进入、速度和连续停留判定；暂停时不推进 |
+| `physics/stars.ts` | 独立配置校验、真实形状与扫过路径拾取、计数与满分判定；不锁出口 |
+| `physics/star-renderer.ts`、`spring-renderer.ts` | 独立绘制未收集星星与几何弹簧状态，不推进模拟 |
+| `components/StarProgress.tsx` | HUD 与过关菜单共用的星星计数 |
 | `physics/devices.ts` | 接触判断、风场、传送带、蓄力、转轮和感应开门 |
 | `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
 | `physics/geometry-renderer.ts` | 前两级几何场景绘图 |
@@ -47,11 +50,13 @@
 
 `shared/rules.ts` 保存声明式操作与校验，`shared/commands.ts` 做简单本地解析，`shared/compiler.ts` 定义编译协议。服务端由 `app.ts` 处理 HTTP，`compiler.ts` 负责场景权限与提示词，`ai-client.ts` 适配模型请求，`config.ts` 读取后端环境变量。
 
+`shared/acceleration.ts` 保存统一向量、范围、显示名称与旧 gravity 操作归一化；关卡 initialAcceleration、规则 acceleration、遥测与事件均只有同一向量。
+
 `shared/physics-capabilities.ts` 统一基础属性、设备控制、范围、单位、词汇与显示名称，关卡只声明场景数据和预设保护。`server/src/compiler-prompt.ts` 独立组装固定能力目录、操作语义及 schema，动态状态和玩家文本置后；`compiler.ts` 只协调上下文校验、请求和响应校验。
 
 `shared/surface-target.ts` 从场景名称与别名解析局部表面；不识别的目标不退化为全局修改。关卡定义只放数据，目标判定与绘图均不通过关卡 ID 选择行为。
 
-`shared/command-language.ts` 只处理保守拼写归一化，`acceleration-command.ts` 解析加速度与单位；`rule-limits.ts` 对已知属性限幅并生成调整记录。客户端准备、API 编译和执行共享该策略，规则快照校验仍严格。`physics/acceleration-renderer.ts` 独立绘制水平力方向，不推进模拟。
+`shared/command-language.ts` 只处理保守拼写归一化，`acceleration-command.ts` 解析加速度与单位；`rule-limits.ts` 对已知属性限幅并生成调整记录。客户端准备、API 编译和执行共享该策略，规则快照校验仍严格。`physics/acceleration-renderer.ts` 独立绘制同一加速度向量的方向和分量，不推进模拟。
 
 ## 后续修改
 
