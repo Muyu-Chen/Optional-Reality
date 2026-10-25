@@ -6,7 +6,7 @@ import { advance, click, lab, rows, startGame } from '../test/game-harness';
 describe('geometry chapter queue and retry flow', () => {
   it.each([
     ['multi-bounce',360,'Surface bounce decreased to 0.5.'],
-    ['friction-runway',270,'Surface friction increased to 0.3.'],
+    ['friction-runway',170,'Surface friction increased to 0.3.'],
     ['catch-cup',400,'Cup base bounce decreased to 0.'],
   ] as const)('plays %s with prepared messages and retries without calling AI', async (id,ticks,caption) => {
     const {api}=await startGame(id);

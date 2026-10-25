@@ -9,8 +9,8 @@ describe('expanded motion and collision journey', () => {
   it.each([
     ['bring-it-back', 'over-the-wall'],
     ['over-the-wall', 'side-door'],
-    ['side-door', 'bounce'],
-    ['bank-shot', 'return-to-dock'],
+    ['side-door', 'bank-shot'],
+    ['bank-shot', 'bounce'],
     ['return-to-dock', 'one-last-bounce'],
     ['one-last-bounce', 'toaster'],
   ])('plays %s through the real queue, retains retry drafts, and advances to %s', async (id, next) => {
