@@ -5,7 +5,8 @@ import type { AiProviderConfig } from './config';
 export class CompilerError extends Error {
   constructor(message: string, readonly status = 502, readonly upstreamStatus?: number) { super(message); }
 }
-export async function requestJson(config: AiProviderConfig, system: string, user: string, signal?: AbortSignal, fetcher: typeof fetch = fetch) {
+export interface RepairConversation { previousReply: unknown; feedback: string }
+export async function requestJson(config: AiProviderConfig, system: string, user: string, signal?: AbortSignal, fetcher: typeof fetch = fetch, repair?: RepairConversation) {
   if (!config.apiKey) throw new CompilerError(`Add ${config.apiKeyEnv} to the server .env file and restart the API server.`, 503);
   const responseFormat = config.format === 'json_schema'
     ? { type: 'json_schema', json_schema: { name: 'physics_commands', strict: true, schema: z.toJSONSchema(ModelOutputSchema) } }
@@ -15,7 +16,8 @@ export async function requestJson(config: AiProviderConfig, system: string, user
     const response = await fetcher(`${config.baseUrl}/chat/completions`, {
       method: 'POST', redirect: 'error',
       headers: { 'content-type': 'application/json', authorization: `Bearer ${config.apiKey}` },
-      body: JSON.stringify({ model: config.model, messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+      body: JSON.stringify({ model: config.model, messages: [{ role: 'system', content: system }, { role: 'user', content: user },
+        ...(repair ? [{ role: 'assistant', content: JSON.stringify(repair.previousReply) }, { role: 'user', content: repair.feedback }] : [])],
         stream: false, max_tokens: 4096, temperature: .1, response_format: responseFormat,
         ...(config.thinking !== 'omit' && new URL(config.baseUrl).hostname === 'api.deepseek.com' ? { thinking: { type: config.thinking } } : {}),
         ...(config.provider === 'gemini' && config.reasoningEffort !== 'omit' ? { reasoning_effort: config.reasoningEffort } : {}),

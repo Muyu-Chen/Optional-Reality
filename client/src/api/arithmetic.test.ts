@@ -11,4 +11,5 @@ it('announces arithmetic support and accepts an unresolved additive operation', 
   const fetcher = vi.fn().mockResolvedValue(Response.json({ ...identity, messages: [{ id: 'm', operations: [operation] }] }));vi.stubGlobal('fetch', fetcher);
   expect((await prepareWithAI(request, new AbortController().signal)).messages[0].operations).toEqual([operation]);
   expect(fetcher.mock.calls[0][1].headers).toMatchObject({ 'x-rule-arithmetic': 'add-v1' });
+  expect(fetcher.mock.calls[0][1].headers).toMatchObject({ 'x-ai-review': 'staged-v1' });
 });

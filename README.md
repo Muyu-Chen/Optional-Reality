@@ -31,6 +31,8 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 - `/demo/` 从开始界面进入游戏，独立关卡页按三个章节展示九关；保留 `?level=...` 直达入口。继续最近小关会开启新一轮并保留消息草稿，通关后记录本机最佳星数。
 - 线上主入口为 [optionalreality.site](https://optionalreality.site/)，`www.optionalreality.site` 与 `muuyyy.cfd` 同样可用：根目录直接游戏，`/intro` 为介绍页，原 `/demo/` 保留。三个域名共用一张自动续期的 SAN 证书，配置与备份见 [域名和路由记录](./deploy/domains-and-routing.md)。
 - 全屏场景，右下半透明输入窗；**Enter 仅排队**，**Shift+Enter 只立即应用当前输入**，不连带执行旧消息。
+- 每次进入或重试关卡，显示 3 秒的[初始状态提示](./docs/initial-state-briefing.md)：初始运动、加速度、表面与机关状态；教学关闭后再显示，不启动计时。
+- 校验拒绝的模型结果会进行[一次 AI 对话修复](./docs/compilation-repair.md)。第二轮可执行解释直接进入 Ready，并显示 AI revised interpretation，由玩家查看后 Send now；这类结果即使用 Shift+Enter 发起也不自动应用。
 - Let It Roll、One More Turn 与 A Little More Bounce 首访显示居中的三步图示教学，模拟保持暂停；Let's play 只关闭并保留原队列。设置中的 How to play 可重看，刷新或重试不强制重复。
 - 消息自动解析，桌面侧栏优先呈现三条可操作摘要：18px 正文、彩色规则图标、28px 高的 **Send now** 和小删除按钮。小箭头展开完整原文、Understood as 与限幅详情；批量发送在管理菜单中。
 - 批量解析逐条返回：合法消息 Ready，错误只标记对应行，不阻止其他 Ready 消息发送；编辑与重试保留可复用结果。协议和整批错误边界见 [逐条编译结果](./docs/compilation-results.md)。

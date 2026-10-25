@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { compileRules } from './compiler';
 import { arithmeticForClient } from './compiler-arithmetic-compatibility';
 import { ARITHMETIC_HEADER, ARITHMETIC_VERSION } from '../../shared/arithmetic-protocol';
+import { reviewForClient } from './compiler-review-compatibility';
+import { AI_REVIEW_HEADER, AI_REVIEW_VERSION } from '../../shared/ai-review';
 import { CompilerError } from './ai-client';
 import type { AiConfig } from './config';
 import { COMPILER_PROTOCOL, COMPILER_PROTOCOL_HEADER } from '../../shared/compiler-protocol';
@@ -31,7 +33,10 @@ export function createApp(config: AiConfig, fetcher?: typeof fetch) {
     req.once('aborted', abort); res.once('close', abort);
     res.set('Cache-Control', 'no-store');
     try {
-      const result = arithmeticForClient(await compileRules(req.body, config, controller.signal, fetcher), req.get(ARITHMETIC_HEADER) === ARITHMETIC_VERSION);
+      const result = reviewForClient(
+        arithmeticForClient(await compileRules(req.body, config, controller.signal, fetcher), req.get(ARITHMETIC_HEADER) === ARITHMETIC_VERSION),
+        req.get(AI_REVIEW_HEADER) === AI_REVIEW_VERSION,
+      );
       const failures = result.messages.flatMap((message, index) => 'error' in message ? [{ index, error: message.error }] : []);
       if (failures.length) {
         const legacy = req.get(COMPILER_PROTOCOL_HEADER) !== COMPILER_PROTOCOL;

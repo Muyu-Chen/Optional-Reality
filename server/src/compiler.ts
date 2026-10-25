@@ -6,6 +6,8 @@ import { CompilerError, requestJson } from './ai-client';
 import type { AiConfig } from './config';
 import { COMPILER_SYSTEM, compilerInput } from './compiler-prompt';
 import { withProviderFallback } from './provider-fallback';
+import { repairCompilation } from './compilation-repair';
+import { withCompilationSignal } from './compilation-budget';
 
 export async function compileRules(input: unknown, config: AiConfig, signal?: AbortSignal, fetcher?: typeof fetch) {
   const request = CompileRequestSchema.parse(input);
@@ -14,9 +16,12 @@ export async function compileRules(input: unknown, config: AiConfig, signal?: Ab
   const context = ruleContext(level);
   validateRuleState(request.rules, context);
   const user = compilerInput(level, request, context);
-  return withProviderFallback(config, async (provider, attemptSignal) => {
+  const deadline = AbortSignal.any([AbortSignal.timeout(config.timeoutMs), ...(signal ? [signal] : [])]);
+  const first = await withCompilationSignal(deadline, () => withProviderFallback(config, async (provider, attemptSignal) => {
     const output = await requestJson(provider, COMPILER_SYSTEM, user, attemptSignal, fetcher);
-    return validateCompilation(request, output, context);
-  }, signal, request.requestId);
+    return { output, result: validateCompilation(request, output, context), provider };
+  }, deadline, request.requestId), signal);
+  return repairCompilation(request, first.output, first.result, context,
+    conversation => requestJson(first.provider, COMPILER_SYSTEM, user, deadline, fetcher, conversation), deadline, signal);
 }
 export type { CompileRequest };

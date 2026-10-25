@@ -7,6 +7,7 @@ import { mergeCompilationResults } from '../domain/compilation-results';
 import { initialRules, ruleContext } from '../levels/rules';
 import type { LevelDefinition } from '../levels/types';
 import type { CanvasLab } from '../physics/canvas-lab';
+import { needsAIReview } from '../../../shared/ai-review';
 
 interface PreparationOptions { draftsOnly?:boolean; messageId?:string; onReady?:(ids:string[])=>void }
 
@@ -80,10 +81,12 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
       const result = await prepareWithAI(request, ticket.signal);
       if (!compilation.isCurrent(ticket)) return;
       const merged = mergeCompilationResults(messageRef.current, result.messages, lab.world.rules, context);
-      const applyImmediately=options.onReady && immediateRef.current===ticket;
+      const applyImmediately=options.onReady && immediateRef.current===ticket
+        && !needsAIReview(merged.messages.find(message => message.id === options.messageId));
       updateMessages(merged.messages,{autoPrepare:false});
       if(applyImmediately && options.messageId && merged.readyIds.includes(options.messageId))options.onReady!([options.messageId]);
-      else onNotice(merged.notice);
+      else onNotice(merged.messages.some(message => merged.readyIds.includes(message.id) && needsAIReview(message))
+        ? `${merged.notice} Review AI revisions before Send now.` : merged.notice);
     } catch (error) {
       if (!compilation.isCurrent(ticket)) return;
       const reason = error instanceof Error ? error.message : 'Could not read this rule. Edit it and try again.';

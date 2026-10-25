@@ -22,16 +22,31 @@ describe('additive rule messages', () => {
     await act(() => fireEvent.click(within(rows()[1]).getByRole('button', { name: 'Send now' })));
     await click('Send now');expect(lab().world.rules.values.world.restitution).toBe(1);
   });
-  it('rechecks model arithmetic per message before enabling Send now', async () => {
+  it('shows an executable AI revision for user review without repeating a meaning rejection or auto-applying it', async () => {
     const { api } = await startGame('bounce', new ControlledApi(), ['padding 弹力+2', 'Please pull downward gently.']);
     const { rules: _rules, messages, ...identity } = api.pending[0].request;
     await api.respond(0, Response.json({ ...identity, messages: [
-      { id: messages[0].id, operations: [{ type: 'scale_property', target: 'world', property: 'restitution', factor: 2 }] },
+      { id: messages[0].id, operations: [{ type: 'scale_property', target: 'world', property: 'restitution', factor: 2 }], understoodAs: 'AI revised interpretation: restitution × 2' },
       { id: messages[1].id, operations: [{ type: 'set_gravity', acceleration: 1 }] },
     ] }));
-    expect(rows()[0].textContent).toContain('Needs editing');
-    expect(within(rows()[0]).getByRole<HTMLButtonElement>('button', { name: 'Send now' }).disabled).toBe(true);
+    expect(rows()[0].textContent).toContain('Ready');
+    expect(rows()[0].textContent).toContain('restitution × 2');
+    expect(within(rows()[0]).getByRole<HTMLButtonElement>('button', { name: 'Send now' }).disabled).toBe(false);
     expect(within(rows()[1]).getByRole<HTMLButtonElement>('button', { name: 'Send now' }).disabled).toBe(false);
     expect(lab().world.commandCount).toBe(0);
+  });
+  it('waits for Send now when a Shift+Enter request returns an AI revision', async () => {
+    const { api } = await startGame('gravity-lab');
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Please make every surface more lively.' } });
+    await act(() => fireEvent.keyDown(screen.getByRole('textbox'), { key: 'Enter', shiftKey: true }));
+    const { rules: _rules, messages, ...identity } = api.pending[0].request;
+    await api.respond(0, Response.json({ ...identity, messages: [{ id: messages[0].id,
+      operations: [{ type: 'set_property', target: 'world', property: 'restitution', value: .9 }],
+      understoodAs: 'AI revised interpretation: restitution = 0.9',
+    }] }));
+    expect(lab().world.commandCount).toBe(0);expect(lab().world.running).toBe(false);
+    expect(rows()[0].textContent).toContain('Ready');
+    await click('Send now');expect(lab().world.rules.values.world.restitution).toBe(.9);
+    expect(lab().world.running).toBe(true);
   });
 });

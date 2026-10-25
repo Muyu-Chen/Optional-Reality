@@ -1,7 +1,6 @@
 import { failedCompilationMessage, validateCompiledOperations, type CompilationMessage } from '../../../shared/compilation-message';
 import type { RuleContext, RuleState } from '../../../shared/rules';
 import type { Message } from './queue';
-import { checkAdditiveMeaning } from '../../../shared/additive-command';
 
 /** Recheck each successful result against the current scene, then merge by ID. */
 export function mergeCompilationResults(messages: readonly Message[], results: readonly CompilationMessage[], current: RuleState, context: RuleContext) {
@@ -9,8 +8,6 @@ export function mergeCompilationResults(messages: readonly Message[], results: r
   const checked = results.map(result => {
     if ('error' in result) return result;
     try {
-      const original = messages.find(message => message.id === result.id);
-      if (original) checkAdditiveMeaning(original.text, result.operations);
       const limited = validateCompiledOperations(preview, result.operations, context);
       preview = limited.state;
       const adjustments = [...new Map([...(result.adjustments || []), ...limited.adjustments]

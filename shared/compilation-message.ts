@@ -37,12 +37,14 @@ export function validateCompiledOperations(current: RuleState, input: unknown, c
   return { ...limited, state };
 }
 
-export function compileModelMessage(input: unknown, original: { id: string; text: string }, current: RuleState, context: RuleContext): { message: CompilationMessage; state: RuleState } {
+export function compileModelMessage(input: unknown, original: { id: string; text: string }, current: RuleState, context: RuleContext, checkMeaning = true): { message: CompilationMessage; state: RuleState } {
   try {
     const model = ModelMessageSchema.parse(input);
     if (model.error !== null) return { message: failedCompilationMessage(original.id, model.error), state: current };
-    checkForceUnits(original.text);
-    checkAdditiveMeaning(original.text, model.operations);
+    if (checkMeaning) {
+      checkForceUnits(original.text);
+      checkAdditiveMeaning(original.text, model.operations);
+    }
     const { operations, adjustments, state } = validateCompiledOperations(current, model.operations, context);
     return { state, message: { id: original.id, operations,
       ...(model.understoodAs && model.understoodAs !== original.text.trim() ? { understoodAs: model.understoodAs } : {}),

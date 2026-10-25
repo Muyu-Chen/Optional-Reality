@@ -10,11 +10,13 @@ import { prepareMessage } from '../../client/src/domain/queue';
 // Mocked contract checks do not measure a provider's language understanding.
 // Real semantic cases also live in scripts/check-live-compiler.ts.
 describe('meaning-first compiler prompt contract (mocked provider)', () => {
-  it.each(['Give the ball an upward buoyancy of 5 newtons.', '向上浮力 5 N', '向上浮力五牛顿'])('rejects silent force-to-acceleration conversion in a model result: %s', async text => {
+  it.each(['Give the ball an upward buoyancy of 5 newtons.', '向上浮力 5 N', '向上浮力五牛顿'])('flags questionable units first, then exposes a final AI interpretation for review without applying it: %s', async text => {
     const level = levels[0], rules = initialRules(level), before = structuredClone(rules);
-    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ messages: [{ id: 'm', error: null, operations: [{ type: 'set_property', target: 'world', property: 'acceleration_y', value: -5 }] }] }) } }] }));
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => Response.json({ choices: [{ finish_reason: 'stop', message: { content: JSON.stringify({ messages: [{ id: 'm', error: null, operations: [{ type: 'set_property', target: 'world', property: 'acceleration_y', value: -5 }] }] }) } }] }));
     const result = await compileRules({ requestId: 'force-units', levelId: level.id, sceneVersion: 0, queueRevision: 0, rules, messages: [{ id: 'm', text }] }, loadConfig({ AI_API_KEY: 'test-only' }), undefined, fetcher);
-    expect(result.messages[0]).toMatchObject({ operations: [], error: expect.stringContaining('newtons') });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(JSON.parse(String(fetcher.mock.calls[1][1]?.body)).messages[3].content).toContain('newtons');
+    expect(result.messages[0]).toMatchObject({ operations: [{ type: 'set_property', target: 'world', property: 'acceleration_y', value: -5 }], understoodAs: expect.stringContaining('AI revised interpretation') });
     expect(rules).toEqual(before);
   });
   it.each(levels)('sends the same semantic policy in $id and preserves a reviewable upward interpretation', async level => {

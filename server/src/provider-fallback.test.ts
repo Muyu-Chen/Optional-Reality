@@ -91,7 +91,8 @@ describe('provider attempts, output checks and cancellation', () => {
   ])('does not override an explicit rejection or permission failure with another model', async body => {
     const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => reply(body));
     expect((await compileRules(input(), config(), undefined, fetcher)).messages[0]).toMatchObject({ operations: [], error: expect.any(String) });
-    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(fetcher).toHaveBeenCalledTimes(body.messages[0].error === null ? 2 : 1);
+    expect(fetcher.mock.calls.every(([url]) => String(url).includes('generativelanguage.googleapis.com'))).toBe(true);
   });
   it('validates player input before contacting either model', async () => {
     const fetcher = vi.fn<typeof fetch>();

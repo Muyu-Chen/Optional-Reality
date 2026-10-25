@@ -18,13 +18,17 @@ export const CompileResponseSchema = z.object({
 }).strict();
 // Validate the trustworthy mapping first; operation/schema errors belong to individual rows.
 const ModelEnvelopeSchema = z.object({ messages: z.array(ModelMessageSchema.pick({ id: true }).passthrough()).min(1).max(24) }).strict();
-export function validateCompilation(request: CompileRequest, output: unknown, context: RuleContext) {
+export function validateModelIdentity(request: Pick<CompileRequest, 'messages'>, output: unknown) {
   const compiled = ModelEnvelopeSchema.parse(output);
   if (compiled.messages.length !== request.messages.length || compiled.messages.some((message, index) => message.id !== request.messages[index].id)) throw new Error('The compiler returned missing, duplicate, or reordered message IDs.');
+  return compiled;
+}
+export function validateCompilation(request: CompileRequest, output: unknown, context: RuleContext, checkMeaning = true) {
+  const compiled = validateModelIdentity(request, output);
   let state = request.rules;
   const messages = [];
   for (const [index, candidate] of compiled.messages.entries()) {
-    const result = compileModelMessage(candidate, request.messages[index], state, context);
+    const result = compileModelMessage(candidate, request.messages[index], state, context, checkMeaning);
     state = result.state;
     messages.push(result.message);
   }
