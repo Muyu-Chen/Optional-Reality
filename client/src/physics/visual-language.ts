@@ -2,12 +2,12 @@ import type { Point } from '../levels/types';
 
 // Behaviour keeps its colour across chapters; permission is shown separately.
 export const physicsColours = {
-  bounce: '#347fb2',
-  drive: '#ba692c',
-  friction: '#287f82',
-  gravity: '#8861a0',
-  structure: '#48554b',
-  goal: '#4f815b',
+  bounce: '#2374c7',
+  drive: '#d57522',
+  friction: '#14847f',
+  gravity: '#8250b5',
+  structure: '#344c40',
+  goal: '#2a8055',
 } as const;
 
 export function drawForceArrow(ctx: CanvasRenderingContext2D, x: number, y: number, vector: Point, length: number, colour: string) {

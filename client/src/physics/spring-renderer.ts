@@ -1,5 +1,6 @@
 import type { PhysicsWorld } from './world';
 import { physicsColours } from './visual-language';
+import { sceneFonts } from './drawing-theme';
 
 export function drawGeometrySprings(ctx: CanvasRenderingContext2D,world: PhysicsWorld) {
   for(const spring of world.level.devices || []) {
@@ -11,7 +12,7 @@ export function drawGeometrySprings(ctx: CanvasRenderingContext2D,world: Physics
     ctx.beginPath();ctx.moveTo(cx,bottom);
     for(let i=0;i<=8;i++)ctx.lineTo(cx+(i%2?10:-10),bottom-(bottom-top)*i/8);
     ctx.stroke();ctx.fillStyle=physicsColours.bounce;ctx.fillRect(x,top-3,width,6);
-    ctx.fillStyle=physicsColours.structure;ctx.font='11px ui-monospace,monospace';ctx.textAlign='center';
+    ctx.fillStyle=physicsColours.structure;ctx.font=sceneFonts.small;ctx.textAlign='center';
     ctx.fillText(state?.phase==='charging' ? 'CHARGING' : 'AUTO SPRING',cx,bottom+25);ctx.restore();
   }
 }

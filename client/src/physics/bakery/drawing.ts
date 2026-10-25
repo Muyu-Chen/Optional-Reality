@@ -1,4 +1,5 @@
 import type { Point } from '../../levels/types';
+import { sceneColours } from '../drawing-theme';
 export type Ctx = CanvasRenderingContext2D;
 
 export function roundRect(ctx: Ctx, x: number, y: number, w: number, h: number, r: number, color: string) {
@@ -23,13 +24,13 @@ export function oval(ctx: Ctx, x: number, y: number, rx: number, ry: number, col
   ctx.fill();
 }
 
-export function bakeryText(ctx: Ctx, text: string, x: number, y: number, size = 12, color = '#756149', weight = '500') {
+export function bakeryText(ctx: Ctx, text: string, x: number, y: number, size = 14, color: string = sceneColours.bakeryInk, weight = '500') {
   ctx.font = `${weight} ${size}px system-ui, sans-serif`;
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
 }
 
 export function tag(ctx: Ctx, label: string, x: number, y: number, width = 110) {
-  roundRect(ctx, x, y, width, 23, 4, '#fffaf0');
-  bakeryText(ctx, label, x + 7, y + 16, 11, '#66533d', '600');
+  roundRect(ctx, x, y, width, 23, 4, '#fff7df');
+  bakeryText(ctx, label, x + 7, y + 16, 12, sceneColours.bakeryInk, '600');
 }

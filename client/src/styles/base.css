@@ -1,13 +1,21 @@
 :root {
   font-family:Inter,'Segoe UI',system-ui,-apple-system,sans-serif;
-  color:#344432;
-  background:#edf1e7;
+  color:#203b30;
+  background:#f5f1e7;
+  font-size:15px;
   font-synthesis:none;
   color-scheme:light;
-  --ink:#344b35;
-  --muted:#71816a;
-  --line:#b1bba450;
-  --glass:#fcfdf4cb;
+  --ink:#203b30;
+  --muted:#52665a;
+  --line:#294d3633;
+  --surface:#fffcf2;
+  --surface-soft:#f0eadb;
+  --glass:#fffcf2ed;
+  --gold:#e9ab24;
+  --gold-ink:#805713;
+  --body-size:15px;
+  --small-size:12px;
+  --accent:#2f7755;
   --scene-left:28px;
   --scene-top:96px;
   --scene-right:366px;
@@ -36,7 +44,7 @@ button:disabled {
   opacity:.4
 }
 button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible {
-  outline:2px solid #79975f;
+  outline:2px solid #347d58;
   outline-offset:3px
 }
 button:not(:disabled):hover {
@@ -50,20 +58,23 @@ summary {
   cursor:pointer
 }
 ::selection {
-  background:#d6e7bd
+  background:#d7e89e;
+  color:var(--ink)
 }
 .game-shell {
   position:fixed;
   inset:0;
   overflow:hidden;
-  background:#f2f5ed
+  background:#f5f1e7
 }
 .bakery-theme {
-  --ink:#4e593c;
-  --muted:#83765e;
-  --line:#b8a88855;
-  --glass:#fff9eac9;
-  background:#f5edde
+  --ink:#403e28;
+  --muted:#665d45;
+  --line:#6f593733;
+  --glass:#fff9e8ed;
+  --surface:#fff9e8;
+  --surface-soft:#eee0c6;
+  background:#f2e6ce
 }
 .game-canvas {
   position:absolute;
@@ -78,8 +89,8 @@ summary {
 }
 .glass {
   background:var(--glass);
-  border:1px solid #fffdf0bd;
-  box-shadow:0 8px 32px #38442c0a,0 0 0 1px var(--line);
+  border:1px solid #fffef6;
+  box-shadow:0 10px 32px #273d2810,0 0 0 1px var(--line);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px)
 }

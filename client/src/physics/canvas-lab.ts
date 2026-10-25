@@ -4,6 +4,7 @@ import { drawBakery } from './bakery-renderer';
 import { drawGeometry } from './geometry-renderer';
 import { drawAcceleration } from './acceleration-renderer';
 import { drawStars } from './star-renderer';
+import { sceneColours } from './drawing-theme';
 
 export class CanvasLab {
   world: PhysicsWorld;
@@ -69,7 +70,7 @@ export class CanvasLab {
     const { width, height } = this.level.viewport;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    ctx.fillStyle = this.level.presentation === 'bakery' ? '#f5edde' : '#f2f5ed'; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.fillStyle = this.level.presentation === 'bakery' ? sceneColours.bakeryBackground : sceneColours.background; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     const ratio = window.devicePixelRatio || 1;
     // The canvas fills the screen; reserve readable space for floating game controls.
     // These CSS tokens are shared with the HUD so it cannot hide the pickup target.

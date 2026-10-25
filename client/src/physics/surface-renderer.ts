@@ -1,6 +1,7 @@
 import type { RuleState } from '../../../shared/rules';
 import type { TrackDefinition } from '../levels/types';
 import { drawBounceMarks, physicsColours } from './visual-language';
+import { sceneFonts } from './drawing-theme';
 
 function drawFrictionMarks(ctx: CanvasRenderingContext2D, track: TrackDefinition, friction: number) {
   const amount = Math.sqrt(Math.max(0,Math.min(1,friction)));
@@ -26,7 +27,7 @@ export function drawSurface(ctx: CanvasRenderingContext2D, track: TrackDefinitio
     const property=track.feature==='bounce'?'restitution':'friction';
     const value=rules.values[track.id]?.[property] ?? rules.values.world?.[property] ?? 0;
     if(track.feature==='bounce')drawBounceMarks(ctx,track.points,value);else drawFrictionMarks(ctx,track,value);
-    ctx.font='13px ui-monospace,monospace';ctx.fillStyle=physicsColours[track.feature];
+    ctx.font=sceneFonts.label;ctx.fillStyle=physicsColours[track.feature];
     ctx.fillText(`${(track.label || (track.feature==='bounce'?'Bounce surface':'Friction surface')).toUpperCase()} · ${Number(value.toFixed(3))}`,track.points[0][0]+10,track.points[0][1]+track.thickness/2+36);
   }
   ctx.restore();

@@ -21,11 +21,11 @@
   color:var(--muted)
 }
 .tutorial-hint>span {
-  font:9px ui-monospace,monospace;
-  letter-spacing:1.5px
+  font:12px ui-monospace,monospace;
+  letter-spacing:1px
 }
 .tutorial-hint p {
-  font-size:12px;
+  font-size:14px;
   line-height:1.7;
   margin:7px 0 0
 }

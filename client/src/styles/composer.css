@@ -11,19 +11,20 @@
 }
 .editable-rules {
   margin:0 14px 10px;
-  font-size:12px;
+  font-size:14px;
   line-height:1.5;
   color:var(--ink)
 }
 .connection-dot {
-  width:5px;
-  height:5px;
+  width:6px;
+  height:6px;
   border-radius:50%;
   background:#a6ac98;
   margin-left:auto
 }
 .connection-dot.connected {
-  background:#759950
+  background:#29804f;
+  box-shadow:0 0 0 3px #29804f12
 }
 .composer-dock textarea {
   display:block;
@@ -31,18 +32,18 @@
   margin:0 14px;
   border:0;
   border-radius:6px;
-  background:#fffff64f;
+  background:#ffffffa8;
   padding:9px 10px;
   resize:none;
   outline:none;
   min-height:75px;
   max-height:100px;
-  font-size:13px;
+  font-size:16px;
   line-height:1.6;
   color:var(--ink)
 }
 .composer-dock textarea::placeholder {
-  color:#969a87
+  color:#6b7568
 }
 .composer-bottom {
   display:flex;
@@ -52,17 +53,18 @@
   margin:10px 14px 0
 }
 .composer-bottom>span {
-  font-size:9px;
+  font-size:12px;
   line-height:1.5;
   color:var(--muted);
-  max-width:125px
+  max-width:132px
 }
 .queue-button {
-  border:1px solid #8191664d;
+  border:1px solid #2f77554d;
   border-radius:6px;
-  background:#5e765c16;
+  background:#2f77551a;
   color:var(--ink);
   padding:7px 10px;
   white-space:nowrap;
-  font-size:11px
+  font-size:12px;
+  font-weight:600
 }

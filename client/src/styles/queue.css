@@ -5,7 +5,7 @@
   width:var(--dock-width);
   border-radius:12px;
   overflow:hidden;
-  max-height:calc(100svh - 258px);
+  max-height:calc(100svh - 322px);
   display:flex;
   flex-direction:column
 }
@@ -15,15 +15,15 @@
   justify-content:space-between;
   gap:8px;
   padding:13px 15px;
-  font:9px ui-monospace,monospace;
-  letter-spacing:1.2px;
+  font:12px ui-monospace,monospace;
+  letter-spacing:.7px;
   color:var(--muted);
   flex-shrink:0
 }
 .dock-heading small {
-  font:10px ui-monospace,monospace;
+  font:12px ui-monospace,monospace;
   margin-left:5px;
-  background:#87996a15;
+  background:#2f775518;
   padding:2px 5px;
   border-radius:3px
 }
@@ -31,7 +31,7 @@
   background:none;
   border:0;
   padding:3px 0;
-  font-size:11px;
+  font-size:12px;
   color:var(--muted);
   letter-spacing:0
 }
@@ -44,7 +44,7 @@
   border-top:1px solid var(--line)
 }
 .current-message {
-  background:#fffff32e;
+  background:#e9efda70;
   animation:message-arrives .22s ease-out
 }
 .message-copy {
@@ -75,19 +75,19 @@
   color:var(--muted)
 }
 .delete-message:hover {
-  color:#995a39;
-  background:#995a3910
+  color:#a4442a;
+  background:#a4442a12
 }
 .message-meta {
   display:flex;
   align-items:center;
   gap:7px;
-  font:9px ui-monospace,monospace;
+  font:12px ui-monospace,monospace;
   color:var(--muted)
 }
 .message-meta>span:last-child {
   margin-left:auto;
-  font:9px system-ui,sans-serif
+  font:12px system-ui,sans-serif
 }
 .message-meta input {
   width:13px;
@@ -96,14 +96,14 @@
   accent-color:var(--ink)
 }
 .message-text {
-  font-size:14px;
+  font-size:15px;
   line-height:1.5;
-  font-weight:500;
+  font-weight:600;
   margin:7px 0 5px;
   overflow-wrap:anywhere
 }
 .parsed-rule {
-  font-size:10px;
+  font-size:12px;
   line-height:1.5;
   color:var(--muted);
   margin:0;
@@ -115,10 +115,10 @@
   color:#fffef3;
   border-radius:8px;
   padding:5px 9px;
-  min-height:28px;
+  min-height:30px;
   flex-shrink:0;
-  font-size:11px;
-  font-weight:550;
+  font-size:12px;
+  font-weight:600;
   align-self:center;
   line-height:1.4;
   white-space:nowrap
@@ -128,14 +128,14 @@
   max-height:300px;
   min-height:0;
   scrollbar-width:thin;
-  scrollbar-color:#a8b49255 transparent
+  scrollbar-color:#52665a66 transparent
 }
 .upcoming-message {
   padding-top:9px;
   padding-bottom:9px
 }
 .upcoming-message .message-text {
-  font-size:12px
+  font-size:15px
 }
 .queue-dock.expanded .pending-list {
   max-height:220px
@@ -144,12 +144,12 @@
   padding:10px 14px;
   border-top:1px solid var(--line);
   overflow:auto;
-  font-size:11px;
+  font-size:12px;
   line-height:1.5;
   min-height:110px
 }
 .queue-management>p {
-  font-size:10px;
+  font-size:12px;
   color:var(--muted);
   margin:0 0 8px
 }
@@ -165,10 +165,10 @@
 }
 .small-button {
   border:1px solid var(--line);
-  background:#fffdf470;
+  background:var(--surface);
   border-radius:5px;
   padding:7px 10px;
-  font-size:11px
+  font-size:12px
 }
 .message-actions {
   display:flex;
@@ -177,10 +177,10 @@
 }
 .message-actions button {
   border:0;
-  background:#83916b13;
+  background:#2f775514;
   border-radius:3px;
   padding:3px 5px;
-  font-size:10px;
+  font-size:12px;
   color:var(--muted)
 }
 .history-item {
@@ -189,13 +189,13 @@
 }
 .history-item p {
   margin:4px 0;
-  font-size:11px
+  font-size:12px
 }
 .empty-queue {
   padding:7px 15px 17px
 }
 .empty-queue>p {
-  font-size:15px;
+  font-size:17px;
   font-weight:500;
   line-height:1.5;
   margin:0 0 8px;
@@ -203,7 +203,7 @@
 }
 .empty-queue>span {
   display:block;
-  font-size:11px;
+  font-size:13px;
   line-height:1.6;
   color:var(--muted)
 }
@@ -214,10 +214,10 @@
   text-underline-offset:3px
 }
 .inline-error,.error-copy {
-  color:#995a39
+  color:#a4442a
 }
 .inline-error {
-  font-size:11px;
+  font-size:12px;
   line-height:1.5;
   margin:5px 14px 10px
 }

@@ -21,21 +21,21 @@
   padding-right:2px
 }
 .game-title>span {
-  font:9px ui-monospace,monospace;
-  letter-spacing:1.7px;
+  font:11px ui-monospace,monospace;
+  letter-spacing:1.25px;
   color:var(--muted);
   display:block;
   margin-bottom:5px
 }
 .game-title h1 {
-  font-size:22px;
-  font-weight:560;
+  font-size:26px;
+  font-weight:650;
   letter-spacing:-.7px;
   margin:0;
   line-height:1.15
 }
 .game-title>p {
-  font-size:12px;
+  font-size:15px;
   color:var(--muted);
   margin:7px 0 0
 }
@@ -44,12 +44,10 @@
   align-items:center;
   gap:4px;
   margin:6px 0 0;
-  color:#806627;
-  font:12px ui-monospace,monospace;
+  color:var(--gold-ink);
+  font:14px ui-monospace,monospace;
   letter-spacing:0
 }
-.completion-score .star-progress { font-size:20px }
-.completion-score p { color:var(--muted);font-size:12px }
 .hud-controls {
   margin-left:auto;
   display:flex;
@@ -58,24 +56,24 @@
   white-space:nowrap
 }
 .game-clock {
-  font:24px ui-monospace,monospace;
+  font:28px ui-monospace,monospace;
   margin-right:8px;
   letter-spacing:-1.5px
 }
 .game-clock small {
-  font:11px system-ui,sans-serif;
+  font:12px system-ui,sans-serif;
   color:var(--muted);
   margin-left:3px
 }
 .urgent {
-  color:#a46137
+  color:#ad4529
 }
 .icon-button {
   width:33px;
   height:33px;
   border-radius:50%;
   border:1px solid var(--line);
-  background:#fffff66b;
+  background:var(--surface);
   font-size:19px;
   display:grid;
   place-items:center;

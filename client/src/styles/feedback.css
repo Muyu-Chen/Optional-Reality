@@ -5,12 +5,12 @@
   right:var(--scene-right);
   display:flex;
   align-items:center;
-  gap:20px;
-  font:10px ui-monospace,monospace;
+  gap:14px;
+  font:12px ui-monospace,monospace;
   color:var(--muted)
 }
 .bottom-hud>.quiet-button {
-  font-size:11px
+  font-size:12px
 }
 .bottom-hud>span:last-child {
   margin-left:auto
@@ -21,7 +21,7 @@
   right:var(--scene-right);
   bottom:48px;
   color:var(--muted);
-  font-size:10px;
+  font-size:12px;
   line-height:1.6;
   margin:0;
   overflow:hidden;
