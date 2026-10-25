@@ -1,10 +1,18 @@
 # 线上游戏 — 2026-10-25
 
+## 最新发布：AST 本地解析与物理意图提示词
+
+当前应用为 `20261025T054254Z-ast-meaning`，静态为同名加 `-optional-reality-game`。支持完整组合、多目标与相对修改，并理解“向上的浮力”等表达；保留最新开场提示、加法指令、Gemini → DeepSeek 兜底和浏览器协议兼容。服务器配置逐字节未变。独立快照 998 项测试、构建、真实主／备模型与公网浏览器验收通过；范围、备份与回退见 [本次发布记录](./ast-meaning.md)。
+
+## 此前发布：Gemini → DeepSeek 兜底与旧页面兼容
+
+该次发布应用为 `20261025T052554Z-api-fallback-94c7f50`，静态为同名加 `-optional-reality-game`。Gemini 失败后最多尝试一次独立 DeepSeek，默认 8 秒主服务、两次共用 30 秒预算；新增脱敏调用日志，并用协议标记兼容旧页面的错误格式。独立发布快照 862 项测试、构建、真实供应商接管和三个域名公网检查通过。配置、归档哈希、日志与成对回退见 [API 兜底发布记录](./api-fallback.md)。
+
 ## 最新域名与入口
 
-三个域名 `optionalreality.site`、`www.optionalreality.site`、`muuyyy.cfd` 已共用一张 SAN 证书，根目录为游戏，`/intro` 为介绍页，旧 `/demo/` 保留。单证书续期演练、三个域名证书链与同源 API 验证通过。此轮静态 current 改为 `20261025T043627Z-domains-optional-reality-game`；应用仍为下述 `9f4c2e8`。配置、备份和回退见 [域名与路由记录](./domains-and-routing.md)，下面保留此前游戏版本的发布历史。
+三个域名 `optionalreality.site`、`www.optionalreality.site`、`muuyyy.cfd` 已共用一张 SAN 证书，根目录为游戏，`/intro` 为介绍页，旧 `/demo/` 保留。单证书续期演练、三个域名证书链与同源 API 验证通过。域名配置见 [域名与路由记录](./domains-and-routing.md)，当前 release 以本文顶部记录为准，下面保留此前游戏版本的发布历史。
 
-## 当前版本：蒸汽朋克入口、生活背景与关卡画廊
+## 历史版本：蒸汽朋克入口、生活背景与关卡画廊
 
 - 地址：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，固定应用版本 `9f4c2e8ec0fd368c54ac2b516fcd4180ada24659`，release `20261025T040224Z-9f4c2e8`（UTC；本地日期 2026-10-25）。
 - 应用 current：`/opt/optional-reality/releases/20261025T040224Z-9f4c2e8`；静态 current：`/var/www/muu-tech/releases/20261025T040224Z-9f4c2e8-optional-reality-game`。

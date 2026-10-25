@@ -35,7 +35,7 @@
 
 ## 代码边界
 
-关卡文件只放数据。`scene-bodies.ts` 创建圆球/滑块和开放边界，`goal.ts` 判定目标，`surface-target.ts` 解析名称。`geometry-renderer.ts` 组合 actor、surface、goal 三个独立绘图模块；运行时不按关卡 ID 写特殊通关逻辑。
+关卡文件只放数据。`scene-bodies.ts` 创建圆球/滑块和开放边界，`goal.ts` 判定目标，`command-parser.ts` 与 `command-compiler.ts` 按语法和场景别名解析目标。`geometry-renderer.ts` 组合 actor、surface、goal 三个独立绘图模块；运行时不按关卡 ID 写特殊通关逻辑。
 
 执行 `npm test` 与 `npm run build`。完整记录见 [verification.md](./verification.md)，测试要求见 [testing.md](./testing.md)。
 

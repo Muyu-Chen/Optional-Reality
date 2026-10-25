@@ -84,7 +84,7 @@ MusicControl 与 SoundEffectsControl 统一由暂停设置组合，Game HUD 不�
 
 `components/front-door/` 保存标题、选关、真实配置缩略图和设置；机械 SVG 装饰另在 `SteamDetails`。`game/journey-navigation.ts` 处理 URL，`journey-progress.ts` 校验并保存最近关卡与最佳星数，`useJourney.ts` 组合导航和存储；App 不承担画面或关卡细节。
 
-`shared/rules.ts` 保存声明式操作与校验，`shared/commands.ts` 做简单本地解析，`shared/compiler.ts` 定义编译协议。服务端由 `app.ts` 处理 HTTP，`compiler.ts` 负责场景权限与提示词，`ai-client.ts` 适配模型请求，`config.ts` 读取后端环境变量。
+`shared/rules.ts` 保存声明式操作与校验，`shared/commands.ts` 提供本地解析入口，`shared/compiler.ts` 定义 AI 编译协议。服务端由 `app.ts` 处理 HTTP，`compiler.ts` 负责场景权限与提示词，`ai-client.ts` 适配模型请求，`config.ts` 读取后端环境变量。
 
 `shared/compilation-message.ts` 独立定义单条结果与模型消息 schema，统一限幅、权限与单条操作的完整验证；`shared/compiler.ts` 只检查整份响应的身份并组合结果。客户端 `domain/compilation-results.ts` 再独立校验与合并，`usePreparedMessages` 负责网络及取消，详见 [逐条编译结果](./compilation-results.md)。
 
@@ -94,9 +94,11 @@ MusicControl 与 SoundEffectsControl 统一由暂停设置组合，Game HUD 不�
 
 `shared/physics-capabilities.ts` 统一基础属性、设备控制、范围、单位、词汇与显示名称，关卡只声明场景数据和预设保护。`server/src/compiler-prompt.ts` 独立组装固定能力目录、操作语义及 schema，动态状态和玩家文本置后；`compiler.ts` 只协调上下文校验、请求和响应校验。
 
-`shared/surface-target.ts` 从场景名称与别名解析局部表面；不识别的目标不退化为全局修改。关卡定义只放数据，目标判定与绘图均不通过关卡 ID 选择行为。
+`shared/command-ast.ts` 定义本地语法树；`command-parser.ts` 通过分词、递归语法完整解析组合语句、相对修改和目标列表；`command-compiler.ts` 从场景名称／别名解析唯一 ID，展开操作且保留相对倍数。不识别的目标不退化为全局修改，任意未消费文字使整句转交 AI。关卡定义只放数据，目标判定与绘图均不通过关卡 ID 选择行为。
 
-`shared/command-language.ts` 只处理保守拼写归一化，`acceleration-command.ts` 解析加速度与单位；`rule-limits.ts` 对已知属性限幅并生成调整记录。客户端准备、API 编译和执行共享该策略，规则快照校验仍严格。`physics/acceleration-renderer.ts` 独立绘制同一加速度向量的方向和分量，不推进模拟。
+`shared/command-language.ts` 只处理保守拼写归一化；`rule-limits.ts` 对已知属性限幅并生成调整记录。客户端准备、API 编译和执行共享该策略，规则快照校验仍严格。`physics/acceleration-renderer.ts` 独立绘制同一加速度向量的方向和分量，不推进模拟。
+
+`server/src/compiler-meaning-policy.ts` 集中说明日常物理表达如何映射到现有控制，包括“向上的浮力”到环境向上加速度，以及单位、物体保护和新机制的边界；与表面作用域策略一同组成固定系统前缀。
 
 ## 后续修改
 

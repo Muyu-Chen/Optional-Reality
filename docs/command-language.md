@@ -13,11 +13,32 @@
 
 `add acceleration rightward` 默认添加向右 1 m/s²；`add acceleration leftward` 向左；`stop horizontal acceleration` 关闭水平加速度。规则状态只保存 acceleration: { x, y }。指令用 world.acceleration_x / acceleration_y 选择分量，修改一个分量时保留另一个；gravity 与重力都映射到 y，不叠加第二套力。每个分量范围为 -100 至 100，向下 20 和向上 20 分别得到 +20 和 -20，不在 10 处改变方向或截断。关闭保留惯性，反转修改加速度，不瞬间翻转速度。
 
-简单语句由 `shared/acceleration-command.ts` 解析；已知拼写由 `shared/command-language.ts` 保守纠正，例如 acceleration 语境中的 `right word` → `rightward`。保留原文，队列显示 Understood as，玩家检查后再 Send now。数字、否定词和对象 ID 不由拼写规则改写；方向冲突、未指明方向、定时条件和物体直接操作不猜测。
+本地路径为 `normalizeCommand → parseCommandTree → compileCommandTree → 限幅与规则校验 → 待发消息`。`shared/command-parser.ts` 分词并完整消费输入，生成 `command-ast.ts` 定义的 Program、Set、Scale 和 SensorTrigger 节点；目标引用保留名字或设备类别。`command-compiler.ts` 再按当前场景解析唯一 ID，展开多个目标，输出现有 operations，不运行物理。`commands.ts` 的 `parseCommands` 是多操作入口，`parseCommand` 保留单操作兼容接口。
+
+已知拼写仍由 `shared/command-language.ts` 保守纠正，例如 acceleration 语境中的 `right word` → `rightward`。保留原文，队列显示 Understood as，玩家检查后再 Send now。数字、否定词和对象 ID 不由拼写规则改写；方向冲突、未指明方向、定时条件和物体直接操作不猜测。
+
+第一版支持以下组合；每条消息最多 16 个展开后的操作，按原文顺序执行：
+
+| 语法 | 示例 |
+| --- | --- |
+| 完整指令组合 | `stop gravity and set surface friction to 0.3`、`关闭重力，并设置摩擦为0.3`；也支持分号、逗号 |
+| 相对修改 | `double fan power`、`摩擦减半`、`reverse gravity`、`multiply friction by 0.25` |
+| 多个明确目标 | `Set both the launch pad and the cup base bounce to 0.5`、`把发射板和杯底的弹性设为0.5` |
+| 全局与局部明确组合 | `set global surface bounce to 0.8 and cup base bounce to 0` |
+
+多目标只选择实际列出的名称／别名，不把局部操作扩大到全局；同一句的多个别名指向同一目标时只修改一次。通用设备名必须只对应一台设备；有多个风扇时用唯一 ID 或交给模型澄清。全局操作只写 world，保留既有局部覆盖。Set 在准备时限幅；Scale 保留倍数，到 Send now 时读取实际规则，包括同条消息前面的操作。
+
+每个组合分句都必须完整可解析；不能识别的尾句、未知／歧义名称、单位错误、否定以及 `then / 然后 / 三秒后 / 直到` 等时序表达会使整条消息交给 AI，不保留已识别的前缀。第一版不推断省略的属性、代词或时序，也不支持不同设备类型共享一个“功率”属性的省略写法；可分别写完整分句。完整解析后若发现目标为 Preset 等明确权限错误，则直接报错。任何失败都不会准备或执行部分操作。旧的宽松正则实现 `acceleration-command.ts` 和 `surface-target.ts` 已移除，避免它们在 AST 失败后再次吞掉未解析文字。
 
 截图中的 `add accelation to right` 可以本地纠正为 `add acceleration to right`。本地规则只覆盖简单明确的快速路径；其余口语、同义表达和长尾错词交给模型理解，不维护穷举的错词表。模型有充分信息时返回操作和 understoodAs；真正的方向冲突或未知目标仍应要求澄清。模型服务未配置或请求失败时，保留消息与世界，不编造成功结果。
 
 自由语言使用兼容 API，模型可返回可选 understoodAs，前后端共享 schema 验证后显示。无论本地还是模型解析，最终执行均由同一规则引擎再次检查。
+
+`server/src/compiler-meaning-policy.ts` 让模型先理解物理意图，再映射到现有能力，而不是按关键词白名单拒绝。“向上的浮力”“让小球向上浮起来”“give everything upward buoyancy”在没有幅值时解释为 world.acceleration_y=-1，保留 x；“向上的浮力 0.75 米每秒平方”解释为 -0.75。这里修改的是环境的净加速度，不另加浮力、不扣除当前重力，也不要求场景有水。概念映射应附 understoodAs，供发送前检查。
+
+明确指定水密度、排水体积、牛顿单位的力、瞬时冲量或物体速度／位置等超出当前能力的要求仍拒绝，不把它们偷换为加速度。不存在的命名设备不退化成世界规则。完全无摩擦、完全不反弹等明确结果可以分别映射到摩擦／弹性为 0；含糊的强弱、目标或冲突方向仍需澄清。
+
+真实模型曾把“5 newtons 向上浮力”转成 -5 m/s²，因此 `shared/force-units.ts` 在共享逐条编译校验中额外拒绝明确牛顿量，不能仅靠提示词防止换单位。没有力单位的日常“向上的浮力”仍可解释为向上加速度。AST 与意图策略已部署，验证与回退见 [发布记录](../deploy/ast-meaning.md)。
 
 方向优先决定正数幅值的符号：“往左/向左 0.5”是水平 -0.5，“往上/向上 0.5”是重力 -0.5；没有方向的显式有符号轴值保留其符号。本地解析与模型提示保持一致，中文不能因为出现“设成 0.5”而丢掉前面的方向。
 

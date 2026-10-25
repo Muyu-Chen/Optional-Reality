@@ -34,7 +34,7 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 - Let It Roll、One More Turn 与 A Little More Bounce 首访显示居中的三步图示教学，模拟保持暂停；Let's play 只关闭并保留原队列。设置中的 How to play 可重看，刷新或重试不强制重复。
 - 消息自动解析，桌面侧栏优先呈现三条可操作摘要：18px 正文、彩色规则图标、28px 高的 **Send now** 和小删除按钮。小箭头展开完整原文、Understood as 与限幅详情；批量发送在管理菜单中。
 - 批量解析逐条返回：合法消息 Ready，错误只标记对应行，不阻止其他 Ready 消息发送；编辑与重试保留可复用结果。协议和整批错误边界见 [逐条编译结果](./docs/compilation-results.md)。
-- 简单指令可本地准备，自由语言使用当前配置的兼容模型（线上为 Gemini）。Shift+Enter 需要 AI 时先暂停、解析成功后应用一次；失败保留消息。普通 Enter 解析完成后继续等待玩家发送。
+- 本地 AST 支持明确的组合指令、翻倍／减半／反转和多个目标，例如 `设置发射板和杯底的弹性为0.5，并关闭重力`；整句无法解析时交给当前配置的模型（线上为 Gemini）。Shift+Enter 需要 AI 时先暂停、解析成功后应用一次；失败保留消息。普通 Enter 解析完成后继续等待玩家发送。
 - **Shift+Tab** 暂停并打开设置；等待 AI 时打开设置会取消立即发送意图，解析结果保留为待发消息。
 - 左侧字幕显示实际修改结果，几秒后淡出。规则参数、提示、批量发送与历史收在菜单里。
 - 每关三颗星；到达出口可过关，收齐后到达出口才获满分，重试恢复全部星星。
@@ -66,6 +66,8 @@ A Little More Bounce 首访会准备一条 `Set surface bounce to 0.9`，等待�
 
 基础能力、范围、单位和界面名称统一定义在 `shared/physics-capabilities.ts`。模型在每关收到相同的完整能力说明；关卡只补充对象、别名和预设权限。简单明确的消息走本地解析，口语和未识别错词由模型兜底理解，再由共享代码校验。
 
+模型按意图理解日常物理表达：例如“向上的浮力”解释为环境向上 1 m/s² 的加速度，保留水平分量，并用 Understood as 展示解释。不会因此创建水体或新力场，也不允许直接修改小球的速度、位置或质量。第一版 AST 的语法范围和回退边界见 [消息理解](./docs/command-language.md)。
+
 超出范围的有限数值由共享代码限幅，例如 fan power 10 → 2。队列显示原请求与实际值，等待 Send now；未知对象、受保护目标和非有限值仍拒绝。
 
 ## 本地运行
@@ -83,7 +85,7 @@ npm run dev
 
 默认配置为 `AI_BASE_URL=https://api.deepseek.com`、`AI_MODEL=deepseek-flash`，使用 JSON 输出并关闭思考模式。密钥仅由后端读取，不能使用 `VITE_` 变量传入前端；修改配置后重启 API。
 
-也可设置 `AI_PROVIDER=gemini`，填写独立的 `GEMINI_API_KEY`；默认模型 `gemini-3.1-flash-lite`。原 `AI_API_KEY` 和 DeepSeek 配置保留，改回 `AI_PROVIDER=compatible` 即可恢复。Gemini 不会使用旧服务的 key 作为后备，配置方法见 [服务端说明](./server/README.md)。
+也可设置 `AI_PROVIDER=gemini`，填写独立的 `GEMINI_API_KEY`；默认模型 `gemini-3.1-flash-lite`。原 `AI_API_KEY` 和 DeepSeek 配置保留，改回 `AI_PROVIDER=compatible` 即可恢复。显式设置 `AI_FALLBACK_PROVIDER=deepseek` 可在 Gemini 失败后向 DeepSeek 发起独立备用请求，两家的 key 不混用。线上已开启此兜底，配置与时间预算见 [服务端说明](./server/README.md)，发布状态见 [部署记录](./deploy/api-fallback.md)。
 
 如果 key 只放在线上，开发机可在 `.env` 设置 `DEV_API_ORIGIN=https://muuyyy.cfd`，再运行 `npm run dev:web`。Vite 仅转发 `/api` 到现有后端，浏览器仍访问本机地址，供应商密钥留在服务器。留空则连接本机 3001 后端；该设置只影响开发服务器，`npm start` 与生产构建继续使用本站 `/api`。
 
