@@ -1,7 +1,7 @@
 import type { LevelDefinition } from './types';
 
 export const multiBounce: LevelDefinition = {
-  id:'multi-bounce', number:2, stage:2, title:'Not Too High',
+  id:'multi-bounce', number:2, stage:3, title:'Not Too High',
   viewport:{width:800,height:510,pixelsPerMetre:80}, timeLimitSeconds:30, initialAcceleration:[0,2],
 
   environment:{restitution:.1,friction:0},

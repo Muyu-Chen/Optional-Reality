@@ -17,7 +17,7 @@ import { oneLastBounce } from './one-last-bounce';
 // Ordered entry points; the bakery is an advanced experiment, not a required second lesson.
 export const levels = [
   gravityLab, oneMoreTurn, bringItBack, overTheWall, sideDoor,
-  bounce, multiBounce, frictionRunway, catchCup, bankShot, returnToDock, oneLastBounce,
+  bankShot, bounce, multiBounce, frictionRunway, catchCup, returnToDock, oneLastBounce,
   toaster, breeze, realityBreakdown,
 ] as const;
 export const findLevel = (id: string) => levels.find(level => level.id === id);

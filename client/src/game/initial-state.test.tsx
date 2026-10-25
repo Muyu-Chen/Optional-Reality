@@ -65,7 +65,7 @@ describe('five-second initial state briefing with a reversible fade', () => {
   it('cancels the previous timer when changing levels and when unmounted', async () => {
     const view = await startGame('multi-bounce');await wait(2000);
     await click('Pause menu');fireEvent.click(screen.getByText('Choose a level'));
-    await click('02.3 · Brake Before the Edge');
+    await click('02.4 · Brake Before the Edge');
     expect(briefing()?.textContent).toContain('Block');
     await wait(4999);expect(briefing()).toBeTruthy();await wait(1);expect(briefing()?.classList.contains('initial-briefing--fading')).toBe(true);
     await wait(400);expect(briefing()).toBeNull();

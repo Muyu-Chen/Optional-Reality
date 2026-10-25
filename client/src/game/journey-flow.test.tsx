@@ -93,7 +93,7 @@ describe('title screen and chapter selection', () => {
     localStorage.setItem(JOURNEY_STORAGE_KEY, JSON.stringify({ version: 1, lastLevel: 'bounce', completed: { bounce: 2 } }));
     skipIntros(); await openFrontDoor('?view=levels');
     expect(screen.getByRole('button', { name: /Chapter 2 Collisions/ }).getAttribute('aria-current')).toBe('true');
-    const bounceCard = screen.getByRole('button', { name: 'Play 02.1 A Little More Bounce' });
+    const bounceCard = screen.getByRole('button', { name: 'Play 02.2 A Little More Bounce' });
     expect(within(bounceCard).getByRole('img', { name: 'Best score 2 of 3 stars' })).toBeTruthy();
     expect(within(bounceCard).getByText('✓ Cleared')).toBeTruthy();
   });
@@ -105,7 +105,7 @@ describe('title screen and chapter selection', () => {
     expect(loadJourney().completed.bounce).toBe(1);
     await click('Pause menu');
     await act(async () => fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Level select' })));
-    const card = screen.getByRole('button', { name: 'Play 02.1 A Little More Bounce' });
+    const card = screen.getByRole('button', { name: 'Play 02.2 A Little More Bounce' });
     expect(within(card).getByRole('img', { name: 'Best score 1 of 3 stars' })).toBeTruthy();
   });
   it('aborts an immediate AI request on leaving, preserves messages, and ignores its late response', async () => {

@@ -1,7 +1,7 @@
 import type { LevelDefinition } from './types';
 
 export const frictionRunway: LevelDefinition = {
-  id:'friction-runway',number:2,stage:3,title:'Brake Before the Edge',
+  id:'friction-runway',number:2,stage:4,title:'Brake Before the Edge',
   viewport:{width:800,height:510,pixelsPerMetre:80},timeLimitSeconds:30,initialAcceleration:[0,2],
 
   environment:{restitution:0,friction:0},

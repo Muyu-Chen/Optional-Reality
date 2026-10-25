@@ -29,11 +29,11 @@ Built for SBUHacks 2026, the game includes three chapters and fifteen progressiv
 | 1 · Motion | 01.3 Bring It Back | Start a rightward drift, brake near the far stars, and return to an exit behind the starting point |
 | 1 · Motion | 01.4 Over the Wall | Lift over a fixed wall, then reverse vertical acceleration to bend the flight toward the exit |
 | 1 · Motion | 01.5 The Side Door | Steer sideways around a shelf while preserving downward momentum |
-| 2 · Collisions | 02.1 A Little More Bounce | A simple rebound reaches the exit; low elasticity followed by upward acceleration collects every star |
-| 2 · Collisions | 02.2 Not Too High | Full-score route: use high elasticity to reach high stars, then increase downward acceleration to return to the exit |
-| 2 · Collisions | 02.3 Brake Before the Edge | Use the cyan friction runway to bring the entire block to rest in the parking area |
-| 2 · Collisions | 02.4 Catch Tutorial | A short lesson in setting launch-pad and cup-base properties independently; both can be prepared in advance |
-| 2 · Collisions | 02.5 Bank Shot | Use a real angled rebound to turn horizontal motion upward in zero gravity |
+| 2 · Collisions | 02.1 Bank Shot | Use a real angled rebound to turn horizontal motion upward in zero gravity |
+| 2 · Collisions | 02.2 A Little More Bounce | A simple rebound reaches the exit; low elasticity followed by upward acceleration collects every star |
+| 2 · Collisions | 02.3 Not Too High | Full-score route: use high elasticity to reach high stars, then increase downward acceleration to return to the exit |
+| 2 · Collisions | 02.4 Brake Before the Edge | Use the cyan friction runway to bring the entire block to rest in the parking area |
+| 2 · Collisions | 02.5 Catch Tutorial | A short lesson in setting launch-pad and cup-base properties independently; both can be prepared in advance |
 | 2 · Collisions | 02.6 Return to Dock | Rebound from the far wall, then use friction to park on the return trip |
 | 2 · Collisions | 02.7 One Last Bounce | Use one floor for a strong rebound, then soften it and add grip for the next landing |
 | 3 · Devices | 03.1 A Little Stored Energy | Learn the toaster's compression, energy storage, and release |

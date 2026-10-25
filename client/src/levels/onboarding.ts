@@ -4,6 +4,7 @@ export interface OnboardingStep {
   title: string;
   body: string;
   diagram: 'queue' | 'ramp' | 'coast' | 'fall' | 'spring' | 'reverse' | 'soft-floor' | 'low-star' | 'rise'
+    | 'bank-approach' | 'bank-impact' | 'bank-exit'
     | 'bakery-setup' | 'bakery-charge' | 'bakery-delivery' | 'bakery-field' | 'bakery-draft' | 'bakery-bell';
   commands?: readonly string[];
 }
@@ -40,6 +41,19 @@ const lessons: Readonly<Record<string, LevelOnboarding>> = {
         body: 'The passive spring compresses on contact and rebounds naturally. By itself, it cannot lift the ball above its starting height.' },
       { title: 'Reverse gravity for more height', diagram: 'reverse',
         body: 'Send “reverse gravity” to turn the acceleration upward. Reach the two higher stars, then the exit.' },
+    ],
+  },
+  'bank-shot': {
+    title: 'Blue means bounce.',
+    intro: 'A simple first collision lesson: the ball is already moving, and gravity is off.',
+    starterMessages: ['Set surface bounce to 1'],
+    steps: [
+      {title:'Prepare the blue surface',diagram:'bank-approach',
+        body:'Blue marks a bouncy surface. “Set surface bounce to 1” is ready in your queue. It takes effect only when you send it.'},
+      {title:'Let the angle turn the ball',diagram:'bank-impact',
+        body:'Send the rule before contact. The slanted surface redirects rightward motion upward. No upward acceleration is needed.'},
+      {title:'Follow the stars',diagram:'bank-exit',
+        body:'Keep the rule active to follow the reflected path through all three stars and the exit. Next, try changing bounce while gravity is on.'},
     ],
   },
   bounce: {

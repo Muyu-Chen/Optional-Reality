@@ -1,7 +1,7 @@
 import type { LevelDefinition } from './types';
 
 export const catchCup: LevelDefinition = {
-  id:'catch-cup',number:2,stage:4,title:'Catch Tutorial',
+  id:'catch-cup',number:2,stage:5,title:'Catch Tutorial',
   viewport:{width:800,height:510,pixelsPerMetre:80},timeLimitSeconds:30,initialAcceleration:[0,2],
 
   environment:{restitution:0,friction:0},

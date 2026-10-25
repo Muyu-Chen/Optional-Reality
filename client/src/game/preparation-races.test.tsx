@@ -94,7 +94,7 @@ describe('AI preparation and player action races', () => {
     const previous = lab();
     await click('Pause menu');
     fireEvent.click(screen.getByText('Choose a level'));
-    await click('02.1 · A Little More Bounce');
+    await click('02.2 · A Little More Bounce');
     expect(previous.destroyed).toBe(true);
     expect(api.pending[0].signal.aborted).toBe(true);
     await api.complete(0, gravity);
