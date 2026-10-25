@@ -167,6 +167,17 @@
   scrollbar-width:thin;
   scrollbar-color:#52665a66 transparent
 }
+.queue-preparation {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:7px 14px;
+  font-size:13px;
+  color:var(--muted);
+  background:#e9ab2417;
+}
+.queue-preparation button { text-decoration:underline;text-underline-offset:3px }
 .upcoming-message {
   padding-top:7px;
   padding-bottom:7px

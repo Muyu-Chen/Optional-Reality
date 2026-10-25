@@ -24,6 +24,8 @@ interface MessageQueueProps {
   onClear: () => void;
   onPrepare: () => void;
   onLoadExample: () => void;
+  onCancelPreparation?: () => void;
+  onPrepareMessage?: (id:string) => void;
 }
 
 export function MessageQueue(props: MessageQueueProps) {
@@ -37,7 +39,7 @@ export function MessageQueue(props: MessageQueueProps) {
       managing={managing} selected={selected.has(message.id)} preparing={preparing}
       canSend={canSend && !props.messageErrors[message.id]} validationError={props.messageErrors[message.id]}
       onSelect={props.onSelect} onEdit={props.onEdit} onDelete={props.onDelete}
-      onMove={props.onMove} onSend={props.onSend} />
+      onMove={props.onMove} onSend={props.onSend} onPrepare={props.onPrepareMessage} />
   );
 
   return (
@@ -48,6 +50,8 @@ export function MessageQueue(props: MessageQueueProps) {
           {managing ? 'Done' : 'Manage'}
         </button>
       </div>
+      {preparing && <div className="queue-preparation" role="status"><span>Reading a message · game paused</span>
+        <button className="quiet-button" onClick={props.onCancelPreparation}>Cancel</button></div>}
       {pending.length ? <div className="pending-list">{pending.map(renderMessage)}</div> : (
         <div className="empty-queue">
           <p>{sent.length ? 'What changes next?' : 'A different world starts with a message.'}</p>
@@ -63,7 +67,7 @@ export function MessageQueue(props: MessageQueueProps) {
           <div className="button-row">
             <button className="small-button" disabled={!ready.length}
               onClick={() => props.onSelectAll(ready.map(message => message.id))}>Select ready</button>
-            <button className="small-button" disabled={!chosen.length || ended || preparing || !!previewError}
+            <button className="small-button" disabled={!chosen.length || ended || !!previewError}
               onClick={() => props.onSend(chosen.map(message => message.id))}>Send all selected</button>
           </div>
           <details>

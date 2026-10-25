@@ -16,16 +16,17 @@ interface MessageCardProps {
   onDelete: (id: string) => void;
   onMove: (id: string, direction: -1 | 1) => void;
   onSend: (ids: string[]) => void;
+  onPrepare?: (id: string) => void;
 }
 
 export function MessageCard({ message, index, count, managing, selected, preparing, canSend, validationError,
-  onSelect, onEdit, onDelete, onMove, onSend }: MessageCardProps) {
+  onSelect, onEdit, onDelete, onMove, onSend, onPrepare }: MessageCardProps) {
   const operations = messageOperations(message);
   const status = message.status === 'draft' ? preparing ? 'Interpreting…' : 'Waiting'
     : message.status === 'error' ? 'Needs editing' : 'Ready';
   const description = operations.length
     ? operations.map(operation => describeOperation(operation).title).join(' · ')
-    : message.status === 'draft' ? 'Interpreting your rule…' : message.error || 'Your rule is being prepared.';
+    : message.status === 'draft' ? preparing ? 'Interpreting your rule…' : 'Choose Prepare when you are ready.' : message.error || 'Your rule is being prepared.';
 
   return (
     <article className={`queued-message ${index === 0 ? 'current-message' : 'upcoming-message'} ${message.status}`}>
@@ -38,8 +39,9 @@ export function MessageCard({ message, index, count, managing, selected, prepari
           <span>{status}</span>
         </div>
         <div className="message-quick-actions">
-          <button className="send-now" disabled={!canSend || message.status !== 'ready'}
-            onClick={() => onSend([message.id])}>Send now</button>
+          {message.status==='draft' && !preparing && onPrepare ? <button className="send-now" disabled={!canSend}
+            onClick={() => onPrepare(message.id)}>Prepare</button> : <button className="send-now" disabled={!canSend || message.status !== 'ready'}
+            onClick={() => onSend([message.id])}>Send now</button>}
           <button className="delete-message" aria-label={`Delete message ${index + 1}`} title="Delete message"
             onClick={() => onDelete(message.id)}>
             <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true">

@@ -8,7 +8,11 @@ export default defineConfig(({ mode }) => ({
   base: '/demo/',
   plugins: [react()],
   publicDir: false,
-  server: { proxy: { '/api': devApiProxy(loadEnv(mode, fileURLToPath(new URL('.', import.meta.url)), 'DEV_API_').DEV_API_ORIGIN) } },
+  server: {
+    // Edits through the shared workspace do not always produce native file events.
+    watch: { usePolling: true, interval: 300 },
+    proxy: { '/api': devApiProxy(loadEnv(mode, fileURLToPath(new URL('.', import.meta.url)), 'DEV_API_').DEV_API_ORIGIN) },
+  },
   build: {
     outDir: fileURLToPath(new URL('./site/demo', import.meta.url)),
     emptyOutDir: true,

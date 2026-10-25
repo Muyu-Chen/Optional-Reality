@@ -9,7 +9,7 @@ import { initialRules, ruleContext } from '../levels/rules';
 import type { LevelDefinition } from '../levels/types';
 import type { CanvasLab } from '../physics/canvas-lab';
 
-interface ImmediatePreparation { id:string; onReady:(ids:string[])=>void }
+interface PreparationOptions { draftsOnly?:boolean; messageId?:string; onReady?:(ids:string[])=>void }
 
 // Owns preparation and persistence only. Sending a prepared rule belongs to the game session.
 export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<CanvasLab | null>, onNotice: (text: string) => void) {
@@ -21,6 +21,7 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
   const [preparing, setPreparingState] = useState(false);
   const preparingRef = useRef(false);
   const immediateRef = useRef<object | null>(null);
+  const autoPrepare = useRef(true);
   const [storageAvailable, setStorageAvailable] = useState(true);
   const setPreparing = useCallback((value:boolean) => {
     preparingRef.current=value;
@@ -28,8 +29,11 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
   },[]);
   const cancelImmediate = useCallback(() => {immediateRef.current=null;},[]);
 
-  const updateMessages = useCallback((next: Message[]) => {
+  const updateMessages = useCallback((next: Message[], options?:{autoPrepare?:boolean}) => {
     immediateRef.current=null;
+    if(options?.autoPrepare!==undefined)autoPrepare.current=options.autoPrepare;
+    else if(next.some(message=>message.status==='draft' && !messageRef.current.some(previous=>
+      previous.id===message.id && previous.text===message.text && previous.status==='draft')))autoPrepare.current=true;
     compilation.queueChanged();
     setPreparing(false);
     messageRef.current = next;
@@ -45,17 +49,25 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
     immediateRef.current=null;
     compilation.sceneChanged();
     setPreparing(false);
+    autoPrepare.current=true;
   }, [compilation,setPreparing]);
 
-  const prepareQueue = useCallback(async (onlyDrafts = false, immediate?:ImmediatePreparation) => {
+  const cancelPreparation = useCallback(() => {
+    immediateRef.current=null;
+    autoPrepare.current=false;
+    compilation.queueChanged();setPreparing(false);
+    onNotice('Preparation cancelled. Ready messages can be sent; choose Prepare for waiting messages.');
+  },[compilation,setPreparing,onNotice]);
+
+  const prepareQueue = useCallback(async (options:PreparationOptions = {}) => {
     const lab = labRef.current;
     if (!lab || preparingRef.current || lab.world.won || lab.world.timedOut || lab.isAbsorbing) return;
-    const pending = messageRef.current.filter(message => immediate ? message.id===immediate.id && message.status!=='sent'
-      : onlyDrafts ? message.status === 'draft' : message.status !== 'sent');
+    const pending = messageRef.current.filter(message => options.messageId ? message.id===options.messageId && message.status!=='sent'
+      : options.draftsOnly ? message.status === 'draft' : message.status !== 'sent');
     if (!pending.length) return;
     const ticket = compilation.begin();
     if (!ticket) return;
-    immediateRef.current=immediate?ticket:null;
+    immediateRef.current=options.onReady?ticket:null;
     lab.world.pause();
     lab.report();
     setPreparing(true);
@@ -77,12 +89,12 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
         return {...message,operations:limited.operations,adjustments};
       });
       const compiled = new Map(bounded.map(message => [message.id, message]));
-      const applyImmediately=immediate && immediateRef.current===ticket;
+      const applyImmediately=options.onReady && immediateRef.current===ticket;
       updateMessages(messageRef.current.map(message => compiled.has(message.id) ? {
         id: message.id, text: message.text, status: 'ready', operations: compiled.get(message.id)!.operations,
         understoodAs: compiled.get(message.id)!.understoodAs, adjustments: compiled.get(message.id)!.adjustments, source: 'ai',
-      } : message));
-      if(applyImmediately)immediate.onReady([immediate.id]);
+      } : message),{autoPrepare:false});
+      if(applyImmediately && options.messageId)options.onReady!([options.messageId]);
       else onNotice('Ready when you are.');
     } catch (error) {
       if (!compilation.isCurrent(ticket)) return;
@@ -90,7 +102,7 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
       const failed = new Set(pending.filter(message => message.status === 'draft').map(message => message.id));
       if (failed.size) updateMessages(messageRef.current.map(message => (
         failed.has(message.id) ? { ...message, status: 'error', error: reason } : message
-      )));
+      )),{autoPrepare:false});
       onNotice(reason);
     } finally {
       if (compilation.finish(ticket)) setPreparing(false);
@@ -116,7 +128,7 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
   }, [compilation]);
 
   useEffect(() => {
-    if (api.configured && !preparing && messages.some(message => message.status === 'draft')) void prepareQueue(true);
+    if (autoPrepare.current && api.configured && !preparing && messages.some(message => message.status === 'draft')) void prepareQueue({draftsOnly:true});
   }, [messages, api.configured, preparing, prepareQueue]);
 
   useEffect(() => {
@@ -127,5 +139,5 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
   }, [api.configured, updateMessages]);
 
   return { messages, messageRef, api, preparing, storageAvailable, updateMessages, localMessage, prepareQueue, invalidateScene,
-    cancelImmediate,isPreparing:()=>preparingRef.current };
+    cancelImmediate,cancelPreparation,isPreparing:()=>preparingRef.current };
 }

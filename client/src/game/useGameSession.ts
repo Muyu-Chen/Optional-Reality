@@ -29,7 +29,7 @@ export function useGameSession(level: LevelDefinition) {
 
   function send(ids: string[]) {
     const lab = labRef.current;
-    if (!lab || onboarding.isVisible() || queue.preparing || lab.world.won || lab.world.timedOut) return;
+    if (!lab || onboarding.isVisible() || lab.world.won || lab.world.timedOut) return;
     try {
       const result = applyBatch(queue.messageRef.current, ids, lab.world.rules, lab.world.tick, context);
       let captionState = lab.world.rules;
@@ -45,7 +45,9 @@ export function useGameSession(level: LevelDefinition) {
       setCaptions(previous => [...previous, ...feedback]);
       lab.world.start();
       controls.setMenuOpen(false);
-      queue.updateMessages(result.messages);
+      // Sending prepared rules invalidates the in-flight model snapshot. Do not
+      // immediately reparse unrelated drafts and pause the run again.
+      queue.updateMessages(result.messages,{autoPrepare:false});
       setEvents(previous => [...previous, ...result.events]);
       queue.clearSelection(ids);
       lab.report();
@@ -131,7 +133,7 @@ export function useGameSession(level: LevelDefinition) {
     canvasRef, telemetry, queue, controls, onboarding, notice, captions, finishCaption,
     world: labRef.current?.world,
     canUndo: !!events.length, ended, absorbing, previewError, messageErrors,
-    canSend: !ended && !queue.preparing && !onboarding.visible,
+    canSend: !ended && !onboarding.visible,
     stateLabel: absorbing ? 'Finding another reality…' : gameStateLabel(telemetry),
     secondsLeft: Math.max(0, Math.ceil(level.timeLimitSeconds - telemetry.tick * STEP_MS / 1000)),
     tutorial: level.tutorials?.find(item => item.id === telemetry.tutorialId),
@@ -153,6 +155,6 @@ export function useGameSession(level: LevelDefinition) {
 }
 
 function gameStateLabel(telemetry: Telemetry) {
-  return telemetry.won ? 'Complete' : telemetry.fell ? 'Try again' : telemetry.timedOut ? 'Time’s up'
+  return telemetry.won ? 'Complete' : telemetry.outOfBounds ? 'Out of bounds' : telemetry.fell ? 'Try again' : telemetry.timedOut ? 'Time’s up'
     : telemetry.tutorialId ? 'Learning' : telemetry.running ? 'Running' : telemetry.started ? 'Paused' : 'Ready';
 }

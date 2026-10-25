@@ -67,7 +67,7 @@ export function useMessageQueue(level: LevelDefinition, labRef: RefObject<Canvas
     const entry=storeInput();
     if(!entry)return;
     if(entry.status==='ready')onSend([entry.id]);
-    else if(entry.status==='draft' && api.configured)void prepared.prepareQueue(true,{id:entry.id,onReady:onSend});
+    else if(entry.status==='draft' && api.configured)void prepared.prepareQueue({draftsOnly:true,messageId:entry.id,onReady:onSend});
     else onNotice(entry.error || 'This message needs editing before it can be applied.');
   }
 

@@ -44,7 +44,8 @@ export function Game({ level, chooseLevel, onTitle, onLevelSelect, onCompleted }
         onToggleManage={queue.toggleManaging} onSelect={queue.toggleSelection} onSelectAll={queue.selectMessages}
         onEdit={queue.editMessage} onDelete={queue.removeMessage} onMove={queue.moveMessage} onSend={game.send}
         onQueueAgain={queue.queueAgain} onUndo={game.undoLastRule} onClear={queue.clearMessages}
-        onPrepare={() => queue.prepareQueue()} onLoadExample={queue.loadExample} />
+        onPrepare={() => queue.prepareQueue()} onLoadExample={queue.loadExample}
+        onCancelPreparation={queue.cancelPreparation} onPrepareMessage={id=>queue.prepareQueue({messageId:id})} />
       <RuleComposer input={queue.input} editing={!!queue.editing} full={queue.messages.length >= 24}
         disabled={game.absorbing || onboarding.visible}
         editableRules={allowedRules}

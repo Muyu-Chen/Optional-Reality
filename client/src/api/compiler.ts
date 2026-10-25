@@ -1,4 +1,5 @@
 import { CompileResponseSchema, type CompileRequest } from '../../../shared/compiler';
+import { withRequestDeadline } from './request-deadline';
 
 export async function compilerStatus(signal: AbortSignal): Promise<{ configured: boolean; model: string }> {
   const response = await fetch('/api/status', { signal });
@@ -7,8 +8,9 @@ export async function compilerStatus(signal: AbortSignal): Promise<{ configured:
   return { configured: result.configured === true, model: typeof result.model === 'string' ? result.model : '' };
 }
 export async function prepareWithAI(request: CompileRequest, signal: AbortSignal) {
+  return withRequestDeadline(async requestSignal => {
   const response = await fetch('/api/compile', {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request), signal,
+    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request), signal: requestSignal,
   });
   let output: unknown;
   try { output = await response.json(); } catch { throw new Error('The API server is unavailable. Start it with npm run dev or npm start.'); }
@@ -20,4 +22,5 @@ export async function prepareWithAI(request: CompileRequest, signal: AbortSignal
   if (result.requestId !== request.requestId || result.levelId !== request.levelId || result.queueRevision !== request.queueRevision || result.sceneVersion !== request.sceneVersion) throw new Error('An outdated compilation was ignored.');
   if (result.messages.length !== request.messages.length || result.messages.some((message, index) => message.id !== request.messages[index].id)) throw new Error('The compiler returned mismatched message IDs.');
   return result;
+  }, signal);
 }

@@ -22,6 +22,7 @@ describe('client compiler identity checks', () => {
     vi.stubGlobal('fetch', fetcher);
     const controller = new AbortController();
     await expect(prepareWithAI(input, controller.signal)).rejects.toThrow('Add AI_API_KEY');
-    expect(fetcher.mock.calls[0][1].signal).toBe(controller.signal);
+    expect(fetcher.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
+    expect(fetcher.mock.calls[0][1].signal.aborted).toBe(false);
   });
 });
