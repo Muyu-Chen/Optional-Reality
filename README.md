@@ -10,9 +10,9 @@ AI compiles the player's intent into supported declarative operations, while Mat
 
 ## Gameplay Demo
 
-The [mobile-friendly introduction](https://optionalreality.site/intro) brings together the game, demo, chapters, and sharing in English and Chinese. [Download its QR code](./site/assets/intro-20261025/intro-qr.png) or a [printable share card](./site/assets/intro-20261025/scan-card.png) for a demo table. The QR opens the introduction; playing the levels still requires a computer. See [Introduction and QR Sharing](./docs/mobile-introduction.md).
+The [mobile-friendly introduction](https://optionalreality.site/intro) brings together the game, demo, chapters, and sharing with an English-first presentation. [Download its QR code](./site/assets/intro-20261025/intro-qr.png) or a [printable share card](./site/assets/intro-20261025/scan-card.png) for a demo table. The QR opens the introduction; playing the levels still requires a computer. See [Introduction and QR Sharing](./docs/mobile-introduction.md). The demo now includes original music and gameplay cues; [watch the English narrated edition](https://optionalreality.site/showcase/narrated.html) or [download the YouTube-ready MP4](https://optionalreality.site/showcase/youtube-demo.mp4).
 
-A 47-second loop shows chapter selection, automatic character-by-character input, and real three-star completions in Motion, Collisions, and Devices. Open the [looping player](https://optionalreality.site/showcase/), or [watch / download the 720p MP4](./site/showcase/gameplay-loop.mp4). [Playback and recording notes](./site/showcase/README.md) include local playback, chapter timestamps, and captions.
+A 47-second loop shows chapter selection, automatic character-by-character input, and real three-star completions in Motion, Collisions, and Devices. Open the [looping player](https://optionalreality.site/showcase/), or [watch / download the 720p MP4 with sound](./site/showcase/gameplay-sound.mp4). [Playback and recording notes](./site/showcase/README.md) include local playback, chapter timestamps, and captions.
 
 [![Looping gameplay demo: level selection, typed rules, and three-star completions](./site/showcase/preview.gif)](./site/showcase/gameplay-loop.mp4)
 
@@ -64,7 +64,7 @@ Chapters organize the teaching sequence. Basic physical properties remain consis
 - A powered toaster charges for approximately 0.6 seconds on contact. All three bakery levels pause on first contact for a teaching moment, even when the toaster is off; rules can be sent while paused, and **Continue** resumes the simulation. Retrying does not repeat the interruption, and the menu can replay the teaching sequence.
 - Switch levels from the pause menu, or proceed to the next level after completion. Results use large, separate stars to distinguish collected and missed stars, with different feedback for ordinary completion and full score.
 - After the first interaction, quiet original background music and event sound effects can play. **Music on/off** and **Sound effects on/off** in pause settings are independent and remember your choices. Leaving the tab stops existing audio, and changing levels does not stack playback.
-- The interface is primarily English and accepts both English and Chinese input, with readable text sizes and contrast for the interface and scene labels.
+- The interface is primarily English, with readable text sizes and contrast for the interface and scene labels. Write rules in any language supported by Google Gemini.
 - An indicator beside the stars shows the actual acceleration direction and magnitude, briefly emphasizing changes. Enlarged birds and an eagle fly independently and respond to direction changes. Impacts create ripples and slight visual deformation based on incoming speed without changing physical trajectories.
 
 Implementation conventions for the interface, continuous springs, backgrounds, and exit animations are collected in [Game Presentation](./docs/presentation.md). Release status is recorded below and in the deployment notes.

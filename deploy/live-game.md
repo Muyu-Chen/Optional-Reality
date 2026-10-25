@@ -1,6 +1,14 @@
 # 线上游戏 — 2026-10-25
 
-## 最新发布：手机介绍页与扫码分享
+## 最新发布：演示配乐、音效与英文旁白
+
+静态版本为 `20261025T114207Z-demo-sound-optional-reality-game`，在已上线的 21 关版本上追加音频与介绍页修改。网页循环录像加入原创配乐和重建的游戏提示音，点击 Watch 或 Enable sound 即可收听，静音选择与原生音量控件同步；另提供英文 Gemini 旁白版、SRT 字幕和 YouTube 上传说明。网站默认英文，语言说明改为 Google Gemini 支持的任何语言。三个域名 285 个资源哈希、API 与视频范围请求验证通过；四个 API 服务及 Apache 的 PID、启动时间保持不变，无停止、重启或 reload。详见 [演示音频记录](../docs/demo-audio.md)。
+
+## 此前发布：介绍页默认英文
+
+静态版本为 `20261025T112324Z-english-default-cf78da3b-optional-reality-game`。介绍页不再根据浏览器语言或旧中文偏好切换，打开及刷新默认英文；中文仅保留手动切换和显式 `?lang=zh`。HTML 使用带版本的脚本 URL，避开旧脚本一小时缓存。只更新静态介绍页，二维码、游戏和现有服务保持不变。
+
+## 此前发布：手机介绍页与扫码分享
 
 静态版本为 `20261025T111302Z-mobile-intro-7d173ddb-optional-reality-game`。[介绍页](https://optionalreality.site/intro) 整合双语品牌展示、循环实机录像、十五关概览、玩法、FAQ 和分享入口；适配手机宽度、内联视频与安全区。提供直达介绍页的 PNG／SVG 二维码、分享卡和社交预览图。三个域名共 147 个资源哈希及九张公开扫码图片验证通过。原游戏、API、全部服务 PID 与启动时间保持不变。详见 [手机介绍页发布记录](./mobile-introduction.md)。
 
