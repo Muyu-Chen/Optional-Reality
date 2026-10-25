@@ -4,12 +4,15 @@ import { drawBread } from './bread';
 import { sceneColours } from '../drawing-theme';
 import type { AmbientFrame } from '../ambient-scenery';
 import { drawAmbientScenery } from '../ambient-scenery-renderer';
+import { sceneryProfile, sceneryProfiles } from '../scenery/profiles';
+import { drawRoomAccent } from './room-accent';
 
-export function drawBakeryRoom(ctx: Ctx,ambient?:AmbientFrame,reducedMotion=false) {
+export function drawBakeryRoom(ctx: Ctx,ambient?:AmbientFrame,reducedMotion=false,levelId='toaster') {
+ const palette=sceneryProfile(levelId).bakery??sceneryProfiles.toaster.bakery!;
  ctx.fillStyle=sceneColours.bakeryBackground;ctx.fillRect(0,0,960,540);
  // Plaster wall and the shop's timber picture rail.
- ctx.fillStyle='#e9d9ba';ctx.fillRect(0,100,960,384);
- ctx.fillStyle='#fff3db';ctx.fillRect(0,101,500,228);
+ ctx.fillStyle=palette.wall;ctx.fillRect(0,100,960,384);
+ ctx.fillStyle=palette.plaster;ctx.fillRect(0,101,500,228);
  ctx.fillStyle='#decaa5';ctx.fillRect(0,329,500,155);
  for(let x=11;x<500;x+=32)strokePath(ctx,[[x,332],[x,482]],'#daceb7');
  ctx.fillStyle='#c6b18f';ctx.fillRect(0,327,500,5);
@@ -20,17 +23,18 @@ export function drawBakeryRoom(ctx: Ctx,ambient?:AmbientFrame,reducedMotion=fals
  roundRect(ctx,788,22,145,51,5,'#e4d1a9');bakeryText(ctx,'ORDER 03',804,44,14,sceneColours.bakeryInk,'700');bakeryText(ctx,'ONE LOAF / AWAITING PICKUP',797,61,10,sceneColours.bakeryMuted);
  strokePath(ctx,[[28,80],[933,80]],'#d9cbb6');
  // Street-facing window: quiet buildings, striped awning, evening light.
- roundRect(ctx,43,125,243,195,5,'#b69a73');roundRect(ctx,50,132,229,181,2,'#dfdfce');
+ roundRect(ctx,43,125,243,195,5,'#b69a73');roundRect(ctx,50,132,229,181,2,palette.window);
  if(ambient)drawAmbientScenery(ctx,ambient,reducedMotion,{x:53,y:153,width:222,height:151,detailScale:.65});
  ctx.fillStyle='#d4d4c0';ctx.fillRect(53,209,100,101);ctx.fillStyle='#c5c8b5';ctx.fillRect(166,186,109,124);
  ctx.fillStyle='#e9e6d8';for(let x=66;x<263;x+=39){ctx.fillRect(x,224,15,25);ctx.fillRect(x,266,15,25);}
- oval(ctx,224,169,19,19,'#eee4c5');
+ if(palette.motif!=='moon')oval(ctx,224,169,19,19,palette.light);
+ drawRoomAccent(ctx,palette);
  ctx.fillStyle='#f3e5c8';ctx.fillRect(51,133,227,20);
- for(let x=52;x<275;x+=35){ctx.fillStyle='#6e8b70';ctx.fillRect(x,133,17,20);}
+ for(let x=52;x<275;x+=35){ctx.fillStyle=palette.awning;ctx.fillRect(x,133,17,20);}
  ctx.fillStyle='#c2a780';ctx.fillRect(158,153,5,160);ctx.fillRect(51,219,227,5);
  roundRect(ctx,35,312,260,9,2,'#bba17b');
  // A soft sun patch keeps the otherwise restrained room warm.
- ctx.fillStyle='#fffbec35';ctx.beginPath();ctx.moveTo(53,225);ctx.lineTo(158,225);ctx.lineTo(451,410);ctx.lineTo(209,410);ctx.closePath();ctx.fill();
+ ctx.fillStyle=`${palette.light}35`;ctx.beginPath();ctx.moveTo(53,225);ctx.lineTo(158,225);ctx.lineTo(451,410);ctx.lineTo(209,410);ctx.closePath();ctx.fill();
  // Herbs and a ceramic cup on the window ledge.
  roundRect(ctx,69,290,23,22,3,'#ad9470');strokePath(ctx,[[80,293],[80,266]],'#8e9870',2);
  oval(ctx,73,279,9,4,'#929c79');oval(ctx,88,271,9,4,'#a1aa85');oval(ctx,75,266,7,3,'#929c79');
@@ -41,7 +45,7 @@ export function drawBakeryRoom(ctx: Ctx,ambient?:AmbientFrame,reducedMotion=fals
  roundRect(ctx,369,154,22,29,3,'#d6ccb7');roundRect(ctx,368,151,24,5,2,'#8a8e70');drawBread(ctx,420,173,13,-.25);drawBread(ctx,447,171,14,.2);
  // Today's chalk menu sits behind the interactive objects.
  roundRect(ctx,329,225,144,107,3,'#9a7546');roundRect(ctx,335,231,132,95,1,'#3e5947');
- bakeryText(ctx,'FRESH TODAY',355,253,14,'#f0ead8','600');strokePath(ctx,[[348,263],[453,263]],'#a3a88e');
+ bakeryText(ctx,palette.menu,344,253,11,'#f0ead8','600');strokePath(ctx,[[348,263],[453,263]],'#a3a88e');
  bakeryText(ctx,'One last round loaf',348,283,11,'#e3dfca');bakeryText(ctx,'Ready when you are.',348,307,10,'#c5c9af');
  // Warm white tiles in the cooling / service bay.
  ctx.fillStyle='#ede8da';ctx.fillRect(500,103,332,317);

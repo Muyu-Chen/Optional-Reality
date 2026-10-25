@@ -9,6 +9,10 @@ import { ExitTransition, type PresentationTelemetry } from './exit-transition';
 import { drawExitTransition } from './exit-transition-renderer';
 import { AmbientScenery } from './ambient-scenery';
 import { SceneSoundEvents } from '../audio/scene-sound-events';
+import { LivingWorld } from './scenery/living-world';
+import { sceneryTheme } from './scenery/layout';
+import { drawPuzzleBackdrop } from './scene-backdrop';
+import { sceneryProfile } from './scenery/profiles';
 
 export class CanvasLab {
   world: PhysicsWorld;
@@ -23,6 +27,7 @@ export class CanvasLab {
   private visualTime=0;
   private exit: ExitTransition;
   private scenery: AmbientScenery;
+  private landscape: LivingWorld;
   private sounds: SceneSoundEvents;
   private destroyed = false;
   private motion=window.matchMedia?.('(prefers-reduced-motion: reduce)');
@@ -35,6 +40,7 @@ export class CanvasLab {
     this.world = new PhysicsWorld(level);
     this.exit = new ExitTransition(level);
     this.scenery = new AmbientScenery(level.viewport.width,level.viewport.height);
+    this.landscape = new LivingWorld(sceneryTheme(level));
     this.feedback = new SceneFeedback(this.world);
     this.sounds = new SceneSoundEvents(this.world);
     this.context = context;
@@ -60,6 +66,7 @@ export class CanvasLab {
     this.feedback=new SceneFeedback(this.world);this.visualTime=0;
     this.exit.reset();this.previousTime=0;
     this.scenery.dispose();this.scenery=new AmbientScenery(this.level.viewport.width,this.level.viewport.height);
+    this.landscape.dispose();this.landscape=new LivingWorld(sceneryTheme(this.level));
     this.sounds=new SceneSoundEvents(this.world);
     this.report(); this.draw();
   }
@@ -69,6 +76,7 @@ export class CanvasLab {
     this.feedback=new SceneFeedback(this.world);this.visualTime=0;
     this.exit.reset();this.previousTime=0;
     this.scenery.dispose();this.scenery=new AmbientScenery(this.level.viewport.width,this.level.viewport.height);
+    this.landscape.dispose();this.landscape=new LivingWorld(sceneryTheme(this.level));
     this.sounds=new SceneSoundEvents(this.world);
     this.trail = []; this.accumulator = 0;
     this.world.start(); this.report(); this.draw();
@@ -86,6 +94,7 @@ export class CanvasLab {
     this.previousTime = time;
     this.visualTime+=delta/1000;
     this.scenery.advance(delta/1000,this.world.rules.acceleration,!document.hidden&&this.world.running,!!this.motion?.matches);
+    this.landscape.advance(delta/1000,this.world.rules.acceleration,!document.hidden&&this.world.running,!!this.motion?.matches);
     this.feedback.advance(this.visualTime,!!this.motion?.matches);
     if (this.world.running) {
       this.accumulator += delta;
@@ -113,6 +122,11 @@ export class CanvasLab {
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.fillStyle = this.level.presentation === 'bakery' ? sceneColours.bakeryBackground : sceneColours.background; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     const ratio = window.devicePixelRatio || 1;
+    const ambient = this.scenery.snapshot();
+    if(this.level.presentation!=='bakery') {
+      ctx.setTransform(ratio,0,0,ratio,0,0);
+      drawPuzzleBackdrop(ctx,this.canvas.width/ratio,this.canvas.height/ratio,this.landscape.snapshot(),ambient,!!this.motion?.matches,sceneryProfile(this.level.id));
+    }
     // The canvas fills the screen; reserve readable space for floating game controls.
     // These CSS tokens are shared with the HUD so it cannot hide the pickup target.
     const style = this.immersive ? getComputedStyle(this.canvas) : null;
@@ -121,7 +135,6 @@ export class CanvasLab {
     const availableWidth = Math.max(1,this.canvas.width-left-right), availableHeight = Math.max(1,this.canvas.height-top-bottom);
     const scale = Math.min(availableWidth / width, availableHeight / height);
     ctx.setTransform(scale, 0, 0, scale, left+(availableWidth-width*scale)/2, top+(availableHeight-height*scale)/2);
-    const ambient = this.scenery.snapshot();
     const actorPose=this.feedback.actorPose;
     if (this.level.presentation === 'bakery') drawBakery(ctx, this.world, this.trail,ambient,!!this.motion?.matches,actorPose);
     else drawGeometry(ctx,this.world,this.trail,ambient,!!this.motion?.matches,actorPose);
@@ -132,7 +145,7 @@ export class CanvasLab {
 
   destroy() {
     if (this.destroyed) return;
-    this.destroyed=true;this.exit.reset();this.scenery.dispose();this.sounds.dispose();
+    this.destroyed=true;this.exit.reset();this.scenery.dispose();this.landscape.dispose();this.sounds.dispose();
     cancelAnimationFrame(this.frame); this.observer.disconnect();
     this.motion?.removeEventListener('change',this.motionChanged);this.feedback.dispose();
     document.removeEventListener('visibilitychange', this.visible); this.world.destroy();

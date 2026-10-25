@@ -6,8 +6,10 @@ import { gravityLab } from '../levels/gravity-lab';
 import { CanvasLab } from './canvas-lab';
 import Matter from 'matter-js';
 import { drawExitTransition } from './exit-transition-renderer';
+import { drawPuzzleBackdrop } from './scene-backdrop';
 
 vi.mock('./geometry-renderer', () => ({ drawGeometry: vi.fn() }));
+vi.mock('./scene-backdrop', () => ({ drawPuzzleBackdrop: vi.fn() }));
 vi.mock('./bakery-renderer', () => ({ drawBakery: vi.fn() }));
 vi.mock('./exit-transition-renderer', () => ({ drawExitTransition: vi.fn() }));
 
@@ -117,6 +119,16 @@ describe('Canvas lifecycle and fixed simulation time', () => {
     expect(y).toBeGreaterThanOrEqual(192);
     expect(x + 800 * scale).toBeLessThanOrEqual(canvas.width - 732 + .001);
     expect(y + 510 * scale).toBeLessThanOrEqual(canvas.height - 156 + .001);
+    // The illustration spans the entire CSS viewport, independently from the fitted playable world.
+    expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall?.slice(1,3)).toEqual([1366,768]);
+  });
+
+  it('freezes the decorative world on pause and rebuilds its deterministic initial state on reset',()=>{
+    const {lab}=setup();const initial=structuredClone(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]);
+    lab.world.start();frame(1);frame(51);const moving=structuredClone(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]);
+    expect(moving.time).toBeGreaterThan(0);lab.world.pause();frame(10001);
+    expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]).toEqual(moving);
+    lab.reset();expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]).toEqual(initial);
   });
 });
 

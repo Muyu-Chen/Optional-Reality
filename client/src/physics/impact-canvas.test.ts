@@ -6,6 +6,7 @@ import { CanvasLab } from './canvas-lab';
 import { drawGeometry } from './geometry-renderer';
 
 vi.mock('./geometry-renderer', () => ({ drawGeometry: vi.fn() }));
+vi.mock('./scene-backdrop', () => ({ drawPuzzleBackdrop: vi.fn() }));
 vi.mock('./bakery-renderer', () => ({ drawBakery: vi.fn() }));
 vi.mock('./star-renderer', () => ({ drawStars: vi.fn() }));
 vi.mock('./exit-transition-renderer', () => ({ drawExitTransition: vi.fn() }));

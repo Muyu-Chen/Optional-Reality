@@ -1,22 +1,29 @@
-import { sceneColours } from './drawing-theme';
 import type { AmbientFrame } from './ambient-scenery';
 import { drawAmbientScenery } from './ambient-scenery-renderer';
+import { drawCosmosLandscape } from './scenery/cosmos-renderer';
+import { drawValleyLandscape } from './scenery/landscape-renderer';
+import { drawResidents } from './scenery/resident-renderer';
+import type { LivingFrame } from './scenery/living-world';
+import { sceneryProfiles, type SceneryProfile } from './scenery/profiles';
 
-// Distant illustration only: none of these soft shapes represent solid geometry.
-export function drawPuzzleBackdrop(ctx: CanvasRenderingContext2D, width: number, height: number, ambient?:AmbientFrame,reducedMotion=false) {
-  ctx.save();
-  const light=ctx.createRadialGradient(width*.28,height*.24,0,width*.28,height*.24,width*.7);
-  light.addColorStop(0,'#fff5ce80');light.addColorStop(1,'#fff5ce00');
-  ctx.fillStyle=light;ctx.fillRect(0,0,width,height);
-  if(ambient)drawAmbientScenery(ctx,ambient,reducedMotion);
-  else for(const [x,y,r] of [[width*.15,height*.12,25],[width*.68,height*.16,34],[width*.86,height*.32,18]]) {
-    ctx.fillStyle='#ffffff66';ctx.beginPath();ctx.ellipse(x,y,r*1.8,r*.55,0,0,Math.PI*2);ctx.fill();
+/** Full-viewport illustration. Nothing in this layer represents an editable or solid object. */
+export function drawPuzzleBackdrop(ctx:CanvasRenderingContext2D,width:number,height:number,frame:LivingFrame,
+  ambient?:AmbientFrame,reducedMotion=false,profile:SceneryProfile=frame.theme==='cosmos'?sceneryProfiles['gravity-lab']:sceneryProfiles.bounce) {
+  if(width<=0||height<=0)return;
+  ctx.save();ctx.scale(width/1000,height/700);
+  ctx.beginPath();ctx.rect(0,0,1000,700);ctx.clip();
+  if(frame.theme==='cosmos')drawCosmosLandscape(ctx,profile);
+  else {
+    drawValleyLandscape(ctx,frame,profile);
+    if(ambient)drawAmbientScenery(ctx,ambient,reducedMotion,{x:0,y:0,width:1000,height:700,detailScale:1.2});
   }
-  ctx.fillStyle='#71977a0b';ctx.beginPath();ctx.moveTo(0,height);
-  ctx.bezierCurveTo(width*.1,height*.75,width*.22,height*.95,width*.42,height*.9);
-  ctx.bezierCurveTo(width*.65,height*.78,width*.8,height*.8,width,height*.94);
-  ctx.lineTo(width,height);ctx.closePath();ctx.fill();
-  ctx.strokeStyle=sceneColours.guide;ctx.globalAlpha=.2;ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(width*.03,height-5);ctx.lineTo(width*.97,height-5);ctx.stroke();
+  drawResidents(ctx,frame,reducedMotion);
+  // Warm negative space behind the HUD/footer preserves readable dark game typography.
+  const top=ctx.createLinearGradient(0,0,0,230);
+  top.addColorStop(0,'#f5f1e7f2');top.addColorStop(.55,'#f5f1e7bd');top.addColorStop(1,'#f5f1e700');
+  ctx.fillStyle=top;ctx.fillRect(0,0,1000,230);
+  const bottom=ctx.createLinearGradient(0,630,0,700);
+  bottom.addColorStop(0,'#f5f1e700');bottom.addColorStop(1,'#f5f1e7e8');
+  ctx.fillStyle=bottom;ctx.fillRect(0,630,1000,70);
   ctx.restore();
 }

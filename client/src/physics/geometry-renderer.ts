@@ -5,7 +5,6 @@ import { drawGoal } from './goal-renderer';
 import { drawSurface } from './surface-renderer';
 import { drawGeometrySprings } from './spring-renderer';
 import { sceneColours, sceneFonts } from './drawing-theme';
-import { drawPuzzleBackdrop } from './scene-backdrop';
 import type { AmbientFrame } from './ambient-scenery';
 import type { ActorImpactPose } from './actor-impact-pose';
 
@@ -13,7 +12,6 @@ import type { ActorImpactPose } from './actor-impact-pose';
 export function drawGeometry(ctx: CanvasRenderingContext2D, world: PhysicsWorld, trail: readonly Point[],ambient?:AmbientFrame,reducedMotion=false,actorPose?:ActorImpactPose) {
   const {level}=world, {width,height}=level.viewport;
   ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
-  drawPuzzleBackdrop(ctx,width,height,ambient,reducedMotion);
   drawGoal(ctx,world);
   for(const track of level.tracks)drawSurface(ctx,track,world.rules);
   drawGeometrySprings(ctx,world);

@@ -13,7 +13,7 @@ export function drawBakery(ctx: Ctx, world: PhysicsWorld, trail: readonly Point[
   const { level } = world;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
-  drawBakeryRoom(ctx,ambient,reducedMotion);
+  drawBakeryRoom(ctx,ambient,reducedMotion,level.id);
   for (const device of level.devices || []) drawBakeryDevice(ctx, device, world);
   if (trail.length > 1) {
     ctx.setLineDash([2, 7]);
