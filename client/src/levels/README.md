@@ -27,6 +27,7 @@
 | `stars` | 至少三颗有唯一 ID、位置与拾取半径的星星；收齐可获满分，不锁出口 |
 | `openEdges` | 指定左右开放边缘，不创建隐形侧墙；摩擦跑道右侧开放 |
 | `instructions` | 目标、提示、场景别名、例子与输入建议 |
+| `instructions.initialMessages` | 可选首访待发消息，仅无保存记录时载入；已有草稿和已保存空列表均保留 |
 
 坐标原点在左上角，位置和尺寸使用世界坐标，速度使用 m/s，重力使用 m/s²。显示缩放与留给浮动控件的空间不改变物理。
 
@@ -49,3 +50,19 @@
 第三关保留旧 ID `reality-breakdown`。绘图改编自队友的面包店原型；旧 HTML 的独立物理与解析器不属于运行层。转轮有单独测试，但当前主线没有放置，避免一次引入过多机关。
 
 普通与满分路线见 [阶段式关卡](../../../docs/phase-puzzles.md)。星星配置、收集判定、绘图与评分分别位于关卡文件、stars.ts、star-renderer.ts、StarProgress.tsx；新弹簧绘图独立为 spring-renderer.ts。
+
+## 默认消息与执行时机
+
+`bounce.instructions.initialMessages` 为单条 `Set surface bounce to 0.9`，进入该关的首次准备不会启动模拟或消耗额度。它是普通通关引导，真实路线取得一颗星；满分仍要求实际收齐三颗星后到达出口。只有真实零星完成才显示零星玩笑，不通过关卡 ID 或口令伪造评分。
+
+Enter 只排队，Shift+Enter 只立即应用当前输入；需要 AI 时暂停准备该条，成功后应用一次、失败保留。打开暂停设置会取消自动应用意图，不阻止有效结果留在队列。关卡配置只提供数据，不实现快捷键、请求或直接发送逻辑。
+
+## 首访操作教学
+
+`onboarding.ts` 为 `gravity-lab`（Let It Roll）、`one-more-turn` 和 `bounce` 提供三步教学数据；不改变 LevelDefinition 的物理状态或权限。首次展示按 `optional-reality:<levelId>:how-to-play:v1` 保存已见，刷新/重试不重复，设置 How to play 可重看。
+
+教学期间暂停并禁用底层操作；Let's play 只关闭，保留默认或自定义队列。主动加载按钮使用 `lesson.starterMessages`，未声明时使用本关 `exampleMessages`，加载并关闭但不启动模拟。它与 `initialMessages` 的自动首访草稿不同，也与 `tutorials` 的机关接触教学不同。重看后返回暂停设置；打开教学取消待完成的立即应用，迟到解析不能自动发送。
+
+bounce 教学的 Load three-star setup 主动载入 `Set surface bounce to 0.1` 与 `acceleration upward 1`。先降低弹性，再于即将触地或刚触地时发送向上加速度；球仍会先扫过低星，再升向高星。不能等待低星已经拾取才发送向上 1。默认 0.9 普通路线与原草稿不会因打开/关闭教程而被替换。
+
+所有关卡的输入窗都由 `editableRuleLabels(level)` 生成真实可改规则，AllowedRules 支持展开完整列表；教程复用相同数据，并明确球、出口和布局固定。列表只描述权限，不改变运行时校验。

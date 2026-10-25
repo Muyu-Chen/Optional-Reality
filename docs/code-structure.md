@@ -10,20 +10,33 @@
 | `client/src/game/Game.tsx` | 组合 Canvas、HUD、队列、输入窗和弹窗 |
 | `game/useGameSession.ts` | 发送、撤销、重试、重置，以及执行后的字幕与提示 |
 | `game/useGameWorld.ts` | 创建和销毁 CanvasLab，接收低频遥测 |
-| `game/useGameControls.ts` | 暂停菜单、恢复与 Escape 快捷键 |
-| `game/useMessageQueue.ts` | 输入、编辑、删除、排序、多选和示例消息 |
-| `game/usePreparedMessages.ts` | 本地准备、AI 准备、状态和队列存储 |
+| `game/useGameControls.ts` | 暂停设置、恢复、Escape 与 Shift+Tab；打开设置取消立即应用意图 |
+| `game/useMessageQueue.ts` | 输入、编辑、删除、排序、多选、示例消息；只应用当前输入的入口 |
+| `game/usePreparedMessages.ts` | 本地/AI 准备、状态、存储、立即应用 ticket 与过期意图取消 |
+| `components/MessageCard.tsx`、`RulePreview.tsx` | 紧凑摘要、彩色解析图标、逐条发送与可访问的原文/限幅详情展开 |
+| `components/RuleComposer.tsx` | Enter 仅排队、Shift+Enter 仅应用当前输入，保留输入法组合保护 |
+| `domain/message-storage.ts` | 恢复草稿；无保存记录时载入关卡 initialMessages，保留已保存空列表 |
+| `levels/onboarding.ts` | Let It Roll、One More Turn、bounce 的三步教学数据、可选 starterMessages 和按关卡版本化的已见存储 key |
+| `game/useLevelOnboarding.ts` | 首访/重看、暂停、已见状态、教学快捷键与立即应用意图取消 |
+| `components/LevelOnboarding.tsx`、`OnboardingDiagram.tsx` | 全视口教学遮罩、居中卡片、静态 SVG 图示与关闭/加载示例按钮 |
+| `components/AllowedRules.tsx` | 输入窗与教程共用的真实权限摘要及可展开完整列表；只显示数据，不授予权限 |
 | `client/src/api/compilation-session.ts` | 编译请求身份、取消、场景与队列版本 |
 | `client/src/components/` | 独立显示组件，通过 props 接收状态和事件 |
 | `client/src/domain/` | 纯队列操作、真实执行反馈与存储格式 |
 
 消息输入不直接调用物理引擎。`usePreparedMessages` 产出待发操作，`useGameSession` 在玩家发送时调用世界，成功后才消费消息和产生字幕。队列更改、重试和卸载都会使旧编译失效。
 
+Shift+Enter 复用同一发送入口：本地有效操作直接应用；AI 只准备当前 ID，并以 ticket 验证一次性应用意图。打开设置只取消自动应用意图，允许有效解析结果保留为待发消息；编辑、删除、重试和切关同时维持现有响应身份校验。它不会批量发送旧队列。
+
+首访教学按 `optional-reality:<levelId>:how-to-play:v1` 保存已见状态，首次展示即记录；不放入消息存储。教学打开时设置底层 inert，游戏会话使用同步可见性守卫拦截发送和立即应用，保持物理暂停。关闭教学不调用 start 或覆盖消息；从设置重看时返回设置。三课与机关首次接触教学分别维护，bounce 的 `lesson.starterMessages` 只在主动加载满分配置时使用。
+
 `styles.css` 只保留有序导入。`styles/` 中按 HUD、队列、输入、反馈、菜单和教学拆分样式；`responsive.css` 保存主要断点。调整导入顺序前检查覆盖关系，Canvas 使用的 `--scene-*` 留白必须与 HUD 一致。
 
 ## 音乐
 
 `audio/MusicProvider.tsx` 位于 App 的 keyed Game 外，关卡切换不会重建音乐会话。`MusicControl.tsx` 只显示和切换状态，`use-background-music.ts` 订阅 Context。`music-controller.ts` 管理可信手势、偏好存储、页面可见性与错误反馈；`music-engine.ts` 管理单个 Web Audio 图、短期调度、音量和资源清理；`music-score.ts` 保存原创音符数据。音乐不依赖物理时钟或 API。
+
+MusicControl 与 SoundEffectsControl 统一由暂停设置组合，Game HUD 不再直接摆放音乐开关。
 
 音效独立于音乐：`audio/game-sound-events.ts` 发布真实游戏事件，`sfx-controller.ts` 管理可信手势、独立偏好和即时订阅，`sfx-engine.ts` 用一个单独的 Web Audio 图合成短音并限制并发声部。`SoundEffectsProvider.tsx` 持有跨关卡控制器，设置组件只切换偏好。未解锁事件不入队；隐藏、重试、取消和卸载停止旧音源，返回不重放。
 
@@ -55,7 +68,7 @@
 | `physics/bakery/devices.ts` | 各机关的状态绘图，读取运行层状态 |
 | `physics/bakery/bread.ts`、`drawing.ts` | 面包绘制与画布基础函数 |
 
-`levels/presentation.ts` 从实际规则权限生成输入窗的可修改项，避免另外维护一份 UI 白名单。`TrackDefinition.feature` 声明需要强调的表面特性，不授予编辑权限；实际弹性仍由规则状态决定。
+`levels/presentation.ts` 的 `editableRuleLabels()` 从实际规则权限生成可修改项，输入窗与教程使用同一份数据交给 AllowedRules，不另外维护 UI 白名单。AllowedRules 的完整列表在所有关卡都可展开，教学另说明球、出口和布局固定。`TrackDefinition.feature` 声明需要强调的表面特性，不授予编辑权限；实际弹性仍由规则状态决定。
 
 以上 `physics/` 均位于 `client/src/`。绘图不能推进模拟、修改规则或发起模型请求。React 不承接每一物理帧的位置更新。
 
