@@ -43,9 +43,10 @@
 .journey-shell--title .title-illustration { border-radius:32px;object-fit:contain;filter:drop-shadow(0 18px 25px #36637b12) }
 .journey-shell--title .journey-art-caption { bottom:0;color:#456b7b;transform:none }
 
-/* An organic silhouette and feathered perimeter blend the key art into the sky. */
+/* Smooth curved perimeter: no polygon vertices at the four corners. */
 .journey-shell--title .title-illustration {
-  clip-path:polygon(8% 3%,40% 0,72% 3%,94% 10%,100% 33%,97% 67%,91% 92%,61% 100%,28% 97%,5% 88%,0 56%,2% 24%);
+  clip-path:none;
   border-radius:38% 28% 34% 25%;
-  mask-image:radial-gradient(ellipse 66% 65% at 50% 50%,#000 58%,#000c 72%,transparent 90%);
+  mask-image:linear-gradient(to right,transparent,#000 10%,#000 90%,transparent),linear-gradient(to bottom,transparent,#000 10%,#000 86%,transparent);
+  mask-composite:intersect;
 }
