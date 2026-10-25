@@ -16,13 +16,13 @@ vi.mock('./exit-transition-renderer', () => ({ drawExitTransition: vi.fn() }));
 const labs: CanvasLab[] = [];
 let frames: Map<number, FrameRequestCallback>, nextFrame: number;
 let disconnect: ReturnType<typeof vi.fn>;
-let context: Record<'setTransform'|'clearRect'|'fillRect'|'save'|'restore'|'beginPath'|'rect'|'clip',ReturnType<typeof vi.fn>>;
+let context: Record<'setTransform'|'clearRect'|'fillRect'|'save'|'restore'|'beginPath'|'rect'|'clip'|'strokeRect'|'setLineDash',ReturnType<typeof vi.fn>>;
 let motion: { matches: boolean; addEventListener: ReturnType<typeof vi.fn>; removeEventListener: ReturnType<typeof vi.fn> };
 
 beforeEach(() => {
   frames = new Map(); nextFrame = 0;
   disconnect = vi.fn();
-  context = { setTransform: vi.fn(), clearRect: vi.fn(), fillRect: vi.fn(),save:vi.fn(),restore:vi.fn(),beginPath:vi.fn(),rect:vi.fn(),clip:vi.fn() };
+  context = { setTransform: vi.fn(), clearRect: vi.fn(), fillRect: vi.fn(),save:vi.fn(),restore:vi.fn(),beginPath:vi.fn(),rect:vi.fn(),clip:vi.fn(),strokeRect:vi.fn(),setLineDash:vi.fn() };
   motion = { matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() };
   vi.stubGlobal('matchMedia', () => motion);
   vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
@@ -132,6 +132,23 @@ describe('Canvas lifecycle and fixed simulation time', () => {
     expect(moving.time).toBeGreaterThan(0);lab.world.pause();frame(10001);
     expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]).toEqual(moving);
     lab.reset();expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]).toEqual(initial);
+  });
+  it('reveals the real rescue region, with the left wall at the screen edge, and restores framing on reset',()=>{
+    const {lab,canvas}=setup(true,canvas=>{
+      for(const [side,value] of Object.entries({left:28,right:366,top:96,bottom:78}))canvas.style.setProperty(`--scene-${side}`,`${value}px`);
+    });
+    const original=[...context.setTransform.mock.lastCall!];
+    lab.world.tick=lab.world.limitTicks-1;lab.world.start();
+    frame(1);for(let i=1;i<=12;i++)frame(1+i*50);
+    expect(lab.world.overtime).toBe(true);
+    expect(context.rect).toHaveBeenLastCalledWith(0,-102,960,612);
+    const [scale,,,,x,y]=context.setTransform.mock.lastCall!;
+    expect(x).toBe(0);expect(y-102*scale).toBeGreaterThanOrEqual(96-.001);
+    expect(x+960*scale).toBeLessThanOrEqual(canvas.width-366+.001);
+    expect(context.rect).toHaveBeenCalledWith(0,96,1000,594);
+    lab.reset();
+    expect(context.setTransform.mock.lastCall).toEqual(original);
+    expect(context.rect).toHaveBeenLastCalledWith(0,0,800,510);
   });
 });
 

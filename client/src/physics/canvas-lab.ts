@@ -16,6 +16,7 @@ import { LivingWorld } from './scenery/living-world';
 import { sceneryTheme } from './scenery/layout';
 import { drawPuzzleBackdrop } from './scene-backdrop';
 import { sceneryProfile } from './scenery/profiles';
+import { sceneFraming } from './scene-framing';
 
 export class CanvasLab {
   world: PhysicsWorld;
@@ -123,7 +124,7 @@ export class CanvasLab {
   };
   private draw() {
     const ctx = this.context;
-    const { width, height } = this.level.viewport;
+    const { width } = this.level.viewport;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.fillStyle = this.level.presentation === 'bakery' ? sceneColours.bakeryBackground : sceneColours.background; ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -138,12 +139,13 @@ export class CanvasLab {
     const style = this.immersive ? getComputedStyle(this.canvas) : null;
     const inset = (name: string) => style ? (parseFloat(style.getPropertyValue(`--scene-${name}`)) || 0) * ratio : 0;
     const left = inset('left'), right = inset('right'), top = inset('top'), bottom = inset('bottom');
-    const availableWidth = Math.max(1,this.canvas.width-left-right), availableHeight = Math.max(1,this.canvas.height-top-bottom);
-    const scale = Math.min(availableWidth / width, availableHeight / height);
-    ctx.setTransform(scale, 0, 0, scale, left+(availableWidth-width*scale)/2, top+(availableHeight-height*scale)/2);
-    // The illustrated background spans the screen; gameplay has one fixed,
-    // visible play area. An escaped actor must not remain drawn beside the HUD.
-    ctx.save();ctx.beginPath();ctx.rect(0,0,width,height);ctx.clip();
+    const framing=sceneFraming(this.world,this.canvas,{left,right,top,bottom},!!this.motion?.matches);
+    // Keep the animated reveal clear of the HUD as well as clipping actual play bounds.
+    ctx.save();ctx.setTransform(1,0,0,1,0,0);
+    ctx.beginPath();ctx.rect(framing.clipLeft,top,framing.availableWidth,framing.availableHeight);ctx.clip();
+    ctx.setTransform(framing.scale,0,0,framing.scale,framing.x,framing.y);
+    const area=this.world.playArea;
+    ctx.beginPath();ctx.rect(area.left,area.top,area.right-area.left,area.bottom-area.top);ctx.clip();
     const actorPose=this.feedback.actorPose;
     if (this.level.presentation === 'bakery') drawBakery(ctx, this.world, this.trail,ambient,!!this.motion?.matches,actorPose);
     else drawGeometry(ctx,this.world,this.trail,ambient,!!this.motion?.matches,actorPose);

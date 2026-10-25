@@ -9,7 +9,7 @@ import { OVERTIME_SECONDS } from '../domain/round';
 import { SimulationJournal } from './simulation-journal';
 import { GoalTracker } from './goal';
 import { StarCollection } from './stars';
-import { outsidePlayArea, type PlayAreaEdge } from './play-area';
+import { outsidePlayArea, playAreaBounds, type PlayAreaEdge } from './play-area';
 
 const { Engine, Composite } = Matter;
 export const STEP_MS = 1000 / 120;
@@ -30,6 +30,7 @@ export class PhysicsWorld {
   readonly limitTicks: number;
   private readonly rescue = new OvertimeBoundary();
   get overtime() { return this.rescue.active; }
+  get playArea() { return playAreaBounds(this.level,this.overtime); }
   get deadlineTicks() { return this.limitTicks+(this.overtime?Math.round(OVERTIME_SECONDS*1000/STEP_MS):0); }
   tick = 0;
   started = false;
@@ -134,7 +135,7 @@ export class PhysicsWorld {
       this.won = true;
       this.running = false;
     } else {
-      this.outOfBounds = outsidePlayArea(this.ball, this.level);
+      this.outOfBounds = outsidePlayArea(this.ball, this.level, this.playArea);
       if(!this.outOfBounds && !this.overtime && this.tick>=this.limitTicks)this.rescue.activate(this.engine,this.level);
       if (this.outOfBounds || this.tick >= this.deadlineTicks) {
         this.timedOut = true;
