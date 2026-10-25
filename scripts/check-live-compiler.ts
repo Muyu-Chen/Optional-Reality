@@ -20,7 +20,7 @@ if (endpoint) {
 } else if (!config.apiKey) throw new Error(`Configure the server-side ${config.apiKeyEnv} before this manual check.`);
 
 async function throughRelay(input: CompileRequest) {
-  const response = await fetch(endpoint!, { method: 'POST', headers: { 'content-type': 'application/json', origin: new URL(endpoint!).origin },
+  const response = await fetch(endpoint!, { method: 'POST', headers: { 'content-type': 'application/json', 'x-compiler-protocol': 'per-message-v1', origin: new URL(endpoint!).origin },
     body: JSON.stringify(input), signal: AbortSignal.timeout(45000) });
   const body = await response.json();
   if (!response.ok) throw new Error(typeof body.error === 'string' ? body.error : `HTTP ${response.status}`);
@@ -42,6 +42,10 @@ const cases = [
   { text: '给环境一个往上 0.75 米每秒平方的加速度。', operations: [set('gravity', -.75)] },
   { text: 'Please accelerate everything towards the left with magnitude 0.25 m/s².', operations: [set('acceleration_x', -.25)] },
   { text: 'Set gravity downward to 20 m/s².', operations: [set('gravity',20)] },
+  { text: '向上的浮力', operations: [set('gravity', -1)] },
+  { text: '让小球向上浮起来', operations: [set('gravity', -1)] },
+  { text: 'Give everything upward buoyancy.', operations: [set('gravity', -1)] },
+  { text: '向上的浮力 0.75 米每秒平方', operations: [set('gravity', -.75)] },
 ];
 const reports: { level: string; kind: string; passed: boolean; milliseconds: number; cases?: number; error?: string; cacheHitTokens?: number; cacheMissTokens?: number }[] = [];
 const details: unknown[] = [];
@@ -84,7 +88,9 @@ async function check(levelId: string, tests: { text: string; operations: Operati
 for (const level of levels) await check(level.id, cases);
 await check('breeze', [{ text: 'Crank the fan power up to 10, please.', operations: [set('fan_power', 2, 'fan-main')] }], false, 'device-clamp');
 await check('catch-cup', [{ text: 'Make the cup bottom completely unbouncy.', operations: [set('restitution', 0, 'cup-base')] }], false, 'named-surface');
-for (const text of ['Teleport the ball straight into the exit.', 'Add acceleration to the left and right at the same time.', 'Set fan power to 1.']) {
+for (const text of ['Teleport the ball straight into the exit.', 'Add acceleration to the left and right at the same time.', 'Set fan power to 1.',
+  'Give the ball an upward buoyancy of 5 newtons.', 'Set the ball upward velocity to 2 m/s.',
+  'Add a water tank and calculate buoyancy from water density and displaced volume.']) {
   await check('gravity-lab', [{ text, operations: [] }], true, 'unsupported');
 }
 const destination = fileURLToPath(new URL('../.localwork/live-api-check/', import.meta.url));

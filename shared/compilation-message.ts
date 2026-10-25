@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { OperationSchema, Property, applyRules, type RuleContext, type RuleState } from './rules';
 import { limitAbsoluteOperations } from './rule-limits';
+import { checkForceUnits } from './force-units';
 import { checkAdditiveMeaning } from './additive-command';
 
 export const ModelMessageSchema = z.object({
@@ -40,6 +41,7 @@ export function compileModelMessage(input: unknown, original: { id: string; text
   try {
     const model = ModelMessageSchema.parse(input);
     if (model.error !== null) return { message: failedCompilationMessage(original.id, model.error), state: current };
+    checkForceUnits(original.text);
     checkAdditiveMeaning(original.text, model.operations);
     const { operations, adjustments, state } = validateCompiledOperations(current, model.operations, context);
     return { state, message: { id: original.id, operations,
