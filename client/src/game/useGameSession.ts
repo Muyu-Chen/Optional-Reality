@@ -11,6 +11,7 @@ import { useGameControls } from './useGameControls';
 import { useGameWorld } from './useGameWorld';
 import { useMessageQueue } from './useMessageQueue';
 import { emitGameSound } from '../audio/game-sound-events';
+import { useLevelOnboarding } from './useLevelOnboarding';
 
 // Coordinates the queue and world at player action boundaries, never on every physics tick.
 export function useGameSession(level: LevelDefinition) {
@@ -19,6 +20,7 @@ export function useGameSession(level: LevelDefinition) {
   const { canvasRef, labRef, telemetry } = useGameWorld(level);
   const queue = useMessageQueue(level, labRef, setNotice);
   const controls = useGameControls(labRef, queue.preparing, queue.cancelImmediate);
+  const onboarding = useLevelOnboarding(level, labRef, queue.cancelImmediate, controls.openMenu);
   const [events, setEvents] = useState<AppliedEvent[]>([]);
   const [captions, setCaptions] = useState<Caption[]>([]);
   const finishCaption = useCallback((id: string) => {
@@ -27,7 +29,7 @@ export function useGameSession(level: LevelDefinition) {
 
   function send(ids: string[]) {
     const lab = labRef.current;
-    if (!lab || queue.preparing || lab.world.won || lab.world.timedOut) return;
+    if (!lab || onboarding.isVisible() || queue.preparing || lab.world.won || lab.world.timedOut) return;
     try {
       const result = applyBatch(queue.messageRef.current, ids, lab.world.rules, lab.world.tick, context);
       let captionState = lab.world.rules;
@@ -126,14 +128,19 @@ export function useGameSession(level: LevelDefinition) {
   const ended = telemetry.won || telemetry.timedOut;
   const absorbing = telemetry.won && telemetry.exitTransition === 'absorbing';
   return {
-    canvasRef, telemetry, queue, controls, notice, captions, finishCaption,
+    canvasRef, telemetry, queue, controls, onboarding, notice, captions, finishCaption,
     world: labRef.current?.world,
     canUndo: !!events.length, ended, absorbing, previewError, messageErrors,
-    canSend: !ended && !queue.preparing,
+    canSend: !ended && !queue.preparing && !onboarding.visible,
     stateLabel: absorbing ? 'Finding another reality…' : gameStateLabel(telemetry),
     secondsLeft: Math.max(0, Math.ceil(level.timeLimitSeconds - telemetry.tick * STEP_MS / 1000)),
     tutorial: level.tutorials?.find(item => item.id === telemetry.tutorialId),
-    send, applyCurrent: () => queue.applyCurrent(send), resetWorld, retryWorld, undoLastRule, continueTutorial, replayTeaching,
+    send,
+    queueInput: () => { if (!onboarding.isVisible()) queue.queueMessage(); },
+    applyCurrent: () => { if (!onboarding.isVisible()) queue.applyCurrent(send); },
+    showHowToPlay: () => { controls.setMenuOpen(false);onboarding.open(true); },
+    loadOnboardingStarters: () => { queue.loadExample();onboarding.close(); },
+    resetWorld, retryWorld, undoLastRule, continueTutorial, replayTeaching,
   };
 }
 

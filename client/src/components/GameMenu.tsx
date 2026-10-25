@@ -15,9 +15,10 @@ interface GameMenuProps {
   onRetry: () => void;
   onReset: () => void;
   onReplayTeaching: () => void;
+  onHowToPlay?: () => void;
 }
 
-export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume, onRetry, onReset, onReplayTeaching }: GameMenuProps) {
+export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume, onRetry, onReset, onReplayTeaching, onHowToPlay }: GameMenuProps) {
   const ended = telemetry.won || telemetry.timedOut;
   const nextLevel = levels[levels.findIndex(item => item.id === level.id) + 1];
   const title = telemetry.fell ? 'Mind the gap.' : telemetry.timedOut ? 'A different timing?' : 'Paused.';
@@ -40,6 +41,7 @@ export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume,
         </>}
         <div className="menu-utilities">
           {!telemetry.won && <div className="menu-audio-settings"><MusicControl /><SoundEffectsControl /></div>}
+          {onHowToPlay && !ended && <button className="quiet-button" onClick={onHowToPlay}>How to play</button>}
           <button className="quiet-button" onClick={onReset}>Restart & reprepare messages</button>
           {!!level.tutorials?.length && <button className="quiet-button" onClick={onReplayTeaching}>Replay teaching</button>}
         </div>

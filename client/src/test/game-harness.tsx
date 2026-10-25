@@ -4,8 +4,9 @@ import type { CompileRequest } from '../../../shared/compiler';
 import type { Operation } from '../../../shared/rules';
 import type { PhysicsWorld } from '../physics/world';
 import type { ExitTransitionPhase, PresentationTelemetry } from '../physics/exit-transition';
-import { findLevel } from '../levels/catalog';
+import { findLevel, levels } from '../levels/catalog';
 import { messageStorageKey } from '../domain/message-storage';
+import { onboardingFor, onboardingStorageKey } from '../levels/onboarding';
 import App from '../App';
 
 interface TestLab { world: PhysicsWorld; report: (phase?: ExitTransitionPhase) => void; destroyed: boolean; isAbsorbing: boolean }
@@ -86,10 +87,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-export async function startGame(level = 'gravity-lab', api = new ControlledApi(), savedMessages: readonly string[] | null = []) {
+export async function startGame(level = 'gravity-lab', api = new ControlledApi(), savedMessages: readonly string[] | null = [], showOnboarding = false) {
   // Most interaction tests start with an intentionally empty queue. Pass null to
   // exercise a genuine first visit, or supply explicit persisted drafts.
   const definition = findLevel(level);
+  if (!showOnboarding) for (const item of levels) if (onboardingFor(item.id)) {
+    try { localStorage.setItem(onboardingStorageKey(item.id), 'seen'); }
+    catch { /* Storage denial is a deliberate integration scenario. */ }
+  }
   if (definition && savedMessages !== null) {
     try { localStorage.setItem(messageStorageKey(definition), JSON.stringify(savedMessages)); }
     catch { /* Storage failure is an explicit scenario in some integration tests. */ }
@@ -98,6 +103,12 @@ export async function startGame(level = 'gravity-lab', api = new ControlledApi()
   vi.stubGlobal('fetch', api.fetch);
   const view = render(<App />, { reactStrictMode: true });
   await act(async () => {});
+  // Denied storage cannot read the seeded seen flag; dismiss only for tests that
+  // explicitly requested the ordinary interaction fixture.
+  if (!showOnboarding) {
+    const intro = screen.queryByRole('button', { name: "Let's play" });
+    if (intro) await act(async () => fireEvent.click(intro));
+  }
   return { ...view, api };
 }
 
