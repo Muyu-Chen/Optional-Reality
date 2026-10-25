@@ -17,7 +17,7 @@ const endpoint = process.env.LIVE_COMPILER_URL;
 if (endpoint) {
   const url = new URL(endpoint);
   if (url.username || url.password || url.search || url.hash || (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname)))) throw new Error('Use an HTTPS compile endpoint (or local HTTP), without credentials or query strings.');
-} else if (!config.apiKey) throw new Error('Configure the server-side AI_API_KEY before this manual check.');
+} else if (!config.apiKey) throw new Error(`Configure the server-side ${config.apiKeyEnv} before this manual check.`);
 
 async function throughRelay(input: CompileRequest) {
   const response = await fetch(endpoint!, { method: 'POST', headers: { 'content-type': 'application/json', origin: new URL(endpoint!).origin },

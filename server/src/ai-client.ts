@@ -6,7 +6,7 @@ export class CompilerError extends Error {
   constructor(message: string, readonly status = 502) { super(message); }
 }
 export async function requestJson(config: AiConfig, system: string, user: string, signal?: AbortSignal, fetcher: typeof fetch = fetch) {
-  if (!config.apiKey) throw new CompilerError('Add AI_API_KEY to the project .env file and restart the API server.', 503);
+  if (!config.apiKey) throw new CompilerError(`Add ${config.apiKeyEnv} to the server .env file and restart the API server.`, 503);
   const responseFormat = config.format === 'json_schema'
     ? { type: 'json_schema', json_schema: { name: 'physics_commands', strict: true, schema: z.toJSONSchema(ModelOutputSchema) } }
     : config.format === 'json_object' ? { type: 'json_object' } : undefined;
@@ -18,11 +18,12 @@ export async function requestJson(config: AiConfig, system: string, user: string
       body: JSON.stringify({ model: config.model, messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
         stream: false, max_tokens: 4096, temperature: .1, response_format: responseFormat,
         ...(config.thinking !== 'omit' && new URL(config.baseUrl).hostname === 'api.deepseek.com' ? { thinking: { type: config.thinking } } : {}),
+        ...(config.provider === 'gemini' && config.reasoningEffort !== 'omit' ? { reasoning_effort: config.reasoningEffort } : {}),
       }),
       signal: AbortSignal.any([AbortSignal.timeout(config.timeoutMs), ...(signal ? [signal] : [])]),
     });
     if (!response.ok) throw new CompilerError(response.status === 401 || response.status === 403
-      ? 'The provider rejected the server API key. Check AI_API_KEY.'
+      ? `The provider rejected the server API key. Check ${config.apiKeyEnv}.`
       : response.status === 429 ? 'The provider rate limit was reached. Try again later.' : `The model provider returned HTTP ${response.status}.`);
     text = await response.text();
   } catch (error) {

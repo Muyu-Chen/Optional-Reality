@@ -73,6 +73,8 @@ npm run dev
 
 默认配置为 `AI_BASE_URL=https://api.deepseek.com`、`AI_MODEL=deepseek-flash`，使用 JSON 输出并关闭思考模式。密钥仅由后端读取，不能使用 `VITE_` 变量传入前端；修改配置后重启 API。
 
+也可设置 `AI_PROVIDER=gemini`，填写独立的 `GEMINI_API_KEY`；默认模型 `gemini-3.1-flash-lite`。原 `AI_API_KEY` 和 DeepSeek 配置保留，改回 `AI_PROVIDER=compatible` 即可恢复。Gemini 不会使用旧服务的 key 作为后备，配置方法见 [服务端说明](./server/README.md)。
+
 ```sh
 npm test
 npm run build
