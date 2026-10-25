@@ -27,7 +27,7 @@ export function FrontDoor({ view, progress, storageAvailable, onPlay, onTitle, o
         <button className="journey-settings-button" ref={settingsTrigger} onClick={() => setSettings(true)}><span aria-hidden="true">⚙</span> Settings</button></header>
       {view === 'levels' ? <LevelSelect key={progress.lastLevel} progress={progress} onPlay={onPlay} onBack={onTitle} />
         : <section className="journey-title" aria-labelledby="journey-title">
-          <div className="journey-title-copy"><span className="journey-eyebrow">A LITTLE PHYSICS. A LOT OF POSSIBILITY.</span>
+          <div className="journey-title-copy"><span className="journey-eyebrow">STEEL & STEAM · A WORLD OF POSSIBILITY.</span>
             <h1 id="journey-title" tabIndex={-1} aria-label="Reality is optional.">Reality is<br /><em>optional.</em></h1>
             <p className="journey-tagline">Change the rules.<br />Choose the moment.</p>
             <p className="journey-pitch">A ball, a few stars, and a world that listens. Write a message. See what happens.</p>
@@ -39,7 +39,7 @@ export function FrontDoor({ view, progress, storageAvailable, onPlay, onTitle, o
             <p className="journey-continue-note">{recent ? <>Return to <strong>{recent.title}</strong>.<br />A fresh attempt; your messages stay with you.</> : 'Nine little worlds. More than one way through.'}</p>
           </div>
           <div className="journey-title-art"><TitleIllustration />
-            <span className="journey-art-caption">THE WORLD HAS RULES.<br /><strong>YOU HAVE OTHER IDEAS.</strong></span></div>
+            <span className="journey-art-caption">POWERED BY STEAM.<br /><strong>REWRITTEN BY YOU.</strong></span></div>
         </section>}
       <footer className="journey-footer"><span>{storageAvailable ? 'Your journey is saved on this device.' : 'Browser storage is unavailable. Progress stays in this tab.'}</span>
         <span>★ {journeyStars(progress)} / {availableStars} <span className="journey-footer-extra">stars · All levels open</span></span></footer>

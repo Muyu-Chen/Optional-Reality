@@ -1,0 +1,31 @@
+/* Brass workshop treatment belongs only to the game entrance. */
+.journey-shell { background-color:#eee3c8;background-image:radial-gradient(ellipse at 77% 35%,#b4c8ae80,transparent 52%),radial-gradient(ellipse at 15% 80%,#e2b96b35,transparent 55%),repeating-linear-gradient(0deg,#87684504 0 1px,transparent 1px 5px) }
+.journey-shell .journey-header { padding-bottom:17px;border-bottom:1px solid #a3824d44 }
+.journey-shell .journey-logo>span { border:2px solid #bd9553;box-shadow:0 3px 0 #785b3540,inset 0 0 0 2px #f3d79d33 }
+.journey-shell .journey-logo strong { letter-spacing:1.2px }
+.journey-shell .journey-settings-button { background:#fff1d4;border-color:#ad8a5266;box-shadow:0 2px 0 #8c6d3330 }
+.journey-shell .journey-eyebrow { color:#8b6134;letter-spacing:1.5px }
+.journey-shell .journey-title h1 { text-shadow:0 3px 0 #fffae9 }
+.journey-shell .journey-title h1 em { color:#a96832 }
+.journey-shell .journey-button { border-radius:10px }
+.journey-shell .journey-button--primary { border-color:#4c593d;box-shadow:0 5px 0 #193b2d,0 0 0 2px #b18b4e66,0 10px 20px #684e2420 }
+.journey-shell .journey-button--primary:active { box-shadow:0 2px 0 #193b2d,0 0 0 2px #b18b4e66 }
+.journey-shell .journey-button--secondary { background:linear-gradient(135deg,#fff4d9,#f0ddaf);border-color:#b09563;color:#5f563b;box-shadow:0 3px 0 #91724233 }
+.journey-shell .journey-footer { border-top:1px solid #a3824d44;padding-top:14px }
+.journey-shell .journey-art-caption { color:#826c45 }
+.journey-shell--levels { background-image:radial-gradient(ellipse at 90% 4%,#c8c8a785,transparent 60%),linear-gradient(135deg,#f5ead0,#e9e5cf) }
+.journey-shell .journey-chapter { border-color:#b69a6566;border-radius:12px;background:#fff3d9 }
+.journey-shell .journey-chapter.is-current { background:linear-gradient(135deg,#397359,#234f43);border-color:#a38146;box-shadow:0 4px 0 #6e56342b }
+.journey-shell .journey-chapter-number { font-variant-numeric:tabular-nums }
+.journey-shell .journey-level { border-color:#d4b67d;border-radius:13px;box-shadow:0 4px 0 #8a704435,0 0 0 1px #8a704450 }
+.journey-shell .journey-level-number { border:1px solid #d8b56d;border-radius:5px }
+.journey-shell .journey-settings { border-color:#cfad6d;background:#fff3d9;border-radius:16px }
+.steam-cog { animation:journey-cog-turn 36s linear infinite }
+.steam-cog--reverse { animation-direction:reverse;animation-duration:27s }
+.steam-puff { animation:journey-steam-rise 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center }
+.steam-puff--1 { animation-delay:-1.6s }.steam-puff--2 { animation-delay:-3.2s }
+.steam-gauge-needle { animation:journey-gauge 7s ease-in-out infinite;transform-origin:0 0 }
+@keyframes journey-cog-turn { to { rotate:360deg } }
+@keyframes journey-steam-rise { 0%,100% { translate:0 4px;opacity:.45 } 50% { translate:3px -9px;opacity:.9 } }
+@keyframes journey-gauge { 50% { rotate:18deg } }
+@media(prefers-reduced-motion:reduce) { .journey-shell .steam-cog,.journey-shell .steam-puff,.journey-shell .steam-gauge-needle { animation:none } }
