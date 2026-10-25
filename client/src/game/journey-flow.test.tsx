@@ -24,7 +24,7 @@ describe('title screen and chapter selection', () => {
     const { api } = await openFrontDoor();
     expect(screen.getByRole('heading', { name: 'Reality is optional.' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Let’s play' })).toBeTruthy();
-    expect(screen.getByRole('img', { name: /little green ball leaps/ })).toBeTruthy();
+    expect(screen.getByRole('img', { name: /green ball follows a U-shaped track/ })).toBeTruthy();
     expect(document.querySelector('canvas')).toBeNull();
     expect(api.fetch).not.toHaveBeenCalled();
     expect(document.title).toBe('Change the rules — Optional Reality');

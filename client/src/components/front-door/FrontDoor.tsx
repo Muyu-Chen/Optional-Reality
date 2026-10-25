@@ -38,8 +38,7 @@ export function FrontDoor({ view, progress, storageAvailable, onPlay, onTitle, o
             </div>
             <p className="journey-continue-note">{recent ? <>Return to <strong>{recent.title}</strong>.<br />A fresh attempt; your messages stay with you.</> : 'Nine little worlds. More than one way through.'}</p>
           </div>
-          <div className="journey-title-art"><TitleIllustration />
-            <span className="journey-art-caption">POWERED BY STEAM.<br /><strong>REWRITTEN BY YOU.</strong></span></div>
+          <div className="journey-title-art"><TitleIllustration /></div>
         </section>}
       <footer className="journey-footer"><span>{storageAvailable ? 'Your journey is saved on this device.' : 'Browser storage is unavailable. Progress stays in this tab.'}</span>
         <span>★ {journeyStars(progress)} / {availableStars} <span className="journey-footer-extra">stars · All levels open</span></span></footer>
