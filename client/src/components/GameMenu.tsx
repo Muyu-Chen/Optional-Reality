@@ -45,6 +45,7 @@ export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume,
           {!telemetry.won && <div className="menu-audio-settings"><MusicControl /><SoundEffectsControl /></div>}
           {onHowToPlay && !ended && <button className="quiet-button" onClick={onHowToPlay}>How to play</button>}
           <button className="quiet-button" onClick={onReset}>Restart & reprepare messages</button>
+          {level.id === 'reality-breakdown' && <a className="quiet-button" href="?level=reality-breakdown&experiment=steam-kiss">Try 2.5D · Kiss of Steam ↗</a>}
           {!!level.tutorials?.length && <button className="quiet-button" onClick={onReplayTeaching}>Replay teaching</button>}
           {(onTitle || onLevelSelect) && <div className="menu-journey-navigation">
             {onLevelSelect && <button className="small-button" onClick={onLevelSelect}>Level select <span aria-hidden="true">▦</span></button>}
