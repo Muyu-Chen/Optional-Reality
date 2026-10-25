@@ -16,9 +16,11 @@ interface GameMenuProps {
   onReset: () => void;
   onReplayTeaching: () => void;
   onHowToPlay?: () => void;
+  onTitle?: () => void;
+  onLevelSelect?: () => void;
 }
 
-export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume, onRetry, onReset, onReplayTeaching, onHowToPlay }: GameMenuProps) {
+export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume, onRetry, onReset, onReplayTeaching, onHowToPlay, onTitle, onLevelSelect }: GameMenuProps) {
   const ended = telemetry.won || telemetry.timedOut;
   const nextLevel = levels[levels.findIndex(item => item.id === level.id) + 1];
   const title = telemetry.fell ? 'Mind the gap.' : telemetry.timedOut ? 'A different timing?' : 'Paused.';
@@ -44,6 +46,10 @@ export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume,
           {onHowToPlay && !ended && <button className="quiet-button" onClick={onHowToPlay}>How to play</button>}
           <button className="quiet-button" onClick={onReset}>Restart & reprepare messages</button>
           {!!level.tutorials?.length && <button className="quiet-button" onClick={onReplayTeaching}>Replay teaching</button>}
+          {(onTitle || onLevelSelect) && <div className="menu-journey-navigation">
+            {onLevelSelect && <button className="small-button" onClick={onLevelSelect}>Level select <span aria-hidden="true">▦</span></button>}
+            {onTitle && <button className="quiet-button" onClick={onTitle}>Title screen</button>}
+          </div>}
         </div>
         <details className="level-list">
           <summary>Choose a level</summary>

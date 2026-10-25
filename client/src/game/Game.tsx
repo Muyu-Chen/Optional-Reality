@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { accelerationLabel } from '../../../shared/acceleration';
 import { GameHud } from '../components/GameHud';
 import { GameMenu } from '../components/GameMenu';
@@ -13,11 +13,22 @@ import { useGameSession } from './useGameSession';
 import { LevelOnboarding } from '../components/LevelOnboarding';
 import { levelLabel } from '../levels/progression';
 
-export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLevel: (id: string) => void }) {
+interface GameProps {
+  level: LevelDefinition;
+  chooseLevel: (id: string) => void;
+  onTitle?: () => void;
+  onLevelSelect?: () => void;
+  onCompleted?: (id: string, stars: number) => void;
+}
+
+export function Game({ level, chooseLevel, onTitle, onLevelSelect, onCompleted }: GameProps) {
   const game = useGameSession(level);
   const { queue, controls, telemetry, world, onboarding } = game;
   const [showRules, setShowRules] = useState(false);
   const allowedRules = editableRuleLabels(level);
+  useEffect(() => {
+    if (telemetry.won) onCompleted?.(level.id, telemetry.stars.collected);
+  }, [level.id, telemetry.won, telemetry.stars.collected, onCompleted]);
 
   return (
     <main className={`game-shell ${level.presentation === 'bakery' ? 'bakery-theme' : ''}${game.absorbing ? ' game-shell--absorbing' : ''}`}>
@@ -25,7 +36,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
         role="img" aria-label={level.instructions.sceneDescription} />
       <div className="gameplay-interface" inert={onboarding.visible || undefined}>
       <GameHud level={level} telemetry={telemetry} secondsLeft={game.secondsLeft} menuOpen={controls.menuOpen}
-        onRetry={game.retryWorld} onResume={controls.resumeGame} onOpenMenu={controls.openMenu} />
+        onRetry={game.retryWorld} onResume={controls.resumeGame} onOpenMenu={controls.openMenu} onTitle={onTitle} />
       <div className="game-rule-controls" inert={game.absorbing || undefined}>
       <MessageQueue messages={queue.messages} selected={queue.selected} managing={queue.managing}
         preparing={queue.preparing} ended={game.ended} canSend={game.canSend} messageErrors={game.messageErrors} canUndo={game.canUndo}
@@ -62,6 +73,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
       {(controls.menuOpen || game.ended) && !game.absorbing && <GameMenu level={level} telemetry={telemetry} preparing={queue.preparing}
         onChooseLevel={chooseLevel} onResume={controls.resumeGame} onRetry={game.retryWorld}
         onReset={game.resetWorld} onReplayTeaching={game.replayTeaching}
+        onTitle={onTitle} onLevelSelect={onLevelSelect}
         onHowToPlay={onboarding.lesson ? game.showHowToPlay : undefined} />}
       </div>
       {onboarding.visible && onboarding.lesson && <LevelOnboarding lesson={onboarding.lesson} levelLabel={levelLabel(level)} levelTitle={level.title}

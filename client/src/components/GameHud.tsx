@@ -12,13 +12,15 @@ interface GameHudProps {
   onRetry: () => void;
   onResume: () => void;
   onOpenMenu: () => void;
+  onTitle?: () => void;
 }
 
-export function GameHud({ level, telemetry, secondsLeft, menuOpen, onRetry, onResume, onOpenMenu }: GameHudProps) {
+export function GameHud({ level, telemetry, secondsLeft, menuOpen, onRetry, onResume, onOpenMenu, onTitle }: GameHudProps) {
   const canResume = telemetry.started && !telemetry.running && !menuOpen && !telemetry.tutorialId && !telemetry.won && !telemetry.timedOut;
   return (
     <header className="game-hud game-hud--with-vector">
-      <a href="/" className="game-brand" aria-label="Optional Reality home">or</a>
+      {onTitle ? <button className="game-brand" style={{ border: 0 }} aria-label="Title screen" title="Title screen" onClick={onTitle}>or</button>
+        : <a href="/" className="game-brand" aria-label="Optional Reality home">or</a>}
       <div className="game-title">
         <span>OPTIONAL REALITY / {levelLabel(level)}</span>
         <h1>{level.title}</h1>
