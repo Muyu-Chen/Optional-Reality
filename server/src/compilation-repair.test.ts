@@ -96,6 +96,13 @@ describe('one AI correction turn after rule validation', () => {
     expect((await compileRules(input(), settings, undefined, fetcher)).messages[1].operations).toEqual([additive]);
     expect(fetcher.mock.calls.map(([url]) => new URL(String(url)).hostname)).toEqual(['generativelanguage.googleapis.com', 'api.deepseek.com', 'api.deepseek.com']);
   });
+  it('preserves DeepSeek failover if Gemini fails during the corrective turn', async () => {
+    const settings = loadConfig({ AI_PROVIDER: 'gemini', AI_FALLBACK_PROVIDER: 'deepseek', GEMINI_API_KEY: 'test-gemini', AI_API_KEY: 'test-deepseek' });
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValueOnce(envelope(output()))
+      .mockResolvedValueOnce(new Response('', { status: 503 })).mockResolvedValueOnce(envelope(repaired()));
+    expect((await compileRules(input(), settings, undefined, fetcher)).messages[1].operations).toEqual([additive]);
+    expect(fetcher.mock.calls.map(([url]) => new URL(String(url)).hostname)).toEqual(['generativelanguage.googleapis.com', 'generativelanguage.googleapis.com', 'api.deepseek.com']);
+  });
   it('rejects repair conflicts without downgrading an already Ready trigger', async () => {
     const sensors = Array.from({ length: 25 }, (_, index) => `s${index}`);
     const expanded = { ...context, sensors, gates: ['g'] };

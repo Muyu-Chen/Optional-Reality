@@ -22,6 +22,8 @@ export async function compileRules(input: unknown, config: AiConfig, signal?: Ab
     return { output, result: validateCompilation(request, output, context), provider };
   }, deadline, request.requestId), signal);
   return repairCompilation(request, first.output, first.result, context,
-    conversation => requestJson(first.provider, COMPILER_SYSTEM, user, deadline, fetcher, conversation), deadline, signal);
+    conversation => first.provider.provider === 'gemini'
+      ? withProviderFallback(config, (provider, repairSignal) => requestJson(provider, COMPILER_SYSTEM, user, repairSignal, fetcher, conversation), deadline, `${request.requestId}:repair`)
+      : requestJson(first.provider, COMPILER_SYSTEM, user, deadline, fetcher, conversation), deadline, signal);
 }
 export type { CompileRequest };
