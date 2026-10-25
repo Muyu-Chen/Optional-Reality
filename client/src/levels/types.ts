@@ -44,9 +44,6 @@ export interface LevelDefinition {
   readonly initialAcceleration: Point;
   readonly devices?: readonly DeviceDefinition[];
   readonly commandLimit?: number;
-  readonly failOnFall?: boolean;
-  readonly openEdges?: readonly ('left' | 'right')[];
-  readonly ceilingY?: number;
   readonly environment?: { readonly restitution: number; readonly friction: number };
   readonly ball: {
     readonly id: string;

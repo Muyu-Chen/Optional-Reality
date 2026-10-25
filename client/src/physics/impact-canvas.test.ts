@@ -19,7 +19,7 @@ beforeEach(() => {
   vi.stubGlobal('matchMedia',()=>motion);
   vi.spyOn(document,'hidden','get').mockReturnValue(false);
   const context={setTransform:vi.fn(),clearRect:vi.fn(),fillRect:vi.fn(),save:vi.fn(),restore:vi.fn(),translate:vi.fn(),
-    rotate:vi.fn(),beginPath:vi.fn(),ellipse:vi.fn(),stroke:vi.fn()};
+    rotate:vi.fn(),beginPath:vi.fn(),rect:vi.fn(),clip:vi.fn(),ellipse:vi.fn(),stroke:vi.fn()};
   vi.spyOn(HTMLCanvasElement.prototype,'getContext').mockReturnValue(context as unknown as CanvasRenderingContext2D);
   vi.stubGlobal('ResizeObserver',class { observe(){} disconnect(){} });
   vi.stubGlobal('requestAnimationFrame',(callback:FrameRequestCallback)=>{frames.set(++next,callback);return next;});

@@ -63,7 +63,7 @@ describe('game completion result', () => {
 
   it('preserves failure recovery without presenting collected stars as a completed level', () => {
     const { onRetry, onReset } = showMenu({ started: true, timedOut: true, fell: true, stars: { collected: 3, total: 3 } });
-    expect(screen.getByRole('dialog', { name: 'Mind the gap.' })).toBeTruthy();
+    expect(screen.getByRole('dialog', { name: 'Out of bounds.' })).toBeTruthy();
     expect(screen.queryByRole('status')).toBeNull();
     expect(screen.queryByText('FULL SCORE')).toBeNull();
     expect(screen.queryByText(/cave dweller/)).toBeNull();

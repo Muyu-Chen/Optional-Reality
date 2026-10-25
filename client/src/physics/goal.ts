@@ -1,5 +1,6 @@
 import type Matter from 'matter-js';
 import type { LevelDefinition } from '../levels/types';
+import { actorBounds } from './play-area';
 
 export class GoalTracker {
   private heldSeconds = 0;
@@ -22,7 +23,7 @@ export class GoalTracker {
       return (x - closestX) ** 2 + (y - closestY) ** 2 <= this.level.ball.radius ** 2;
     }
     // Matter's cached bounds include a velocity margin; goals use the visible shape.
-    const { min, max } = this.bounds(body);
+    const { min, max } = actorBounds(body, this.level);
     const slop = .5; // Subpixel contact penetration must not prevent a visibly settled capture.
     const inside = min.x >= exit.x - slop && max.x <= exit.x + exit.width + slop
       && min.y >= exit.y - slop && max.y <= exit.y + exit.height + slop;
@@ -34,18 +35,8 @@ export class GoalTracker {
   }
 
   private overlaps(body: Matter.Body) {
-    const { x, y, width, height } = this.level.exit, { min, max } = this.bounds(body);
+    const { x, y, width, height } = this.level.exit, { min, max } = actorBounds(body, this.level);
     return max.x >= x && min.x <= x + width && max.y >= y && min.y <= y + height;
   }
 
-  private bounds(body: Matter.Body) {
-    if (!this.level.ball.shape) {
-      const { x, y } = body.position, r = this.level.ball.radius;
-      return { min: { x: x-r, y: y-r }, max: { x: x+r, y: y+r } };
-    }
-    return {
-      min: { x: Math.min(...body.vertices.map(vertex => vertex.x)), y: Math.min(...body.vertices.map(vertex => vertex.y)) },
-      max: { x: Math.max(...body.vertices.map(vertex => vertex.x)), y: Math.max(...body.vertices.map(vertex => vertex.y)) },
-    };
-  }
 }

@@ -172,8 +172,8 @@
     font-size:13px
   }
   .stage-overlay {
-    top:146px;
-    bottom:460px
+    inset:12px;
+    padding:8px
   }
   .game-menu {
     padding:18px;

@@ -23,9 +23,9 @@ interface GameMenuProps {
 export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume, onRetry, onReset, onReplayTeaching, onHowToPlay, onTitle, onLevelSelect }: GameMenuProps) {
   const ended = telemetry.won || telemetry.timedOut;
   const nextLevel = levels[levels.findIndex(item => item.id === level.id) + 1];
-  const title = telemetry.fell ? 'Mind the gap.' : telemetry.timedOut ? 'A different timing?' : 'Paused.';
+  const title = telemetry.outOfBounds || telemetry.fell ? 'Out of bounds.' : telemetry.timedOut ? 'A different timing?' : 'Paused.';
   return (
-    <div className={`stage-overlay${telemetry.won ? ' stage-overlay--complete' : ''}`}>
+    <div className={`stage-overlay${ended ? ' stage-overlay--ended' : ''}${telemetry.won ? ' stage-overlay--complete' : ''}`}>
       <section className={`game-menu glass${telemetry.won ? ' game-menu--complete' : ''}`} role="dialog" aria-modal="false" aria-labelledby="menu-title">
         {telemetry.won ? <CompletionResult
           level={level} stars={telemetry.stars} nextLevel={nextLevel}
@@ -33,7 +33,7 @@ export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume,
         /> : <>
           <span className="menu-eyebrow">{ended ? 'ANOTHER POSSIBILITY' : 'TAKE YOUR TIME'}</span>
           <h2 id="menu-title">{title}</h2>
-          <p>{ended ? 'Try the same messages at different moments.' : level.instructions.hint}</p>
+          <p>{telemetry.outOfBounds || telemetry.fell ? 'The ball left the play area. Try again with a different timing.' : ended ? 'Try the same messages at different moments.' : level.instructions.hint}</p>
           <div className="menu-buttons">
             {!ended && <button className="primary-button" disabled={preparing} onClick={onResume}>
               {telemetry.started ? 'Resume' : 'Back to game'}

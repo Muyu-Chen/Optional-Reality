@@ -21,25 +21,6 @@ function trackBodies(track: TrackDefinition) {
   return bodies;
 }
 
-function boundaries(level: LevelDefinition) {
-  const { width, height } = level.viewport;
-  const walls = [
-    ...(!level.failOnFall ? [Bodies.rectangle(width / 2, height + 18, width + 72, 36,
-      { ...staticSurface, label: 'boundary-bottom' })] : []),
-    ...(!level.openEdges?.includes('left') ? [Bodies.rectangle(-18, height / 2, 36, height * 2, { ...staticSurface, label: 'boundary-left' })] : []),
-    ...(!level.openEdges?.includes('right') ? [Bodies.rectangle(width + 18, height / 2, 36, height * 2, { ...staticSurface, label: 'boundary-right' })] : []),
-    Bodies.rectangle(width / 2, (level.ceilingY ?? 0) - 18, width + 72, 36, { ...staticSurface, label: 'boundary-top' }),
-  ];
-  // Matter.setStatic overwrites construction friction with 1. Hidden containment
-  // walls must stay neutral; only visible, editable surfaces supply friction.
-  for (const wall of walls) {
-    wall.friction = 0;
-    wall.frictionStatic = 0;
-    wall.restitution = 0;
-  }
-  return walls;
-}
-
 // Construction is separate from simulation and rendering. Preserve insertion order
 // because Matter's collision solver can depend on the ordering of its bodies.
 export function createSceneBodies(level: LevelDefinition) {
@@ -64,5 +45,5 @@ export function createSceneBodies(level: LevelDefinition) {
     x: definition.velocity[0] * viewport.pixelsPerMetre / 60,
     y: definition.velocity[1] * viewport.pixelsPerMetre / 60,
   });
-  return { ball, surfaces, bodies: [...rails, ball, ...boundaries(level)] };
+  return { ball, surfaces, bodies: [...rails, ball] };
 }

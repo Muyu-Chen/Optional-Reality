@@ -2,7 +2,7 @@ import type { LevelDefinition } from './types';
 
 export const multiBounce: LevelDefinition = {
   id:'multi-bounce', number:2, stage:2, title:'Not Too High',
-  viewport:{width:800,height:510,pixelsPerMetre:80}, timeLimitSeconds:30, initialAcceleration:[0,2], failOnFall:true,
+  viewport:{width:800,height:510,pixelsPerMetre:80}, timeLimitSeconds:30, initialAcceleration:[0,2],
 
   environment:{restitution:.1,friction:0},
   ball:{id:'ball-A',label:'BALL A',position:[80,110],velocity:[1,0],radius:16,restitution:0},
@@ -16,7 +16,7 @@ export const multiBounce: LevelDefinition = {
   instructions:{
     objective:'Reach the exit. Collect the high stars for full score.',
     hint:'High bounce reaches the first high star. After collecting it, increase downward acceleration to bend the next arc back toward the star above the exit. Lowering bounce is another way to reach the exit, but may miss a star.',
-    sceneDescription:'Two separated blue horizontal bounce pads at the same height. Ball A moves right and is protected. first-pad (First pad) and second-pad (Second pad) inherit world surface properties unless individually overridden. Gravity, horizontal acceleration, surface restitution and friction are editable. The exit is just above the second pad. Falling below the red bottom edge fails.',
+    sceneDescription:'Two separated blue horizontal bounce pads at the same height. Ball A moves right and is protected. first-pad (First pad) and second-pad (Second pad) inherit world surface properties unless individually overridden. Gravity, horizontal acceleration, surface restitution and friction are editable. The exit is just above the second pad. All four play-area edges are open; fully leaving the play area fails.',
     canvasHeading:'SAME RULE. TWO DIFFERENT MOMENTS.',readyCaption:'A STRONG START. A SOFTER RETURN.',
     exampleMessages:['Set surface bounce to 0.9','Set surface bounce to 0.5'],
     suggestedMessages:['Set surface bounce to 0.9','Set acceleration downward to 4','Set surface bounce to 0.5'],

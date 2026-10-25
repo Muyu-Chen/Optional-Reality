@@ -91,6 +91,17 @@
   text-align:center;
   background:var(--surface,#fffcf2)
 }
+.stage-overlay--ended {
+  inset:0;
+  padding:20px;
+  pointer-events:auto;
+  background:#203b3040;
+  backdrop-filter:blur(3px)
+}
+.stage-overlay--ended .game-menu {
+  max-height:calc(100svh - 40px);
+  overflow:auto
+}
 .menu-eyebrow {
   font:12px ui-monospace,monospace;
   letter-spacing:1.7px;

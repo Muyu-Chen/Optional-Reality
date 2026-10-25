@@ -135,12 +135,16 @@ export class CanvasLab {
     const availableWidth = Math.max(1,this.canvas.width-left-right), availableHeight = Math.max(1,this.canvas.height-top-bottom);
     const scale = Math.min(availableWidth / width, availableHeight / height);
     ctx.setTransform(scale, 0, 0, scale, left+(availableWidth-width*scale)/2, top+(availableHeight-height*scale)/2);
+    // The illustrated background spans the screen; gameplay has one fixed,
+    // visible play area. An escaped actor must not remain drawn beside the HUD.
+    ctx.save();ctx.beginPath();ctx.rect(0,0,width,height);ctx.clip();
     const actorPose=this.feedback.actorPose;
     if (this.level.presentation === 'bakery') drawBakery(ctx, this.world, this.trail,ambient,!!this.motion?.matches,actorPose);
     else drawGeometry(ctx,this.world,this.trail,ambient,!!this.motion?.matches,actorPose);
     drawStars(ctx,this.world,this.visualTime,!!this.motion?.matches);
     this.feedback.draw(ctx);
     drawExitTransition(ctx,this.level,this.exit.visual);
+    ctx.restore();
   }
 
   destroy() {

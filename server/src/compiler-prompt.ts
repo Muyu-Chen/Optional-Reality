@@ -46,7 +46,9 @@ export const COMPILER_SYSTEM = COMPILER_RULES
 export function compilerInput(level: LevelDefinition, request: CompileRequest, context: RuleContext): string {
   // Keep static scene data ahead of state and player messages for prefix reuse.
   return JSON.stringify({
-    level: { id: level.id, title: level.title, description: level.instructions.sceneDescription, editable: context },
+    level: { id: level.id, title: level.title, description: level.instructions.sceneDescription,
+      playArea: { width:level.viewport.width, height:level.viewport.height, edges:'open', failure:'The actor fully leaving any edge ends the run. There are no implicit containment walls.' },
+      editable: context },
     currentRules: request.rules, messages: request.messages,
   });
 }

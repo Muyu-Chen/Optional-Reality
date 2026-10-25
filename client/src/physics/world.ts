@@ -6,16 +6,17 @@ import { DeviceRuntime } from './devices';
 import { createSceneBodies } from './scene-bodies';
 import { GoalTracker } from './goal';
 import { StarCollection } from './stars';
+import { outsidePlayArea, type PlayAreaEdge } from './play-area';
 
 const { Engine, Composite } = Matter;
 export const STEP_MS = 1000 / 120;
 
-export interface Telemetry { running: boolean; started: boolean; acceleration: RuleState['acceleration']; stars: {collected:number;total:number}; tick: number; won: boolean; timedOut: boolean; fell: boolean; tutorialId: string | null; x: number; y: number }
+export interface Telemetry { running: boolean; started: boolean; acceleration: RuleState['acceleration']; stars: {collected:number;total:number}; tick: number; won: boolean; timedOut: boolean; fell: boolean; outOfBounds: PlayAreaEdge | null; tutorialId: string | null; x: number; y: number }
 
 export function initialTelemetry(level: LevelDefinition): Telemetry {
   return {
     running: false, started: false, acceleration:{x:level.initialAcceleration[0],y:level.initialAcceleration[1]}, stars:{collected:0,total:level.stars?.length || 0}, tick: 0,
-    won: false, timedOut: false, fell: false, tutorialId: null, x: level.ball.position[0], y: level.ball.position[1],
+    won: false, timedOut: false, fell: false, outOfBounds: null, tutorialId: null, x: level.ball.position[0], y: level.ball.position[1],
   };
 }
 
@@ -29,7 +30,9 @@ export class PhysicsWorld {
   running = false;
   won = false;
   timedOut = false;
-  fell = false;
+  outOfBounds: PlayAreaEdge | null = null;
+  // Retain the existing terminal-failure flags for queue/session consumers.
+  get fell() { return this.outOfBounds !== null; }
   tutorialId: string | null = null;
   readonly seenTutorials: Set<string>;
   rules: RuleState;
@@ -114,14 +117,16 @@ export class PhysicsWorld {
     if (this.goal.update(this.ball, STEP_MS / 1000)) {
       this.won = true;
       this.running = false;
-    } else if (this.tick >= this.limitTicks || (this.level.failOnFall && this.ball.bounds.min.y > this.level.viewport.height)) {
-      this.fell = this.tick < this.limitTicks;
-      this.timedOut = true;
-      this.running = false;
+    } else {
+      this.outOfBounds = outsidePlayArea(this.ball, this.level);
+      if (this.outOfBounds || this.tick >= this.limitTicks) {
+        this.timedOut = true;
+        this.running = false;
+      }
     }
   }
   snapshot(): Telemetry {
-    return { running: this.running, started: this.started, acceleration:{...this.rules.acceleration}, stars:this.stars.snapshot(), tick: this.tick, won: this.won, timedOut: this.timedOut, fell: this.fell, tutorialId: this.tutorialId, x: this.ball.position.x, y: this.ball.position.y };
+    return { running: this.running, started: this.started, acceleration:{...this.rules.acceleration}, stars:this.stars.snapshot(), tick: this.tick, won: this.won, timedOut: this.timedOut, fell: this.fell, outOfBounds: this.outOfBounds, tutorialId: this.tutorialId, x: this.ball.position.x, y: this.ball.position.y };
   }
   destroy() { Composite.clear(this.engine.world, false); Engine.clear(this.engine); }
 }

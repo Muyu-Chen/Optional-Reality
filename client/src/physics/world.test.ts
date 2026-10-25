@@ -131,8 +131,9 @@ describe('level-driven physics', () => {
       Matter.Body.setPosition(world.ball, { x: 400, y: 150 });
       Matter.Body.setVelocity(world.ball, { x: 4, y: 0 });
       for (let i = 0; i < 30; i++) world.step();
-      expect(world.ball.position.x).toBeLessThan(412);
-      expect(world.ball.position.x).toBeGreaterThan(400);
+      expect(world.ball.position.x).toBeGreaterThan(429);
+      expect(world.outOfBounds).toBe('right');
+      expect(world.running).toBe(false);
     } finally { world.destroy(); }
   });
   it('builds collisions from the supplied track and thickness', () => {

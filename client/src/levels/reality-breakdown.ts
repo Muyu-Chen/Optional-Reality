@@ -4,7 +4,7 @@ import type { LevelDefinition } from './types';
 export const realityBreakdown: LevelDefinition = {
   id: 'reality-breakdown', number: 3, stage:3, title: 'The Last Order', presentation: 'bakery',
   viewport: { width: 960, height: 540, pixelsPerMetre: 80 },
-  timeLimitSeconds: 30, initialAcceleration:[0,8], commandLimit: 100, failOnFall: true, ceilingY: 100,
+  timeLimitSeconds: 30, initialAcceleration:[0,8], commandLimit: 100,
   environment: { restitution: .22, friction: .12 },
   ball: { id: 'energy-core', label: 'ROUND BREAD', position: [160, 407], velocity: [0, 0], radius: 13, restitution: 0 },
   tracks: [

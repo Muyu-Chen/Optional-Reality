@@ -2,7 +2,7 @@ import type { LevelDefinition } from './types';
 
 export const frictionRunway: LevelDefinition = {
   id:'friction-runway',number:2,stage:3,title:'Brake Before the Edge',
-  viewport:{width:800,height:510,pixelsPerMetre:80},timeLimitSeconds:30,initialAcceleration:[0,2],failOnFall:true,openEdges:['right'],
+  viewport:{width:800,height:510,pixelsPerMetre:80},timeLimitSeconds:30,initialAcceleration:[0,2],
 
   environment:{restitution:0,friction:0},
   ball:{id:'slider',label:'SLIDING BLOCK',position:[100,377],velocity:[2,0],radius:16,restitution:0,shape:{kind:'box',width:32,height:32}},

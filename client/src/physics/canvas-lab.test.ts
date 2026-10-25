@@ -16,13 +16,13 @@ vi.mock('./exit-transition-renderer', () => ({ drawExitTransition: vi.fn() }));
 const labs: CanvasLab[] = [];
 let frames: Map<number, FrameRequestCallback>, nextFrame: number;
 let disconnect: ReturnType<typeof vi.fn>;
-let context: { setTransform: ReturnType<typeof vi.fn>; clearRect: ReturnType<typeof vi.fn>; fillRect: ReturnType<typeof vi.fn> };
+let context: Record<'setTransform'|'clearRect'|'fillRect'|'save'|'restore'|'beginPath'|'rect'|'clip',ReturnType<typeof vi.fn>>;
 let motion: { matches: boolean; addEventListener: ReturnType<typeof vi.fn>; removeEventListener: ReturnType<typeof vi.fn> };
 
 beforeEach(() => {
   frames = new Map(); nextFrame = 0;
   disconnect = vi.fn();
-  context = { setTransform: vi.fn(), clearRect: vi.fn(), fillRect: vi.fn() };
+  context = { setTransform: vi.fn(), clearRect: vi.fn(), fillRect: vi.fn(),save:vi.fn(),restore:vi.fn(),beginPath:vi.fn(),rect:vi.fn(),clip:vi.fn() };
   motion = { matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() };
   vi.stubGlobal('matchMedia', () => motion);
   vi.spyOn(document, 'hidden', 'get').mockReturnValue(false);
@@ -121,6 +121,9 @@ describe('Canvas lifecycle and fixed simulation time', () => {
     expect(y + 510 * scale).toBeLessThanOrEqual(canvas.height - 156 + .001);
     // The illustration spans the entire CSS viewport, independently from the fitted playable world.
     expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall?.slice(1,3)).toEqual([1366,768]);
+    expect(context.rect).toHaveBeenLastCalledWith(0,0,gravityLab.viewport.width,gravityLab.viewport.height);
+    expect(context.clip).toHaveBeenCalled();
+    expect(context.save.mock.calls.length).toBe(context.restore.mock.calls.length);
   });
 
   it('freezes the decorative world on pause and rebuilds its deterministic initial state on reset',()=>{
