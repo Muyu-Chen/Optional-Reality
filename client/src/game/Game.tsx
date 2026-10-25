@@ -38,6 +38,7 @@ export function Game({ level, chooseLevel, onTitle, onLevelSelect, onCompleted }
         role="img" aria-label={level.instructions.sceneDescription} />
       <div className="gameplay-interface" inert={onboarding.visible || undefined}>
       <GameHud level={level} telemetry={telemetry} secondsLeft={game.secondsLeft} menuOpen={controls.menuOpen}
+        preparing={queue.preparing} onStart={game.startWorld}
         onRetry={game.retryWorld} onResume={controls.resumeGame} onOpenMenu={controls.openMenu} onTitle={onTitle} />
       <div className="game-rule-controls" inert={game.absorbing || undefined}>
       <MessageQueue level={level} messages={queue.messages} selected={queue.selected} managing={queue.managing}

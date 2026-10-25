@@ -24,7 +24,7 @@ export function InitialStateBriefing({ level, suspended, started }: {
       </dl>
       <ul className="briefing-surfaces">{summary.surfaces.map((surface, index) => <li key={index}>{surface}</li>)}</ul>
       {!!summary.devices.length && <ul className="briefing-devices">{summary.devices.map((device, index) => <li key={index}>{device}</li>)}</ul>}
-      <p>Ready when you are. <b>Send now</b> starts the run.</p>
+      <p><b>Start</b> runs the current world. <b>Send now</b> applies a queued rule and starts the run.</p>
     </section>
   );
 }

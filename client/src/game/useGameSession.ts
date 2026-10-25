@@ -17,7 +17,7 @@ import { useLevelOnboarding } from './useLevelOnboarding';
 // Coordinates the queue and world at player action boundaries, never on every physics tick.
 export function useGameSession(level: LevelDefinition) {
   const context = useMemo(() => ruleContext(level), [level]);
-  const [notice, setNotice] = useState(`${accelerationLabel({x:level.initialAcceleration[0],y:level.initialAcceleration[1]})}. Your first sent message starts the ${level.timeLimitSeconds}-second run.`);
+  const [notice, setNotice] = useState(`${accelerationLabel({x:level.initialAcceleration[0],y:level.initialAcceleration[1]})}. Press Start or send your first message to begin the ${level.timeLimitSeconds}-second run.`);
   const { canvasRef, labRef, telemetry } = useGameWorld(level);
   const queue = useMessageQueue(level, labRef, setNotice);
   const controls = useGameControls(labRef, queue.preparing, queue.cancelImmediate);
@@ -28,6 +28,14 @@ export function useGameSession(level: LevelDefinition) {
   const finishCaption = useCallback((id: string) => {
     setCaptions(previous => previous.filter(caption => caption.id !== id));
   }, []);
+
+  function startWorld() {
+    const lab=labRef.current;
+    if(!lab || onboarding.isVisible() || controls.menuOpen || queue.preparing || lab.world.started
+      || lab.world.won || lab.world.timedOut || lab.world.tutorialId)return;
+    lab.world.start();lab.report();
+    setNotice('Run started with the current rules. Queued messages wait for Send now.');
+  }
 
   function send(ids: string[]) {
     const lab = labRef.current;
@@ -153,7 +161,7 @@ export function useGameSession(level: LevelDefinition) {
       } else queue.loadExample();
       onboarding.close();
     },
-    resetWorld, retryWorld, undoLastRule, continueTutorial, replayTeaching,
+    startWorld, resetWorld, retryWorld, undoLastRule, continueTutorial, replayTeaching,
   };
 }
 

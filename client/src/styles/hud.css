@@ -93,3 +93,18 @@
 
 .overtime-tag { color:#39657b;background:#edf8ffdd;border:1px solid #6395ae88;border-radius:9px;padding:5px 8px;font-size:12px;font-weight:800;position:absolute;right:0;top:calc(100% + 8px);white-space:nowrap }
 .hud-controls { position:relative }
+.start-button {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:33px;
+  padding:5px 12px;
+  border:1px solid #214e3a;
+  border-radius:11px;
+  background:linear-gradient(145deg,#39734f,var(--ink));
+  color:#fffdf2;
+  font-size:15px;
+  font-weight:750;
+  box-shadow:0 2px 0 #102f2240,inset 0 1px 0 #ffffff30
+}
+.start-button>span { font-size:11px }

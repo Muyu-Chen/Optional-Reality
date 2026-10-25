@@ -9,13 +9,15 @@ interface GameHudProps {
   telemetry: Telemetry;
   secondsLeft: number;
   menuOpen: boolean;
+  preparing: boolean;
+  onStart: () => void;
   onRetry: () => void;
   onResume: () => void;
   onOpenMenu: () => void;
   onTitle?: () => void;
 }
 
-export function GameHud({ level, telemetry, secondsLeft, menuOpen, onRetry, onResume, onOpenMenu, onTitle }: GameHudProps) {
+export function GameHud({ level, telemetry, secondsLeft, menuOpen, preparing, onStart, onRetry, onResume, onOpenMenu, onTitle }: GameHudProps) {
   const canResume = telemetry.started && !telemetry.running && !menuOpen && !telemetry.tutorialId && !telemetry.won && !telemetry.timedOut;
   return (
     <header className="game-hud game-hud--with-vector">
@@ -35,6 +37,10 @@ export function GameHud({ level, telemetry, secondsLeft, menuOpen, onRetry, onRe
         <span className={`game-clock ${secondsLeft <= 5 ? 'urgent' : ''}`} data-testid="time-left">
           {secondsLeft}<small>s</small>
         </span>
+        {!telemetry.started && !telemetry.won && !telemetry.timedOut && <button className="start-button" aria-label="Start game"
+          disabled={preparing || menuOpen || !!telemetry.tutorialId} onClick={onStart}>
+          <span aria-hidden="true">▶</span> Start
+        </button>}
         <button className="icon-button" aria-label="Try again" title="Try again" onClick={onRetry}>↻</button>
         <button className="icon-button" aria-label={canResume ? 'Resume game' : 'Pause menu'}
           disabled={telemetry.won || telemetry.timedOut} onClick={canResume ? onResume : onOpenMenu}>
