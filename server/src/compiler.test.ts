@@ -92,7 +92,7 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
       ? {id,operations:[],error:'This message is unsupported.'}
       : {id,operations:[{type:'set_gravity',acceleration:index+1}],error:null})};
     const {base}=await endpoint(config.apiKey,provider(output));
-    const response=await fetch(`${base}/api/compile`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(input)});
+    const response=await fetch(`${base}/api/compile`,{method:'POST',headers:{'content-type':'application/json','x-compiler-protocol':'per-message-v1'},body:JSON.stringify(input)});
     expect(response.status).toBe(200);
     const body=await response.json();
     expect(body.messages.map((message:{error?:string})=>!!message.error)).toEqual(allErrors?[true,true,true]:[false,true,false]);

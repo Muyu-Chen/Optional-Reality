@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export interface AiConfig {
+export interface AiProviderConfig {
   provider: 'compatible' | 'gemini';
   apiKeyEnv: 'AI_API_KEY' | 'GEMINI_API_KEY';
   baseUrl: string; model: string; apiKey: string;
@@ -8,8 +8,23 @@ export interface AiConfig {
   thinking: 'disabled' | 'enabled' | 'omit';
   reasoningEffort: 'minimal' | 'low' | 'medium' | 'high' | 'omit';
 }
+export interface AiConfig extends AiProviderConfig {
+  fallback?: AiProviderConfig;
+  primaryTimeoutMs?: number;
+}
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AiConfig {
   const provider = z.enum(['compatible', 'gemini']).parse(env.AI_PROVIDER?.trim() || 'compatible');
+  const primary = providerConfig(provider, env);
+  const fallback = z.enum(['none', 'deepseek']).parse(env.AI_FALLBACK_PROVIDER?.trim() || 'none');
+  if (provider !== 'gemini' || fallback === 'none') return primary;
+  const backup = providerConfig('compatible', env);
+  if (new URL(backup.baseUrl).origin !== 'https://api.deepseek.com') throw new Error('DeepSeek fallback requires AI_BASE_URL=https://api.deepseek.com (optionally with /v1).');
+  return { ...primary, fallback: backup,
+    primaryTimeoutMs: z.coerce.number().int().min(100).max(120000).parse(env.AI_PRIMARY_TIMEOUT_MS || 8000),
+  };
+}
+
+function providerConfig(provider: AiProviderConfig['provider'], env: NodeJS.ProcessEnv): AiProviderConfig {
   const gemini = provider === 'gemini';
   const baseName = gemini ? 'GEMINI_BASE_URL' : 'AI_BASE_URL';
   const baseUrl = (env[baseName]?.trim() || (gemini ? 'https://generativelanguage.googleapis.com/v1beta/openai' : 'https://api.deepseek.com')).replace(/\/+$/, '');
@@ -20,7 +35,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AiConfig {
   return {
     provider, apiKeyEnv, baseUrl,
     model: (gemini ? env.GEMINI_MODEL?.trim() : env.AI_MODEL?.trim()) || (gemini ? 'gemini-3.1-flash-lite' : 'deepseek-flash'),
-    // Never send a different provider's retained key as a fallback.
+    // Each provider always uses its own credentials and endpoint.
     apiKey: env[apiKeyEnv]?.trim() || '',
     format: z.enum(['json_object', 'json_schema', 'text']).parse((gemini ? env.GEMINI_RESPONSE_FORMAT : env.AI_RESPONSE_FORMAT) || 'json_object'),
     timeoutMs: z.coerce.number().int().min(100).max(120000).parse(env.AI_TIMEOUT_MS || 30000),

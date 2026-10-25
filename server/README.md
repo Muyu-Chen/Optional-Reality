@@ -2,7 +2,7 @@
 
 后端只编译用户准备的消息，不运行物理世界，也不执行模型代码。`npm run dev` 同时启动 Vite 与 API；`npm run build && npm start` 用 Express 同时提供构建前端与 API，默认仅监听 `127.0.0.1:3001`。
 
-复制根目录 `.env.example` 到 `.env`，填入所选服务的 key 后重启。已有 `.env` 时直接编辑，避免覆盖密钥。两个服务使用独立密钥；切换不会删除另一份配置，也不会在当前 key 缺失时发送旧服务的 key。
+复制根目录 `.env.example` 到 `.env`，填入所选服务的 key 后重启。已有 `.env` 时直接编辑，避免覆盖密钥。两个服务使用独立密钥；切换不会删除另一份配置，DeepSeek 的 key 始终只发给 DeepSeek，不会作为 Gemini 的 key 使用。
 
 | 配置 | 默认值与用途 |
 | --- | --- |
@@ -12,12 +12,14 @@
 | `AI_API_KEY` | 留空时 API 返回明确配置错误，本地指令仍可用 |
 | `AI_RESPONSE_FORMAT` | `json_object`；可选 `json_schema` 或 `text`，始终验证实际输出 |
 | `AI_THINKING` | `disabled`；仅 DeepSeek 域名发送此供应商参数，其他兼容服务省略 |
-| `GEMINI_API_KEY` | Gemini 服务密钥，不回退到 AI_API_KEY |
+| `GEMINI_API_KEY` | Gemini 服务密钥；只有显式开启兜底才会向独立的 DeepSeek 发起备用请求 |
 | `GEMINI_MODEL` | `gemini-3.1-flash-lite`，可按账户支持的模型修改 |
 | `GEMINI_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/openai`，自动追加 `/chat/completions` |
 | `GEMINI_RESPONSE_FORMAT` | `json_object`；与原服务格式独立，实际规则仍经共享 schema 验证 |
 | `GEMINI_REASONING_EFFORT` | `minimal`；可选 low / medium / high / omit，omit 不发送该参数 |
-| `AI_TIMEOUT_MS` | `30000`，超时不改变消息或规则 |
+| `AI_FALLBACK_PROVIDER` | `none`；设置为 `deepseek` 后，仅 Gemini 主服务失败时尝试一次 AI_* 指定的 DeepSeek；限定官方 HTTPS endpoint |
+| `AI_PRIMARY_TIMEOUT_MS` | `8000`，兜底开启时 Gemini 单次预算；备用获得总预算剩余时间 |
+| `AI_TIMEOUT_MS` | `30000`，包含两次尝试的总预算；超时不改变消息或规则 |
 | `PORT` | `3001` |
 | `APP_ORIGIN` | 可选，部署在反向代理后时指定公开站点 origin |
 
@@ -32,6 +34,12 @@ GEMINI_API_KEY=your-google-key
 ```
 
 改回 `AI_PROVIDER=compatible` 即使用保留的 DeepSeek / 兼容服务。示例 key 只是占位，不提交真实 `.env`。线上持久配置与开发机配置分开维护，发布代码不自动上传开发机 key。
+
+自动兜底：保留 `AI_PROVIDER=gemini`，设置 `AI_FALLBACK_PROVIDER=deepseek`，并分别配置 GEMINI_API_KEY 与 AI_API_KEY。Gemini 网络／HTTP 错误（含认证失败、限流）、超时、损坏 JSON／顶层格式／消息身份失败后，尝试一次 DeepSeek；两次共用默认 30 秒预算，Gemini 默认最多 8 秒。浏览器取消或总预算到期后不会重试。备用 key 未配置时不发送备用请求；两者失败返回清晰错误，不循环。下一次玩家请求仍优先 Gemini。合法的模型拒绝、逐条规则错误和受保护目标仍按原语义返回，不通过更换模型绕过权限。
+
+每次调用记录脱敏结构化事件：`compiler_provider_success`、`compiler_provider_failed` 和 `compiler_message_rejected`；包含请求 ID、服务、耗时、HTTP 状态和是否切换备用，不记录 key、玩家原文、提示词或供应商响应正文。线上可用 `journalctl -u optional-reality --since "15 minutes ago" --no-pager` 查询。供应商状态记录为 upstreamStatus；进程重启和 Apache 连接失败需分别查看 systemd 与 Apache 日志。
+
+逐条结果协议通过 `X-Compiler-Protocol: per-message-v1` 显式协商。新版前端携带该标记后可接收混合成功／错误项；旧页面未携带标记时，任何失败项转为 HTTP 422 的 `{error}`，避免旧 Zod schema 将空 operations／error 字段显示成原始校验异常。全部成功时沿用原响应。
 
 - `GET /api/status` 只返回模型名与是否配置密钥。
 - `GET /api/health` 返回 `{ "ok": true }`，禁止缓存，不调用供应商或返回模型配置。

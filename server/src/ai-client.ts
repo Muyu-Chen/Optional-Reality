@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { ModelOutputSchema } from '../../shared/compiler';
-import type { AiConfig } from './config';
+import type { AiProviderConfig } from './config';
 
 export class CompilerError extends Error {
-  constructor(message: string, readonly status = 502) { super(message); }
+  constructor(message: string, readonly status = 502, readonly upstreamStatus?: number) { super(message); }
 }
-export async function requestJson(config: AiConfig, system: string, user: string, signal?: AbortSignal, fetcher: typeof fetch = fetch) {
+export async function requestJson(config: AiProviderConfig, system: string, user: string, signal?: AbortSignal, fetcher: typeof fetch = fetch) {
   if (!config.apiKey) throw new CompilerError(`Add ${config.apiKeyEnv} to the server .env file and restart the API server.`, 503);
   const responseFormat = config.format === 'json_schema'
     ? { type: 'json_schema', json_schema: { name: 'physics_commands', strict: true, schema: z.toJSONSchema(ModelOutputSchema) } }
@@ -24,7 +24,7 @@ export async function requestJson(config: AiConfig, system: string, user: string
     });
     if (!response.ok) throw new CompilerError(response.status === 401 || response.status === 403
       ? `The provider rejected the server API key. Check ${config.apiKeyEnv}.`
-      : response.status === 429 ? 'The provider rate limit was reached. Try again later.' : `The model provider returned HTTP ${response.status}.`);
+      : response.status === 429 ? 'The provider rate limit was reached. Try again later.' : `The model provider returned HTTP ${response.status}.`, 502, response.status);
     text = await response.text();
   } catch (error) {
     if (error instanceof CompilerError) throw error;

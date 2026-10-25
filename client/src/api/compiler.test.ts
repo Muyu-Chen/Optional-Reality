@@ -10,8 +10,10 @@ const output = { requestId: 'r1', levelId: 'gravity-lab', sceneVersion: 1, queue
 afterEach(() => vi.unstubAllGlobals());
 describe('client compiler identity checks', () => {
   it('accepts the current queue response', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify(output))));
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify(output)));
+    vi.stubGlobal('fetch', fetcher);
     expect((await prepareWithAI(input, new AbortController().signal)).messages[0].id).toBe('m1');
+    expect(fetcher.mock.calls[0][1].headers).toMatchObject({ 'x-compiler-protocol': 'per-message-v1' });
   });
   it.each([{ queueRevision: 2 }, { sceneVersion: 0 }, { requestId: 'old' }, { levelId: 'other' }, { messages: [{ id: 'wrong', operations: output.messages[0].operations }] }])('rejects stale or mismatched output %#', async overrides => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(JSON.stringify({ ...output, ...overrides }))));

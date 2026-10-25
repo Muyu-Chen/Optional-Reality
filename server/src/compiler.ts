@@ -5,6 +5,7 @@ import { ruleContext } from '../../client/src/levels/rules';
 import { CompilerError, requestJson } from './ai-client';
 import type { AiConfig } from './config';
 import { COMPILER_SYSTEM, compilerInput } from './compiler-prompt';
+import { withProviderFallback } from './provider-fallback';
 
 export async function compileRules(input: unknown, config: AiConfig, signal?: AbortSignal, fetcher?: typeof fetch) {
   const request = CompileRequestSchema.parse(input);
@@ -12,7 +13,10 @@ export async function compileRules(input: unknown, config: AiConfig, signal?: Ab
   if (!level) throw new CompilerError('Unknown level.', 400);
   const context = ruleContext(level);
   validateRuleState(request.rules, context);
-  const output = await requestJson(config, COMPILER_SYSTEM, compilerInput(level, request, context), signal, fetcher);
-  return validateCompilation(request, output, context);
+  const user = compilerInput(level, request, context);
+  return withProviderFallback(config, async (provider, attemptSignal) => {
+    const output = await requestJson(provider, COMPILER_SYSTEM, user, attemptSignal, fetcher);
+    return validateCompilation(request, output, context);
+  }, signal, request.requestId);
 }
 export type { CompileRequest };
