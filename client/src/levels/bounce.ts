@@ -16,6 +16,7 @@ export const bounce: LevelDefinition = {
     hint: 'Bounce can reach the exit. For all stars, try low bounce to collect the ground star, then upward acceleration as the ball approaches the stars on the right. Gravity is another name for vertical acceleration.',
     sceneDescription: 'A geometric physics puzzle: a ball moving right drops toward a flat floor. The exit is raised on the right. The blue surface returns energy on collision. Gravity, horizontal acceleration, surface restitution and friction are editable; the ball is protected.',
     canvasHeading: 'ENERGY AT THE MOMENT OF IMPACT', readyCaption: 'ONE COLLISION. A DIFFERENT POSSIBILITY.',
+    initialMessages: ['Set surface bounce to 0.9'],
     exampleMessages: ['Set surface bounce to 0.9'], suggestedMessages: ['Set surface bounce to 0.9','Set surface bounce to 0.5'],
     exampleNotice: 'Your bounce rule is queued. Send before impact, then compare another value with Try again.',
   },

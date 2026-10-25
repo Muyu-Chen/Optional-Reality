@@ -77,6 +77,7 @@ export interface LevelDefinition {
     readonly sceneDescription: string;
     readonly canvasHeading: string;
     readonly readyCaption: string;
+    readonly initialMessages?: readonly string[];
     readonly exampleMessages: readonly string[];
     readonly suggestedMessages: readonly string[];
     readonly exampleNotice: string;

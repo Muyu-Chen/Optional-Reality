@@ -58,6 +58,16 @@ describe('ordinary and full-score routes',()=>{
       expect(world.won).toBe(true);expect(world.stars.fullScore).toBe(true);
     }finally{world.destroy();}
   });
+  it('lets the first-play bounce starter reach the exit without claiming full score',()=>{
+    const world=new PhysicsWorld(bounce);
+    try {
+      for(const message of bounce.instructions.initialMessages || [])apply(world,message);
+      play(world);
+      expect(world.won).toBe(true);
+      expect(world.stars.fullScore).toBe(false);
+      expect(world.stars.collected.size).toBe(1);
+    }finally{world.destroy();}
+  });
   it('keeps the previous bounce route as ordinary completion without granting full score',()=>{
     const world=new PhysicsWorld(multiBounce);let sent=false;
     try{

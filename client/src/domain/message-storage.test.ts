@@ -30,6 +30,23 @@ describe('stored message drafts', () => {
     expect(messages.every(message => message.operation?.type === 'set_property')).toBe(true);
   });
 
+  it('prepares the bounce starter only when no saved queue exists', () => {
+    vi.stubGlobal('localStorage', { getItem: () => null });
+    const messages = loadMessages(bounce);
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toMatchObject({ text: 'Set surface bounce to 0.9', status: 'ready' });
+    expect(loadMessages(gravityLab)).toEqual([]);
+    saved([]);
+    expect(loadMessages(bounce)).toEqual([]);
+    saved(['Set surface bounce to 0.1']);
+    expect(loadMessages(bounce).map(message => message.text)).toEqual(['Set surface bounce to 0.1']);
+  });
+
+  it('keeps the first-play starter available when storage access is denied', () => {
+    vi.stubGlobal('localStorage', { getItem: () => { throw new Error('denied'); } });
+    expect(loadMessages(bounce)[0]).toMatchObject({ text: 'Set surface bounce to 0.9', status: 'ready' });
+  });
+
   it('keeps per-level drafts separate and validates against the active level’s permissions', () => {
     expect(messageStorageKey(bounce)).not.toBe(messageStorageKey(gravityLab));
     saved(['add gravity']);
