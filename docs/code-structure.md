@@ -38,7 +38,8 @@
 | `components/StarProgress.tsx` | HUD 星星进度 |
 | `components/CompletionResult.tsx`、`ResultStars.tsx` | 独立的结算信息、真实分数与大号 SVG 星形 |
 | `physics/drawing-theme.ts` | Canvas 主题颜色与可读字号，与界面保留一致的物理颜色语义 |
-| `physics/devices.ts` | 接触判断、风场、传送带、蓄力、转轮和感应开门 |
+| `physics/devices.ts` | 接触判断、风场、传送带、有动力面包机、转轮和感应开门 |
+| `physics/elastic-spring.ts` | 被动弹簧的胡克弹力、阻尼与连续接触；不冻结或硬改物体速度 |
 | `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
 | `physics/geometry-renderer.ts` | 前两级几何场景绘图 |
 | `physics/actor-renderer.ts`、`surface-renderer.ts`、`goal-renderer.ts` | 分别绘制任务物体、真实材质纹理、接触/停留目标；由几何场景组合 |

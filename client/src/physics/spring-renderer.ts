@@ -7,12 +7,19 @@ export function drawGeometrySprings(ctx: CanvasRenderingContext2D,world: Physics
     if(spring.kind!=='spring')continue;
     const state=world.devices.springs.get(spring.id),{x,y,width}=spring.area;
     const compression=state?.phase==='charging' ? Math.min(1,state.elapsed/(spring.chargeSeconds || .6))*(spring.compressionDistance || 0) : 0;
-    const top=y+compression,bottom=y+44,cx=x+width/2;
-    ctx.save();ctx.strokeStyle=physicsColours.bounce;ctx.lineWidth=3;
+    const top=spring.response==='elastic'?(state?.top ?? y):y+compression,bottom=y+44,cx=x+width/2;
+    ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.fillStyle='#2547301a';ctx.beginPath();ctx.ellipse(cx,bottom+4,width*.48,5,0,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=physicsColours.bounce;ctx.lineWidth=4;
     ctx.beginPath();ctx.moveTo(cx,bottom);
-    for(let i=0;i<=8;i++)ctx.lineTo(cx+(i%2?10:-10),bottom-(bottom-top)*i/8);
-    ctx.stroke();ctx.fillStyle=physicsColours.bounce;ctx.fillRect(x,top-3,width,6);
+    const step=(bottom-top)/8;
+    for(let i=0;i<8;i++)ctx.quadraticCurveTo(cx+(i%2?17:-17),bottom-step*(i+.5),cx,bottom-step*(i+1));
+    ctx.stroke();ctx.fillStyle=physicsColours.bounce;
+    ctx.beginPath();ctx.roundRect(x,top-4,width,8,4);ctx.fill();
+    ctx.fillStyle='#b3daf8';ctx.beginPath();ctx.roundRect(x+3,top-3,width-6,2,1);ctx.fill();
     ctx.fillStyle=physicsColours.structure;ctx.font=sceneFonts.small;ctx.textAlign='center';
-    ctx.fillText(state?.phase==='charging' ? 'CHARGING' : 'AUTO SPRING',cx,bottom+25);ctx.restore();
+    const label=spring.response==='elastic' ? state?.phase==='charging' ? world.ball.velocity.y>0?'Compressing':'Rebounding' : 'Spring'
+      : state?.phase==='charging'?'Storing energy':'Powered launcher';
+    ctx.fillText(label,cx,bottom+25);ctx.restore();
   }
 }

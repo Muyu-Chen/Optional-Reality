@@ -35,7 +35,7 @@ describe('ordinary and full-score routes',()=>{
           : level.id==='bounce'&&w.ball.position.x>=490 ? 'acceleration upward 2'
           : level.id==='multi-bounce'&&w.tick>=480 ? 'gravity downward 4'
           : level.id==='friction-runway'&&w.ball.position.x>=580 ? 'surface friction 0.3'
-          : level.id==='one-more-turn'&&w.devices.firedSprings.size&&w.ball.velocity.y>0&&w.ball.position.y>=280 ? 'reverse gravity' : '';
+          : level.id==='one-more-turn'&&w.devices.firedSprings.size&&w.ball.velocity.y>0&&w.ball.position.y>=330 ? 'reverse gravity' : '';
         if(text){apply(w,text);sent=true;}
       });
       expect(world.won,JSON.stringify(world.snapshot())).toBe(true);
@@ -66,7 +66,7 @@ describe('ordinary and full-score routes',()=>{
       expect(world.won).toBe(true);expect(world.stars.fullScore).toBe(false);
     }finally{world.destroy();}
   });
-  it.each([260,280,300,330,360])('allows reversing after the spring at returning height %s',height=>{
+  it.each([315,330,345,360,380])('allows reversing after the spring at returning height %s',height=>{
     const world=new PhysicsWorld(oneMoreTurn);let sent=false;
     try{
       apply(world,'add gravity');

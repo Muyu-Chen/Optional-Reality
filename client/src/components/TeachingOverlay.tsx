@@ -22,7 +22,7 @@ export function TeachingOverlay({ tutorial, preparing, onContinue }: TeachingOve
 
 export function TimingHint({ hasMessages, telemetry, lesson }: { hasMessages: boolean; telemetry: Telemetry; lesson: 'ramp'|'spring' }) {
   const hint = lesson==='spring' ? !hasMessages ? 'Queue “add gravity” and “reverse gravity” — or load the starter messages.'
-    : !telemetry.started ? 'Fall toward the first star. The spring charges and releases automatically.'
+    : !telemetry.started ? 'Fall toward the first star. The spring compresses and rebounds naturally.'
     : telemetry.stars.collected>=2 ? 'The higher star is still ahead. Try changing the acceleration direction.'
     : 'Watch the spring compress and release. Your next message is ready when you choose.'
     : !hasMessages ? 'Queue “add gravity” and “stop gravity” — or load the starter messages.'

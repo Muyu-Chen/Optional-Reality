@@ -1,9 +1,10 @@
 import Matter from 'matter-js';
 import type { RuleState } from '../../../shared/rules';
 import type { LevelDefinition, Rect } from '../levels/types';
+import { ElasticSpring } from './elastic-spring';
 
 const { Bodies, Body, Composite, Constraint } = Matter;
-export interface SpringState { phase: 'idle' | 'charging' | 'launched'; elapsed: number; anchor?: Matter.Constraint; origin?: {x:number;y:number} }
+export interface SpringState { phase: 'idle' | 'charging' | 'launched'; elapsed: number; top?:number; anchor?: Matter.Constraint; origin?: {x:number;y:number} }
 export interface DeviceEvent { type: 'spring_charging' | 'spring_released'; deviceId: string }
 const overlaps = (ball: Matter.Body, radius: number, area: Rect) => {
   const x = Math.max(area.x, Math.min(ball.position.x, area.x + area.width));
@@ -18,12 +19,16 @@ export class DeviceRuntime {
   readonly openGates = new Set<string>();
   readonly firedSprings = new Set<string>();
   readonly springs = new Map<string,SpringState>();
+  private elasticSprings=new Map<string,ElasticSpring>();
   private events: DeviceEvent[] = [];
   private touchingRotors = new Set<string>();
 
   constructor(private level: LevelDefinition, private engine: Matter.Engine, private ball: Matter.Body) {
     for (const device of level.devices || []) {
-      if (device.kind === 'spring') this.springs.set(device.id,{phase:'idle',elapsed:0});
+      if (device.kind === 'spring') {
+        const state:SpringState={phase:'idle',elapsed:0};this.springs.set(device.id,state);
+        if(device.response==='elastic')this.elasticSprings.set(device.id,new ElasticSpring(device,ball,level.ball.radius,level.viewport.pixelsPerMetre,state));
+      }
       if (device.kind === 'gate') {
         const { x, y, width, height } = device.area;
         const body = Bodies.rectangle(x + width / 2, y + height / 2, width, height, { isStatic: true, label: device.id });
@@ -63,6 +68,13 @@ export class DeviceRuntime {
         }
         case 'spring': {
           const power = values.spring_power ?? device.power;
+          const elastic=this.elasticSprings.get(device.id);
+          if(elastic) {
+            const event=elastic.step(power,dt);
+            if(event==='contact')this.events.push({type:'spring_charging',deviceId:device.id});
+            if(event==='release') { this.firedSprings.add(device.id);this.events.push({type:'spring_released',deviceId:device.id}); }
+            break;
+          }
           const state = this.springs.get(device.id)!;
           const touching = overlaps(ball,radius,device.area);
           if (state.phase === 'launched' && !touching) state.phase='idle';
@@ -113,6 +125,7 @@ export class DeviceRuntime {
     }
   }
   afterStep(rules: RuleState) {
+    for(const spring of this.elasticSprings.values())spring.refresh();
     for (const trigger of rules.triggers) {
       const sensor = (this.level.devices || []).find(device => device.id === trigger.sensor && device.kind === 'sensor');
       if (sensor?.kind !== 'sensor') continue;

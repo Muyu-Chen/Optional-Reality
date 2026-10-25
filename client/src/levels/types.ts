@@ -20,7 +20,7 @@ export interface Rect { readonly x: number; readonly y: number; readonly width: 
 export interface StarDefinition { readonly id: string; readonly position: Point; readonly radius?: number }
 export type DeviceDefinition =
   | { readonly kind: 'conveyor'; readonly id: string; readonly area: Rect; readonly speed: number }
-  | { readonly kind: 'spring'; readonly id: string; readonly area: Rect; readonly power: number; readonly launchBase: Point; readonly launchPerPower: Point; readonly chargeSeconds?: number; readonly compressionDistance?: number }
+  | { readonly kind: 'spring'; readonly id: string; readonly area: Rect; readonly power: number; readonly launchBase: Point; readonly launchPerPower: Point; readonly chargeSeconds?: number; readonly compressionDistance?: number; readonly response?: 'elastic'; readonly stiffness?: number; readonly damping?: number }
   | { readonly kind: 'fan'; readonly id: string; readonly area: Rect; readonly power: number; readonly acceleration: Point }
   | { readonly kind: 'rotor'; readonly id: string; readonly position: Point; readonly radius: number; readonly angularSpeed: number }
   | { readonly kind: 'sensor'; readonly id: string; readonly position: Point; readonly radius: number }

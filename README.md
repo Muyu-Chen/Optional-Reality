@@ -15,7 +15,7 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 | 等级 | 小关 | 主要学习内容 |
 | --- | --- | --- |
 | 1 · Motion | 01 Gravity Lab | 零重力起步，沿斜坡运动，在离轨时取消重力 |
-| 1 · Motion | 01.2 One More Turn | 落下取星、弹簧自动弹出，再改变加速度取得高处星 |
+| 1 · Motion | 01.2 One More Turn | 落下取星、被动弹簧自然回弹，再改变加速度取得高处星 |
 | 2 · Collisions | 02.1 A Little More Bounce | 直接反弹可通关，低弹性后向上加速可收齐星星 |
 | 2 · Collisions | 02.2 Not Too High | 满分路线：高弹性取高星，再增大向下加速度回到出口 |
 | 2 · Collisions | 02.3 Brake Before the Edge | 青色摩擦跑道，完整停靠滑块 |

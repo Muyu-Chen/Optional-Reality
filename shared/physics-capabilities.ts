@@ -27,7 +27,7 @@ export const PHYSICS_CAPABILITIES = {
   conveyor_speed: { label: 'Conveyor speed', range: [-3, 3], unit: 'device control', targetKinds: ['conveyor'],
     meaning: 'Signed belt drive control; zero stops the drive, negative reverses it. Not a direct actor velocity.', commandPattern: /conveyor|belt|传送带/ },
   spring_power: { label: 'Spring strength', range: [0, 3], unit: 'device control', targetKinds: ['spring'],
-    meaning: 'Spring/toaster launch strength; zero disables it. Contact starts its automatic charge and release.', commandPattern: /spring|toaster|弹簧|面包机/ },
+    meaning: 'Spring strength; zero disables it. Passive elastic springs use contact restoring force; powered toasters use automatic charge and release.', commandPattern: /spring|toaster|弹簧|面包机/ },
   fan_power: { label: 'Airflow', range: [-2, 2], unit: 'device control', targetKinds: ['fan'],
     meaning: 'Multiplier of the configured wind acceleration inside its area; negative reverses it, zero disables it.', commandPattern: /fan|wind|风扇/ },
   angular_speed: { label: 'Wheel speed', range: [-3, 3], unit: 'device control', targetKinds: ['rotor'],
