@@ -4,6 +4,7 @@ import { sceneryLayout, sceneryTheme } from './layout';
 import { PhysicsWorld } from '../world';
 import { bounce } from '../../levels/bounce';
 import { gravityLab } from '../../levels/gravity-lab';
+import { WATER_PARTICLE_COUNT } from './water-particles';
 
 const down={x:0,y:1},up={x:0,y:-1};
 function advance(scene:LivingWorld,seconds:number,vector=down,fps=60) {
@@ -25,7 +26,7 @@ describe('independent living background',()=>{
       const actor=after.residents[i];expect(actor.grounded).toBe(true);expect(actor.y).toBe(sceneryLayout.roadY);
       expect(actor.x).not.toBe(before.residents[i].x);expect(actor.phase).toBeGreaterThan(before.residents[i].phase);
     }
-    expect(after.water).toHaveLength(52);expect(after.water.every(drop=>drop.vy>0)).toBe(true);
+    expect(after.water).toHaveLength(WATER_PARTICLE_COUNT);expect(after.water.every(drop=>drop.vy>0)).toBe(true);
   });
 
   it('loses ground contact and turns the waterfall upward when acceleration reverses',()=>{
@@ -66,7 +67,7 @@ describe('independent living background',()=>{
     a.advance(100,down);b.advance(.05,down);expect(a.snapshot()).toEqual(b.snapshot());
     const external=a.snapshot();(external.residents[0] as {x:number}).x=9999;expect(a.snapshot()).toEqual(b.snapshot());
     for(const delta of [NaN,Infinity,-2,0])a.advance(delta,up);expect(a.snapshot()).toEqual(b.snapshot());
-    a.dispose();a.advance(1,up);expect(a.snapshot()).toEqual({theme:'valley',time:0,residents:[],water:[]});
+    a.dispose();a.advance(1,up);expect(a.snapshot()).toEqual({theme:'valley',time:0,residents:[],water:[],spray:[]});
     expect(new LivingWorld('valley').snapshot()).toEqual(new LivingWorld('valley').snapshot());
   });
 

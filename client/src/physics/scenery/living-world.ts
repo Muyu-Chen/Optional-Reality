@@ -1,18 +1,19 @@
 import type { AccelerationVector } from '../../../../shared/acceleration';
 import { sceneryLayout, type SceneryTheme } from './layout';
+import { WaterParticles, type WaterParticle, type SprayParticle } from './water-particles';
+export type { WaterParticle, SprayParticle } from './water-particles';
 
 export interface SceneryResident {
   readonly kind: 'walker' | 'car'; readonly x: number; readonly y: number;
   readonly vx: number; readonly vy: number; readonly angle: number;
   readonly phase: number; readonly grounded: boolean; readonly palette: number;
 }
-export interface WaterParticle { readonly x: number; readonly y: number; readonly vx: number; readonly vy: number; readonly age: number; readonly lane: number }
 export interface LivingFrame {
   readonly theme: SceneryTheme; readonly time: number;
   readonly residents: readonly SceneryResident[]; readonly water: readonly WaterParticle[];
+  readonly spray:readonly SprayParticle[];
 }
 interface ResidentState {kind:'walker'|'car';x:number;y:number;vx:number;vy:number;angle:number;phase:number;grounded:boolean;palette:number;cruise:number}
-interface DropState {x:number;y:number;vx:number;vy:number;age:number;life:number;lane:number}
 const STEP = 1 / 120;
 const finite = (value:number) => Number.isFinite(value) ? Math.max(-100,Math.min(100,value)) : 0;
 const approach = (a:number,b:number,rate:number) => a+(b-a)*(1-Math.exp(-rate*STEP));
@@ -23,7 +24,7 @@ export class LivingWorld {
   private remainder=0;
   private disposed=false;
   private residents:ResidentState[];
-  private water:DropState[];
+  private waterfall?:WaterParticles;
 
   constructor(readonly theme:SceneryTheme) {
     this.residents=([
@@ -32,11 +33,7 @@ export class LivingWorld {
       y:theme==='valley'?sceneryLayout.roadY:410+i*48,vx:theme==='valley'?cruise:cruise*.3,
       vy:theme==='valley'?0:(i%2?-.7:.7),angle:theme==='valley'?0:(i-1)*.23,
       phase:i*1.8,grounded:theme==='valley',palette,cruise}));
-    this.water=theme==='valley'?Array.from({length:52},(_,i)=>{
-      const age=i/52*2.4,lane=(i*13%29)/29;
-      return {x:sceneryLayout.waterfall.x+lane*sceneryLayout.waterfall.width,
-        y:sceneryLayout.waterfall.y+age*82+age*age*15,vx:0,vy:82+30*age,age,life:2.4,lane};
-    }):[];
+    if(theme==='valley')this.waterfall=new WaterParticles();
   }
 
   advance(delta:number,acceleration:Readonly<AccelerationVector>,active=true,reducedMotion=false) {
@@ -46,7 +43,7 @@ export class LivingWorld {
     while(this.remainder+1e-10>=STEP) {
       this.remainder-=STEP;this.time+=STEP;
       for(const actor of this.residents)this.advanceResident(actor,ax,ay);
-      for(const drop of this.water)this.advanceDrop(drop,ax,ay);
+      this.waterfall?.step(ax,ay,STEP);
     }
   }
 
@@ -77,25 +74,13 @@ export class LivingWorld {
     actor.phase+=STEP*(actor.grounded?Math.abs(actor.vx)*.3:.7);
   }
 
-  private advanceDrop(drop:DropState,ax:number,ay:number) {
-    drop.age+=STEP;
-    if(drop.age>=drop.life||drop.y < -40||drop.y>710||drop.x < -60||drop.x>1060) {
-      drop.age=0;drop.x=sceneryLayout.waterfall.x+drop.lane*sceneryLayout.waterfall.width;
-      drop.y=sceneryLayout.waterfall.y;
-      const magnitude=Math.hypot(ax,ay);
-      // A flowing source supplies momentum, including when acceleration is switched off.
-      drop.vx=magnitude>.02?ax/magnitude*48:0;drop.vy=magnitude>.02?ay/magnitude*48:35;
-    }
-    drop.vx+=ax*30*STEP;drop.vy+=ay*30*STEP;
-    drop.x+=drop.vx*STEP;drop.y+=drop.vy*STEP;
-  }
-
   snapshot():LivingFrame {
+    const particles=this.waterfall?.snapshot();
     return {theme:this.theme,time:this.time,
       residents:this.residents.map(({cruise:_,...resident})=>({...resident})),
-      water:this.water.map(({life:_life,...drop})=>({...drop})),
+      water:particles?.water??[],spray:particles?.spray??[],
     };
   }
 
-  dispose(){this.disposed=true;this.time=0;this.remainder=0;this.residents=[];this.water=[];}
+  dispose(){this.disposed=true;this.time=0;this.remainder=0;this.residents=[];this.waterfall?.dispose();}
 }

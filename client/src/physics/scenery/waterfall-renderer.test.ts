@@ -7,19 +7,21 @@ function advance(world:LivingWorld,seconds:number,vector={x:0,y:1}) {
   for(let i=0;i<seconds*120;i++)world.advance(1/120,vector);
 }
 function canvas() {
-  return Object.fromEntries(['save','restore','beginPath','moveTo','lineTo','quadraticCurveTo','ellipse','stroke']
+  return Object.fromEntries(['save','restore','beginPath','moveTo','lineTo','quadraticCurveTo','ellipse','stroke','arc','fill']
     .map(method=>[method,vi.fn()])) as unknown as CanvasRenderingContext2D;
 }
 
-describe('simple continuous waterfall',()=>{
-  it('connects the river mouth to the pool without ending in a cloud of separate drops',()=>{
+describe('dense water particle stream',()=>{
+  it('connects the river mouth to the pool with fine round particles over a faint continuous base',()=>{
     const world=new LivingWorld('valley');advance(world,4);const frame=world.snapshot();
     const before=structuredClone(frame),points=waterfallCentreline(frame.water),ctx=canvas();
     expect(points[0]).toEqual({x:sceneryLayout.waterfall.x+sceneryLayout.waterfall.width/2,y:sceneryLayout.waterfall.y});
     expect(points[points.length-1].y).toBe(sceneryLayout.waterfall.poolY);
     expect(points.every(point=>Number.isFinite(point.x+point.y))).toBe(true);
     drawWaterfall(ctx,frame);
-    expect(ctx.stroke).toHaveBeenCalledTimes(8); // 3 ribbons, 3 white ripples, 2 modest splash shapes.
+    expect(ctx.stroke).toHaveBeenCalledTimes(2); // A faint base and a quiet pool ring, no long rain dashes.
+    expect(ctx.arc).toHaveBeenCalledTimes(frame.water.length+frame.spray.length);
+    expect(vi.mocked(ctx.arc).mock.calls.every(([, ,radius])=>radius<=1.7)).toBe(true);
     expect(ctx.quadraticCurveTo).toHaveBeenCalled();
     expect(frame).toEqual(before);
   });
@@ -39,6 +41,10 @@ describe('simple continuous waterfall',()=>{
     const points=waterfallCentreline(world.snapshot().water);
     expect(points[points.length-1].x).toBeGreaterThan(points[0].x+80);
     expect(waterfallCentreline(world.snapshot().water)).toEqual(points);
+    const sidewaysCanvas=canvas();drawWaterfall(sidewaysCanvas,world.snapshot());
+    expect(sidewaysCanvas.quadraticCurveTo).not.toHaveBeenCalled();
+    expect(sidewaysCanvas.arc).toHaveBeenCalledTimes(world.snapshot().water.length+world.snapshot().spray.length);
+    expect(waterfallCentreline([])).toEqual([]);
     const ctx=canvas();drawWaterfall(ctx,new LivingWorld('cosmos').snapshot());expect(ctx.stroke).not.toHaveBeenCalled();
   });
 });
