@@ -1,6 +1,51 @@
 # 线上游戏 — 2026-10-24
 
-## 当前版本：结算界面、可读性与背景音乐
+## 当前版本：连续物理、游戏反馈与图示教学
+
+- 游戏：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，应用版本 `75af06a59d145e9325acb14dee46d13d51842e3b`，release `20261025T024029Z-75af06a`。标识使用 UTC，本地发布日期为 2026-10-24。
+- 应用 current：`/opt/optional-reality/releases/20261025T024029Z-75af06a`；静态 current：`/var/www/muu-tech/releases/20261025T024029Z-75af06a-optional-reality-game`。前后端同版，正式服务 active，仅监听 `127.0.0.1:3001`；临时 3115 验证服务已停止。
+- 包含连续被动弹簧、方向响应的背景云鸟、真实拾取反馈、黑洞吸入后结算、独立事件音效、三条紧凑消息、快捷应用、三课居中教学和全关规则清单展开。保留共享 main 中固定摩擦表面与 runway 别名更新。
+- bounce 首访 `.9` 普通路线保留，主动加载满分教程才换 `.1` 与向上加速度 1；教程和暂停菜单均强调接近触地时发送。U 形轨道教程路线未改。
+- 固定提交在独立目录全新 `npm ci` 后通过 66 个文件、603 项 Vitest、13 项 Node 首页测试、类型检查与生产构建，共 616 项。构建仍提示单个 JS 包大于 500kB，不影响本次通过。
+- 公网 20 个静态文件 SHA256 全部与独立构建一致；健康检查正常、模型已配置。真实 DeepSeek Flash 三条方向消息依次应用为 `(2,20)`、`(2,-20)`、`(2,20)`。
+- 实际浏览器完成 bounce 与 One More Turn 的 3/3；最终 bounce 页面确认先进入 Finding another reality… 吸入阶段，再显示 Full score。三条消息的发送按钮均为 28px，1280×720 无横向溢出；Enter 排队、Shift+Tab 设置、教程加载与重看均已检查。浏览器 warning/error 为空。
+- 保留 Node、Apache/TLS、systemd 和服务器持久 `.env`，没有复制开发机密钥。应用配置仍为 root:optional-reality、640 权限。现场证据与资源清单位于忽略目录 `.localwork/deploy-motion/`。
+
+### 本轮备份和资源
+
+- 最终切换前服务器备份：`/var/backups/optional-reality/20261025T024029Z-75af06a/`；本地 `.localwork/backups/motion-20261025T024029Z-75af06a/`，目录 700、文件 600，归档两端 SHA256 一致。源码归档排除 `.env` 和依赖。
+- `site.tar.gz`：`3db338cdedd4d0ea9ca73a87c07bfcff4280aa12d1ea5b5a93a466394b5d30bc`。
+- `app-source.tar.gz`：`e7127df04a08c61253b987a8b2168f3e8e3b9e9efecdc45485d2b5cd00aa4805`。
+- 最终 HTML：`51896cbc48c2c585451680bcfcc8d3f183cbaeeb85a11a6d5990842ad89a3e9d`。
+- JS `index-BrfqxEMN.js`：`405590d1fbeb46ab5d8b763badc3358fb0585a4fb7db929ef45bb0d6c2553236`。
+- CSS `index-CG-rJbt2.css`：`52ccfacc0b0f2017c9d748147cdf459b23eb81ede44a33e2619ecaf58ec058ee`。
+- 首页：`008e27587b18371bd8b34c11d5eb16d22b2e2e566df62391cf0c9e4f987b9eb4`，包含两幅实时 Canvas 示意图。
+- 发布先核对实际在线 `b7db0cd` 并完整备份，再切换整合版 `20261025T023726Z-acd3840`；随后统一暂停菜单的旧时机提示，发布本节最终版。两次 release 均保留，旧哈希资源继续可用。
+- 整合前 `b7db0cd` 的备份仍在 `/var/backups/optional-reality/20261025T023726Z-acd3840/` 与本地 `.localwork/backups/motion-20261025T023726Z-acd3840/`；站点归档 `581194aa389e3a411bfc0e629ecc7342fdff1a9b644b63bae14504b376b6e9cf`，源码归档 `3c3ef59fa52a22dd5e3a7765430089714e124e5976553373add1677c42cf0a70`。更早本轮快照的 release 和原备份也保留。
+
+### 回退到上一整合版
+
+先核对 current 仍为本节版本；如果已有更新，应停止核对新记录。只切换前后端代码，不回退持久 `.env`。
+
+```sh
+set -eu
+app_root=/opt/optional-reality
+site_root=/var/www/muu-tech
+test "$(readlink -f "$app_root/current")" = "/opt/optional-reality/releases/20261025T024029Z-75af06a"
+test "$(readlink -f "$site_root/current")" = "/var/www/muu-tech/releases/20261025T024029Z-75af06a-optional-reality-game"
+test -f "/opt/optional-reality/releases/20261025T023726Z-acd3840/server/src/index.ts"
+test -f "/var/www/muu-tech/releases/20261025T023726Z-acd3840-optional-reality-game/demo/index.html"
+apache2ctl configtest
+ln -s "/opt/optional-reality/releases/20261025T023726Z-acd3840" "$app_root/.rollback-app-$$"
+mv -Tf "$app_root/.rollback-app-$$" "$app_root/current"
+systemctl restart optional-reality
+curl -fsS --retry 15 --retry-connrefused --retry-delay 1 http://127.0.0.1:3001/api/health
+ln -s "/var/www/muu-tech/releases/20261025T023726Z-acd3840-optional-reality-game" "$site_root/.rollback-web-$$"
+mv -Tf "$site_root/.rollback-web-$$" "$site_root/current"
+curl -fsS https://muuyyy.cfd/api/health
+```
+
+## 历史版本：结算界面、可读性与背景音乐
 
 - 游戏：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，版本 `7da00d4bcde298acf4b0be3d54cdfcf63fdf3f2e`。
 - release ID `20261025T010404Z-7da00d4`（UTC 标识；本地发布日期为 2026-10-24）。应用 current 为 `/opt/optional-reality/releases/20261025T010404Z-7da00d4`；静态 current 为 `/var/www/muu-tech/releases/20261025T010404Z-7da00d4-optional-reality-game`。本轮文档收尾通过只读 SSH 再次核对两个真实指向、正式服务 active 及回环健康 `{ "ok": true }`。

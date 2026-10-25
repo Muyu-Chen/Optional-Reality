@@ -107,4 +107,4 @@ React + TypeScript + Vite 管理界面；Matter.js + Canvas 2D 运行、绘制�
 
 满分路线、消息操作与向量语义见 [星星玩法约定](./docs/star-gameplay.md)；九关的具体路线见 [阶段式物理解谜](./docs/phase-puzzles.md)。
 
-第一轮界面与音乐版本 `7da00d4` 已发布，此后已有本轮中途快照上线。场景绘图、连续被动弹簧、首页实时动画、生态、出口过渡、音效及最新消息交互、首访教程均已集成，仍待最终统一发布。线上具体版本以 [部署记录](./deploy/live-game.md) 为准，最新验证见 [verification.md](./docs/verification.md)。
+本轮整合版 `75af06a` 已发布：场景绘图、连续被动弹簧、首页实时动画、背景生态、出口吸入、音效、消息快捷操作、三课图示教学和规则清单展开均已上线。独立构建通过 616 项测试，公网三星路线和真实 API 已验收。线上具体版本以 [部署记录](./deploy/live-game.md) 为准，最新验证见 [verification.md](./docs/verification.md)。
