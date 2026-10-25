@@ -6,5 +6,7 @@ export default defineConfig({
   test: {
     // Local backups/prototypes can contain old tests; only test the active application.
     include: ['client/src/**/*.test.{ts,tsx}', 'shared/**/*.test.{ts,tsx}', 'server/src/**/*.test.{ts,tsx}'],
+    // Keep jsdom/physics suites within a shared laptop's CPU and memory budget.
+    maxWorkers: 4,
   },
 });

@@ -20,6 +20,7 @@
 | `game/useLevelOnboarding.ts` | 首访/重看、暂停、已见状态、教学快捷键与立即应用意图取消 |
 | `components/LevelOnboarding.tsx`、`OnboardingDiagram.tsx` | 全视口教学遮罩、居中卡片、静态 SVG 图示与关闭/加载示例按钮 |
 | `components/AllowedRules.tsx` | 输入窗与教程共用的真实权限摘要及可展开完整列表；只显示数据，不授予权限 |
+| `components/AccelerationIndicator.tsx`、`domain/acceleration-display.ts` | 实际加速度方向、数值、读屏文本与短强调；纯向量展示和 UI 生命周期分开 |
 | `client/src/api/compilation-session.ts` | 编译请求身份、取消、场景与队列版本 |
 | `client/src/components/` | 独立显示组件，通过 props 接收状态和事件 |
 | `client/src/domain/` | 纯队列操作、真实执行反馈与存储格式 |
@@ -58,6 +59,9 @@ MusicControl 与 SoundEffectsControl 统一由暂停设置组合，Game HUD 不�
 | `physics/scene-backdrop.ts` | 独立场景背景绘画，保持前景与装饰层次 |
 | `physics/scene-feedback.ts` | 从真实拾取结果生成短时视觉反馈，不回写评分 |
 | `physics/ambient-scenery.ts`、`ambient-scenery-renderer.ts` | 确定性的背景生态状态与绘画；只读取加速度，不创建物理体 |
+| `physics/ambient-bird-flight.ts`、`ambient-bird-renderer.ts` | 鸟的独立飞行状态、升力/拍翼和轮廓绘图；生态模块委托调用 |
+| `physics/impact-contact.ts`、`impact-feedback.ts` | 复制入射运动，观察真实接触并计算法向速度；不写 Matter 状态 |
+| `physics/impact-state.ts`、`impact-renderer.ts`、`actor-impact-pose.ts` | 有界模拟时钟波纹、法向绘图和轻微角色视觉压缩 |
 | `physics/exit-transition.ts`、`exit-transition-renderer.ts` | 判胜之后的复制姿态、吸入时间线与绘画，不改变世界或分数 |
 | `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
 | `physics/geometry-renderer.ts` | 前两级几何场景绘图 |
