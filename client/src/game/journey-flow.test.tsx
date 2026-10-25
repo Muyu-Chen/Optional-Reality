@@ -20,6 +20,17 @@ function skipIntros() {
 }
 
 describe('title screen and chapter selection', () => {
+  it.each(['', '?level=bounce'])('shows phone introduction without starting physics at %s', async search => {
+    vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
+    const { api } = await openFrontDoor(search);
+    expect(screen.getByRole('heading', { name: /You don’t move the ball/ })).toBeTruthy();
+    expect(screen.getByText('Desktop only')).toBeTruthy();
+    await click('Let’s play');
+    expect(screen.getByRole('alert').textContent).toContain('cannot be played on a phone');
+    expect(document.querySelector('canvas')).toBeNull();
+    expect(api.fetch).not.toHaveBeenCalled();
+    expect(window.location.search).toBe(search);
+  });
   it('reopens the beginner tutorial from title settings without starting a game', async () => {
     skipIntros(); const { api } = await openFrontDoor();
     await click('Settings'); await click('Replay beginner tutorial');
