@@ -14,7 +14,7 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 
 | 等级 | 小关 | 主要学习内容 |
 | --- | --- | --- |
-| 1 · Motion | 01 Gravity Lab | 零重力起步，沿斜坡运动，在离轨时取消重力 |
+| 1 · Motion | 01 Let It Roll | 零重力起步，沿斜坡运动，在离轨时取消重力 |
 | 1 · Motion | 01.2 One More Turn | 落下取星、被动弹簧自然回弹，再改变加速度取得高处星 |
 | 2 · Collisions | 02.1 A Little More Bounce | 直接反弹可通关，低弹性后向上加速可收齐星星 |
 | 2 · Collisions | 02.2 Not Too High | 满分路线：高弹性取高星，再增大向下加速度回到出口 |
@@ -39,6 +39,8 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 - 暂停菜单切换小关，通关后可进入下一关。结算用大号独立星形区分已取得与遗漏，普通通关和满分有不同反馈。
 - 首次操作后播放低音量原创背景音乐；左下角 **Music on/off** 可切换并记住选择，切出页面暂停、切关不叠加。
 - 界面以英语为主，支持中英文输入，正文与场景标注采用更清晰的字号和对比。
+
+界面、连续弹簧、背景和出口动画的实现约定集中在 [游戏呈现说明](./docs/presentation.md)，具体发布状态见文末与部署记录。
 
 基础例子：`add gravity`、`stop gravity`、`reverse gravity`、`add acceleration rightward`、`Set surface bounce to 0.9`、`Set toaster power to 2`、`Set fan power to 0.45`。设备需要实际存在且可编辑；任务物体不能被直接移动或修改速度。
 
@@ -99,4 +101,4 @@ React + TypeScript + Vite 管理界面；Matter.js + Canvas 2D 运行、绘制�
 
 满分路线、消息操作与向量语义见 [星星玩法约定](./docs/star-gameplay.md)；九关的具体路线见 [阶段式物理解谜](./docs/phase-puzzles.md)。
 
-本轮结算界面、配色字号与音乐改进已在本地完成验证，尚未再次部署；线上仍为上述九关发布版本。
+第一轮结算界面、配色字号与音乐版本 `7da00d4` 已部署并完成线上验收。第二轮场景绘图、18px 侧栏、连续被动弹簧、首页实时示意动画及新增反馈仍待统一部署；背景生态、出口过渡与音效以本轮集成验收结果为准。

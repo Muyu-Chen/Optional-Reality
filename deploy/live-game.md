@@ -1,6 +1,46 @@
 # 线上游戏 — 2026-10-24
 
-## 当前版本：九关、星星评分与统一加速度
+## 当前版本：结算界面、可读性与背景音乐
+
+- 游戏：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，版本 `7da00d4bcde298acf4b0be3d54cdfcf63fdf3f2e`。
+- release ID `20261025T010404Z-7da00d4`（UTC 标识；本地发布日期为 2026-10-24）。应用 current 为 `/opt/optional-reality/releases/20261025T010404Z-7da00d4`；静态 current 为 `/var/www/muu-tech/releases/20261025T010404Z-7da00d4-optional-reality-game`。本轮文档收尾通过只读 SSH 再次核对两个真实指向、正式服务 active 及回环健康 `{ "ok": true }`。
+- 此版包含九关与原有评分/加速度规则、新结算星形、强化的配色字号和首次可信操作后播放的原创背景音乐。音乐可独立关闭、保存偏好，切关不叠加。第一轮线上 UI、满分路线和音乐生命周期已验收；第二轮新场景与动画尚未发布，不包含在此记录中。
+- 发布记录与现场证据位于忽略目录 `.localwork/deploy-polish/`。真实公网模型向量验收三条：向下得到 (2,20)，向上得到 (2,-20)，反转后得到 (2,20)。
+- 保留原 Node、Apache/TLS、systemd 与持久 `.env`，后端继续只监听回环地址。
+
+### 备份与资源校验
+
+- 服务器备份 `/var/backups/optional-reality/20261025T010404Z-7da00d4/`；本地 `.localwork/backups/polish-20261025T010404Z-7da00d4/`，源码备份不包含 `.env` 或依赖。
+- `site.tar.gz` SHA256：`3fcb09fc78e6b986609e0cb9a7e57a318865d1aa624699aa319a0106c79a471c`。
+- `app-source.tar.gz` SHA256：`e0023579962a5314cc716188abd12e8ea66d6832f9d4c70a3a565f07275cb398`。
+- HTML SHA256：`76bf9b8f92993227934c6ed41987fcc2271421d7da4b252231ee3455a5f35892`。
+- JS `index-C5kyAlcC.js` SHA256：`a8fa69f77b378e76925cbad5792147b928ee4acaddcc5679421d1e168607be81`。
+- CSS `index-Dt2Chu3I.css` SHA256：`062efac7c9cdc10fa48b6cecf5d16800caf0d68d2ef1ef5f7303c81d9a65894f`。
+- 首页 SHA256：`d2d3dc39f722a2c353a1ed3a6f1cf32e2eec4ec6871e3755028c249a92c8a1fa`。文档收尾复验已保存公网 HTML/JS/CSS/首页，均与计划中的哈希一致。
+
+### 回退到上一九关版
+
+先检查 current 仍为本节版本，若已有新发布应停止并核对新记录。只回退前后端代码，不回退持久 `.env`。
+
+```sh
+set -eu
+app_root=/opt/optional-reality
+site_root=/var/www/muu-tech
+test "$(readlink -f "$app_root/current")" = "/opt/optional-reality/releases/20261025T010404Z-7da00d4"
+test "$(readlink -f "$site_root/current")" = "/var/www/muu-tech/releases/20261025T010404Z-7da00d4-optional-reality-game"
+test -f "/opt/optional-reality/releases/20261025T004029Z-f4b59d1/server/src/index.ts"
+test -f "/var/www/muu-tech/releases/20261025T004029Z-f4b59d1-optional-reality-game/demo/index.html"
+apache2ctl configtest
+ln -s "/opt/optional-reality/releases/20261025T004029Z-f4b59d1" "$app_root/.rollback-app-$$"
+mv -Tf "$app_root/.rollback-app-$$" "$app_root/current"
+systemctl restart optional-reality
+curl -fsS --retry 15 --retry-connrefused --retry-delay 1 http://127.0.0.1:3001/api/health
+ln -s "/var/www/muu-tech/releases/20261025T004029Z-f4b59d1-optional-reality-game" "$site_root/.rollback-web-$$"
+mv -Tf "$site_root/.rollback-web-$$" "$site_root/current"
+curl -fsS https://muuyyy.cfd/api/health
+```
+
+## 历史版本：九关、星星评分与统一加速度
 
 - 游戏：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，应用版本 `f4b59d1a6b2b43c2b49d825f64e9bec322ef1a52`。
 - release ID `20261025T004029Z-f4b59d1`（UTC 标识；本地发布时间为 2026-10-24）。应用 current 指向 `/opt/optional-reality/releases/20261025T004029Z-f4b59d1`；静态 current 指向 `/var/www/muu-tech/releases/20261025T004029Z-f4b59d1-optional-reality-game`。

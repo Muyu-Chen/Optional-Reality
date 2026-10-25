@@ -1,6 +1,6 @@
 # 代码模块与修改入口
 
-按职责拆分模块，关卡配置、界面、消息准备、规则执行与逐帧模拟各有入口。`App.tsx` 只选择关卡，`Game.tsx` 只组合游戏界面。
+按职责拆分模块，关卡配置、界面、消息准备、规则执行与逐帧模拟各有入口。`App.tsx` 选择关卡并持有跨关卡音频 Provider，`Game.tsx` 组合游戏界面。
 
 ## 前端交互
 
@@ -40,6 +40,10 @@
 | `physics/drawing-theme.ts` | Canvas 主题颜色与可读字号，与界面保留一致的物理颜色语义 |
 | `physics/devices.ts` | 接触判断、风场、传送带、有动力面包机、转轮和感应开门 |
 | `physics/elastic-spring.ts` | 被动弹簧的胡克弹力、阻尼与连续接触；不冻结或硬改物体速度 |
+| `physics/scene-backdrop.ts` | 独立场景背景绘画，保持前景与装饰层次 |
+| `physics/scene-feedback.ts` | 从真实拾取结果生成短时视觉反馈，不回写评分 |
+| `physics/ambient-scenery.ts`、`ambient-scenery-renderer.ts` | 确定性的背景生态状态与绘画；只读取加速度，不创建物理体 |
+| `physics/exit-transition.ts`、`exit-transition-renderer.ts` | 判胜之后的复制姿态、吸入时间线与绘画，不改变世界或分数 |
 | `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
 | `physics/geometry-renderer.ts` | 前两级几何场景绘图 |
 | `physics/actor-renderer.ts`、`surface-renderer.ts`、`goal-renderer.ts` | 分别绘制任务物体、真实材质纹理、接触/停留目标；由几何场景组合 |
@@ -77,3 +81,5 @@
 ## 介绍页示意动画
 
 `site/assets/intro-motion-20261024.js` 绑定两张示意图和暂停按钮；`diagram-player-20261024.js` 管理独立的绘图时钟、DPR、离屏/隐藏暂停、减少动态效果和销毁。`diagram-timeline-20261024.js` 保存弹簧的连续力学时间线，spring/orbit/paint 模块负责绘制。它们不导入游戏运行层、不调用 API。`scripts/intro-animation.test.mjs` 用 Node 原生测试运行，`npm test` 在 Vitest 后自动执行。
+
+视觉和声音的统一约定、第二轮集成边界见 [presentation.md](./presentation.md)。绘图只读 Matter 状态；背景与出口过渡使用独立呈现时钟，不能成为额外的物理引擎。
