@@ -1,7 +1,11 @@
+import { bakeryLessons } from './bakery-onboarding';
+
 export interface OnboardingStep {
   title: string;
   body: string;
-  diagram: 'queue' | 'ramp' | 'coast' | 'fall' | 'spring' | 'reverse' | 'soft-floor' | 'low-star' | 'rise';
+  diagram: 'queue' | 'ramp' | 'coast' | 'fall' | 'spring' | 'reverse' | 'soft-floor' | 'low-star' | 'rise'
+    | 'bakery-setup' | 'bakery-charge' | 'bakery-delivery' | 'bakery-field' | 'bakery-draft' | 'bakery-bell';
+  commands?: readonly string[];
 }
 export interface LevelOnboarding {
   title: string;
@@ -9,9 +13,13 @@ export interface LevelOnboarding {
   intro?: string;
   starterMessages?: readonly string[];
   starterLabel?: string;
+  theme?: 'bakery';
+  machines?: readonly { name: string; state: string; editable: boolean }[];
+  watchFor?: { title: string; body: string };
 }
 
 const lessons: Readonly<Record<string, LevelOnboarding>> = {
+  ...bakeryLessons,
   'gravity-lab': {
     title: 'Queue the rules. Choose the moment.',
     steps: [

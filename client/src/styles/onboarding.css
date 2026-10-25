@@ -85,6 +85,41 @@
 .onboarding-actions { display:flex;justify-content:center;gap:10px;flex-wrap:wrap }
 .onboarding-actions button { min-height:45px;padding:11px 22px;font-size:16px;font-weight:650;border-radius:9px }
 .onboarding-load { border:1px solid var(--line);color:var(--ink);background:var(--surface-soft) }
+.onboarding-card--bakery { width:min(1080px,100%) }
+.onboarding-card--bakery h2 { margin-top:16px }
+.onboarding-card--bakery .onboarding-pause { margin-bottom:16px }
+.onboarding-machines { display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 16px;text-align:left }
+.onboarding-machines>div { display:grid;grid-template-columns:1fr auto;gap:3px 12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#f0eee3 }
+.onboarding-machines span { grid-column:1/-1;color:#60736a;font-size:10px;font-weight:750;letter-spacing:.9px }
+.onboarding-machines .is-editable { background:#eaf2e5;border-color:#a9bda2 }
+.onboarding-machines .is-editable span { color:#38694c }
+.onboarding-machines strong { font-size:15px }.onboarding-machines small { align-self:center;font-size:12px;color:var(--muted) }
+.onboarding-commands { display:grid;gap:7px;margin:0 0 12px }
+.onboarding-commands code { display:block;padding:8px 10px;border:1px solid #b9c7b3;border-left:3px solid #4b775b;border-radius:6px;background:#fffdf2;font:12px/1.5 ui-monospace,monospace;color:#284b39;overflow-wrap:anywhere }
+.onboarding-watch { text-align:left;display:grid;grid-template-columns:170px 1fr;gap:16px;margin:16px 0 0;padding:13px 16px;border-radius:10px;background:#f5e9cb;border:1px solid #d9c68e }
+.onboarding-watch strong { font-size:15px;line-height:1.5;color:#6c542a }.onboarding-watch p { margin:0;font-size:14px;line-height:1.55;color:#635b45 }
+.bakery-lesson-diagram { height:120px }
+.bakery-lesson-diagram text { fill:#596950;font-size:10px;font-weight:600 }
+.bakery-lesson-diagram .bakery-lesson-accent { fill:#a36728 }
+.bakery-lesson-bread { fill:#e4ba76;stroke:#815d36;stroke-width:2 }
+.bakery-lesson-score { fill:none;stroke:#fff0c7;stroke-width:2.5;stroke-linecap:round }
+.bakery-lesson-machine { fill:#d3dfdf;stroke:#48747b;stroke-width:2 }
+.bakery-lesson-coil { fill:none;stroke:#2374c7;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round }
+.bakery-lesson-light { fill:#2374c7 }.bakery-lesson-belt { fill:#68745b;stroke:#435340;stroke-width:1.5 }
+.bakery-lesson-belt-marks { fill:none;stroke:#f1c987;stroke-width:2;stroke-linecap:round }
+.bakery-lesson-flight { fill:none;stroke:#385b43;stroke-width:2.3 }
+.bakery-lesson-launch { fill:none;stroke:#2374c7;stroke-width:2 }
+.bakery-lesson-clock { fill:#f3d797;stroke:#a17e3f;stroke-width:2 }
+.bakery-lesson-clock-hand { fill:none;stroke:#876331;stroke-width:2;stroke-linecap:round }
+.bakery-lesson-pickup { fill:#e0c695;stroke:#a18354;stroke-width:2 }
+.bakery-lesson-bag-mark { fill:none;stroke:#42694a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round }
+.bakery-lesson-field { fill:#d6a15612;stroke:#c39048;stroke-width:1.5;stroke-dasharray:4 5 }
+.bakery-lesson-draft { fill:none;stroke:#c18639;stroke-width:2 }
+.bakery-lesson-no-draft { fill:none;stroke:#8d9688;stroke-width:1.8;stroke-dasharray:3 4 }
+.bakery-lesson-bell-range { fill:#e1c48112;stroke:#b69a61;stroke-width:1.3;stroke-dasharray:3 5 }
+.bakery-lesson-link { fill:none;stroke:#527d4e;stroke-width:2;stroke-dasharray:4 4 }
+.bakery-lesson-closed-gate { fill:none;stroke:#b2b7a7;stroke-width:1.5;stroke-dasharray:3 4 }
+.bakery-lesson-open-gate { fill:#879675;stroke:#536c4c;stroke-width:1.5 }
 @media(max-width:650px) {
   .onboarding-scrim { padding:12px }
   .onboarding-card { padding:22px 18px;max-height:calc(100dvh - 24px);border-radius:18px }
@@ -100,4 +135,10 @@
   .onboarding-score { font-size:14px;margin-top:17px }
   .onboarding-keys { gap:8px;font-size:11px }
   .onboarding-actions { flex-direction:column }
+  .onboarding-machines { grid-template-columns:repeat(2,minmax(0,1fr)) }
+  .onboarding-machines>div { display:flex;flex-direction:column;gap:4px }
+  .onboarding-machines small { align-self:flex-start }
+  .onboarding-card--bakery .onboarding-steps li { grid-template-columns:1fr }
+  .onboarding-card--bakery .onboarding-diagram { grid-row:auto;height:105px }
+  .onboarding-watch { grid-template-columns:1fr;gap:5px }
 }

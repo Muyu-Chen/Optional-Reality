@@ -22,6 +22,8 @@ export function naturalRuleExample(level:LevelDefinition) {
   if(level.id==='bring-it-back')return 'Give the world a gentle leftward acceleration';
   if(level.id==='side-door')return 'Give the world a gentle rightward acceleration';
   if(level.id==='friction-runway')return 'Make the surface grippy';
-  if(level.id==='reality-breakdown')return 'Make the conveyor much slower';
+  if(level.id==='toaster')return 'Give the toaster more launch power';
+  if(level.id==='breeze')return 'Give the fan a gentle upward draft';
+  if(level.id==='reality-breakdown')return 'When the bread touches the bell, open the shutter';
   return 'Give the ball a gentle upward acceleration';
 }

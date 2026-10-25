@@ -34,7 +34,7 @@ export interface LevelDefinition {
   readonly title: string;
   readonly presentation?: 'bakery';
   readonly editableDevices?: readonly string[];
-  readonly tutorials?: readonly { readonly id: string; readonly deviceId: string; readonly title: string; readonly body: string }[];
+  readonly tutorials?: readonly { readonly id: string; readonly deviceId: string; readonly title: string; readonly body: string; readonly diagram?: 'bakery-charge' }[];
   readonly viewport: {
     readonly width: number;
     readonly height: number;

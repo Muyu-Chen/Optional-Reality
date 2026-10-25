@@ -1,5 +1,6 @@
 import type { LevelDefinition } from '../levels/types';
 import type { Telemetry } from '../physics/world';
+import { BakeryOnboardingDiagram } from './BakeryOnboardingDiagram';
 
 interface TeachingOverlayProps {
   tutorial: NonNullable<LevelDefinition['tutorials']>[number];
@@ -13,6 +14,7 @@ export function TeachingOverlay({ tutorial, preparing, onContinue }: TeachingOve
       <section className="game-menu glass tutorial-card" role="dialog" aria-modal="false" aria-labelledby="tutorial-title">
         <span className="menu-eyebrow">FIRST ENCOUNTER / TIME PAUSED</span>
         <h2 id="tutorial-title">{tutorial.title}</h2>
+        {tutorial.diagram && <BakeryOnboardingDiagram kind={tutorial.diagram} />}
         <p>{tutorial.body}</p>
         <button className="primary-button" disabled={preparing} onClick={onContinue}>Continue →</button>
       </section>

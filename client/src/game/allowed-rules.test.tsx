@@ -21,7 +21,9 @@ describe('visible editing limits in each level', () => {
   it.each(levels.filter(level => onboardingFor(level.id)))('explains the same editing limits and fixed objects in the $id tutorial', async level => {
     await startGame(level.id, new ControlledApi(), [], true);
     const tutorial = screen.getByRole('dialog', { name: onboardingFor(level.id)!.title });
-    expect(within(tutorial).getByText('Only these rules can be changed in this level. The ball, exit and layout stay fixed.')).toBeTruthy();
+    expect(within(tutorial).getByText(level.presentation === 'bakery'
+      ? 'Only these rules can be changed in this level. The bread, pickup bag and layout stay fixed.'
+      : 'Only these rules can be changed in this level. The ball, exit and layout stay fixed.')).toBeTruthy();
     fireEvent.click(within(tutorial).getByRole('button', { name: 'Expand allowed rules' }));
     const panel = within(tutorial).getByRole('region', { name: 'Allowed rules' });
     expect(within(panel).getAllByRole('listitem').map(item => item.textContent)).toEqual(editableRuleLabels(level));

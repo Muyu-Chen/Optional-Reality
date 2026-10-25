@@ -39,7 +39,7 @@ export function FrontDoorSettings({ onClose, returnFocus, levelId }: { onClose: 
         <button className="journey-close" aria-label="Close settings" onClick={onClose}>×</button></div>
       <h2 id="journey-settings-title">Set the mood.</h2>
       <div className="journey-audio"><MusicControl /><SoundEffectsControl /></div>
-      <button ref={tutorialButton} className="journey-button journey-button--secondary" onClick={() => setTutorial(true)}>Replay beginner tutorial <span aria-hidden="true">↺</span></button>
+      <button ref={tutorialButton} className="journey-button journey-button--secondary" onClick={() => setTutorial(true)}>{lesson.theme === 'bakery' ? 'Review this level’s guide' : 'Replay beginner tutorial'} <span aria-hidden="true">↺</span></button>
       <h3>Small keys. Big changes.</h3>
       <dl className="journey-controls">
         <div><dt><kbd>Enter</kbd></dt><dd>Prepare a message in the queue</dd></div>

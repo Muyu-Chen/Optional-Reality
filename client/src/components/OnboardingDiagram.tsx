@@ -1,7 +1,9 @@
 import type { OnboardingStep } from '../levels/onboarding';
+import { BakeryOnboardingDiagram, type BakeryDiagramKind } from './BakeryOnboardingDiagram';
 
 const star = 'm0-8 2.5 5.1 5.6.8-4.1 4 .9 5.6L0 4.8l-5 2.7.9-5.6-4.1-4 5.6-.8Z';
 export function OnboardingDiagram({ kind }: { kind: OnboardingStep['diagram'] }) {
+  if (kind.startsWith('bakery-')) return <BakeryOnboardingDiagram kind={kind as BakeryDiagramKind} />;
   return <svg className="onboarding-diagram" viewBox="0 0 220 106" aria-hidden="true" focusable="false">
     <defs><marker id={`lesson-arrow-${kind}`} markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="m1 1 4 2.5L1 6" fill="none" className={kind === 'coast' ? 'lesson-speed-arrow' : kind === 'spring' ? 'lesson-spring-arrow' : 'lesson-acceleration-arrow'} strokeWidth="1.5" /></marker></defs>
     {kind === 'queue' ? <>

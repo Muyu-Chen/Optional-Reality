@@ -8,7 +8,7 @@ import { JourneyStars } from './JourneyStars';
 const chapterDescriptions: Record<number, string> = {
   1: 'Set the world in motion. Learn how a well-timed message changes everything.',
   2: 'Bounce higher, slide farther, land softer. Find the route between the stars.',
-  3: 'A small bakery with some unusual rules. Put familiar machines to unexpected use.',
+  3: 'Deliver a loaf through a working bakery. Learn the toaster’s stored-energy launch, tune the fan’s updraft, then link the pickup bell to the shutter in one complete delivery line.',
 };
 
 export function LevelSelect({ progress, onPlay, onBack }: {

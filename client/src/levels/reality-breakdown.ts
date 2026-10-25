@@ -15,13 +15,13 @@ export const realityBreakdown: LevelDefinition = {
   stars:[{id:'belt',position:[300,407],radius:14},{id:'launch',position:[600,290],radius:14},{id:'airflow',position:[820,260],radius:14}],
   exit: { id: 'exit', label: 'PICKUP', x: 897, y: 213, width: 55, height: 137 },
   instructions: {
-    objective: 'Deliver the last loaf to the pickup bag',
-    hint: 'Prepare the conveyor, toaster and fan. Link the bell to the shutter, then choose when to send.',
+    objective: 'Run the delivery line and link the bell to the shutter.',
+    hint: 'All three machines start off and the shutter is closed. Prepare conveyor speed 1.5, toaster power 2, fan power 0.45, and “When the bread touches the bell, open the shutter”. Send the four rules together from Manage, or set the toaster, fan and bell link before starting the conveyor. The toaster charges on contact; Continue resumes its first teaching pause. Reaching the bell’s dashed circle opens the shutter automatically, letting the loaf reach the paper pickup bag.',
     sceneDescription: 'A side-view bakery. The protected round bread is energy-core. belt-main is the conveyor; spring-main is the toaster; fan-main blows vertically upward; sensor-gate is the pickup bell; gate-final is the shutter. The paper bag is the exit. Only change the environment.',
     canvasHeading: 'THE LAST ORDER', readyCaption: 'YOUR RECIPES WAIT UNTIL YOU SEND.',
-    exampleMessages: ['Set conveyor speed to 1.5', 'Set spring power to 2', 'Set fan power to 0.45', 'When the core touches the sensor, open the gate'],
-    suggestedMessages: ['Set conveyor speed to 1.5', 'Set spring power to 2', 'Set fan power to 0.45'],
-    exampleNotice: 'Setup loaded. Send each rule in time, or use Manage to send them together. Try again restores your messages.',
+    exampleMessages: ['Set conveyor speed to 1.5', 'Set toaster power to 2', 'Set fan power to 0.45', 'When the bread touches the bell, open the shutter'],
+    suggestedMessages: ['Set conveyor speed to 1.5', 'Set toaster power to 2', 'Set fan power to 0.45', 'When the bread touches the bell, open the shutter'],
+    exampleNotice: 'Four rules are prepared, including the bell → shutter link. Manage can send them together. Otherwise prepare the fan and link before the loaf arrives; Continue resumes the first toaster charge.',
   },
   devices: [
     { kind: 'conveyor', id: 'belt-main', area: { x: 140, y: 400, width: 311, height: 25 }, speed: 0 },
@@ -30,5 +30,5 @@ export const realityBreakdown: LevelDefinition = {
     { kind: 'sensor', id: 'sensor-gate', position: [698, 255], radius: 56 },
     { kind: 'gate', id: 'gate-final', area: { x: 833, y: 147, width: 22, height: 273 } },
   ],
-  tutorials: [{ id: 'toaster-charge', deviceId: 'spring-main', title: 'A little stored energy.', body: 'The toaster compresses, stores energy, then releases the bread. You can prepare your next rule while it charges. Choose Continue when you’re ready.' }],
+  tutorials: [{ id: 'toaster-charge', deviceId: 'spring-main', title: 'A little stored energy.', diagram: 'bakery-charge', body: 'The loaf is held while the toaster charges. Continue resumes the 0.6-second charge, then it launches up and right. Toaster power changes this launch strength; it does not change the floor’s bounce. You can prepare or change your next rule while time is paused.' }],
 };
