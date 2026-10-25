@@ -80,7 +80,7 @@ describe('pause, teaching, retry and completion', () => {
     await startGame(level);
     await queue(command);
     await click('Send now');
-    await advance(3600);
+    await advance(7200);
     expect(lab().world[outcome]).toBe(true);
     const count = lab().world.commandCount, tick = lab().world.tick;
     await queue(command);

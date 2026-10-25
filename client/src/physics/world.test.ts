@@ -70,7 +70,7 @@ describe('zero-gravity lab', () => {
       expect(world.won).toBe(false);
     } finally { world.destroy(); }
   });
-  it('ends after 30 simulated seconds, excluding time before starting and while paused', () => {
+  it('adds one 30-second rescue phase, excluding time before starting and while paused', () => {
     const world = new PhysicsWorld(gravityLab);
     try {
       for (let i = 0; i < 120; i++) world.step();
@@ -83,11 +83,14 @@ describe('zero-gravity lab', () => {
       expect(world.tick).toBe(ROUND_TICKS - 1);
       world.start(); world.step();
       expect(world.tick).toBe(ROUND_TICKS);
+      expect(world.overtime).toBe(true);
+      expect(world.timedOut).toBe(false);
+      for(let i=0;i<ROUND_TICKS;i++)world.step();
       expect(world.timedOut).toBe(true);
       expect(world.running).toBe(false);
       world.start(); world.step();
       expect(world.running).toBe(false);
-      expect(world.tick).toBe(ROUND_TICKS);
+      expect(world.tick).toBe(ROUND_TICKS*2);
     } finally { world.destroy(); }
   });
   it('counts a touch on the last tick as a win', () => {
@@ -164,7 +167,9 @@ describe('level-driven physics', () => {
       for (let i = 0; i < 239; i++) world.step();
       expect(world.timedOut).toBe(false);
       world.step();
-      expect(world.timedOut).toBe(true);
+      expect(world.overtime).toBe(true);
+      expect(world.timedOut).toBe(false);
+      expect(world.deadlineTicks).toBe(240+3600);
       expect(world.tick).toBe(240);
     } finally { world.destroy(); }
   });

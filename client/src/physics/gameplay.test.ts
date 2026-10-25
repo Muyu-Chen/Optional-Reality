@@ -15,7 +15,7 @@ function apply(world: PhysicsWorld, text: string) {
   if(message.status !== 'ready')throw new Error(message.error);
   world.applyMessages([{text,operations:messageOperations(message)}]);
 }
-function advance(world: PhysicsWorld, count=3600) {
+function advance(world: PhysicsWorld, count=7200) {
   world.start();for(let i=0;i<count && world.running;i++)world.step();
 }
 

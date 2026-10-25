@@ -1,4 +1,7 @@
 import type { LevelDefinition } from '../levels/types';
+import { drawOvertimeBoundary } from './overtime-renderer';
+import { RuleComparison } from './rule-comparison';
+import { drawRuleComparison } from './rule-comparison-renderer';
 import { PhysicsWorld, STEP_MS } from './world';
 import { drawBakery } from './bakery-renderer';
 import { drawGeometry } from './geometry-renderer';
@@ -20,6 +23,7 @@ export class CanvasLab {
   private previousTime = 0;
   private accumulator = 0;
   private lastReport = 0;
+  private comparison=new RuleComparison();
   private trail: [number, number][] = [];
   private observer: ResizeObserver;
   private context: CanvasRenderingContext2D;
@@ -56,6 +60,7 @@ export class CanvasLab {
   get isAbsorbing() { return this.exit.phase === 'absorbing'; }
   report() {
     if (this.destroyed) return;
+    this.comparison.captureRule(this.world,!!this.motion?.matches);
     this.exit.capture(this.world,!!this.motion?.matches);
     this.sounds.transition(this.exit.phase);
     this.reportState({...this.world.snapshot(),exitTransition:this.exit.phase});
@@ -63,7 +68,7 @@ export class CanvasLab {
   reset() {
     const seen = this.world.seenTutorials;
     this.feedback.dispose();this.sounds.dispose();this.world.destroy(); this.world = new PhysicsWorld(this.level,seen); this.trail = []; this.accumulator = 0;
-    this.feedback=new SceneFeedback(this.world);this.visualTime=0;
+    this.feedback=new SceneFeedback(this.world);this.visualTime=0;this.comparison=new RuleComparison();
     this.exit.reset();this.previousTime=0;
     this.scenery.dispose();this.scenery=new AmbientScenery(this.level.viewport.width,this.level.viewport.height);
     this.landscape.dispose();this.landscape=new LivingWorld(sceneryTheme(this.level));
@@ -73,7 +78,7 @@ export class CanvasLab {
   retry() {
     const previous = this.world;
     this.feedback.dispose();this.sounds.dispose();this.world = previous.retryWithRules(); previous.destroy();
-    this.feedback=new SceneFeedback(this.world);this.visualTime=0;
+    this.feedback=new SceneFeedback(this.world);this.visualTime=0;this.comparison=new RuleComparison();
     this.exit.reset();this.previousTime=0;
     this.scenery.dispose();this.scenery=new AmbientScenery(this.level.viewport.width,this.level.viewport.height);
     this.landscape.dispose();this.landscape=new LivingWorld(sceneryTheme(this.level));
@@ -100,6 +105,7 @@ export class CanvasLab {
       this.accumulator += delta;
       while (this.accumulator >= STEP_MS && this.world.running) {
         this.world.step(); this.accumulator -= STEP_MS;
+        this.comparison.captureStep(this.world);
         this.feedback.capture();
         this.sounds.capture();
         if (this.world.tick % 6 === 0) {
@@ -141,15 +147,17 @@ export class CanvasLab {
     const actorPose=this.feedback.actorPose;
     if (this.level.presentation === 'bakery') drawBakery(ctx, this.world, this.trail,ambient,!!this.motion?.matches,actorPose);
     else drawGeometry(ctx,this.world,this.trail,ambient,!!this.motion?.matches,actorPose);
+    if(!this.motion?.matches)drawRuleComparison(ctx,this.comparison.view,width);
     drawStars(ctx,this.world,this.visualTime,!!this.motion?.matches);
     this.feedback.draw(ctx);
+    drawOvertimeBoundary(ctx,this.world,!!this.motion?.matches);
     drawExitTransition(ctx,this.level,this.exit.visual);
     ctx.restore();
   }
 
   destroy() {
     if (this.destroyed) return;
-    this.destroyed=true;this.exit.reset();this.scenery.dispose();this.landscape.dispose();this.sounds.dispose();
+    this.destroyed=true;this.comparison.clear();this.exit.reset();this.scenery.dispose();this.landscape.dispose();this.sounds.dispose();
     cancelAnimationFrame(this.frame); this.observer.disconnect();
     this.motion?.removeEventListener('change',this.motionChanged);this.feedback.dispose();
     document.removeEventListener('visibilitychange', this.visible); this.world.destroy();

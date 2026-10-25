@@ -90,3 +90,6 @@
   padding:0;
   box-shadow:0 2px 0 #294d361a
 }
+
+.overtime-tag { color:#39657b;background:#edf8ffdd;border:1px solid #6395ae88;border-radius:9px;padding:5px 8px;font-size:12px;font-weight:800;position:absolute;right:0;top:calc(100% + 8px);white-space:nowrap }
+.hud-controls { position:relative }

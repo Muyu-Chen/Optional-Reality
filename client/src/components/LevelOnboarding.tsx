@@ -35,7 +35,7 @@ export function LevelOnboarding({ lesson, levelLabel, levelTitle, editableRules,
         <p>Only these rules can be changed in this level. The ball, exit and layout stay fixed.</p>
         <AllowedRules rules={editableRules} variant="tutorial" />
       </section>
-      <p className="onboarding-score"><span aria-hidden="true">★ ★ ★</span> Reach the exit to pass. Collect all three stars, then exit for full score. Leaving the play area ends the run.</p>
+      <p className="onboarding-score"><span aria-hidden="true">★ ★ ★</span> Reach the exit to pass. Collect all three stars, then exit for full score. Before overtime, leaving the play area ends the run. After 30 seconds, you get one 30-second rescue with protective walls; an overtime clear costs one star.</p>
       <p className="onboarding-keys"><span><kbd>Enter</kbd> queue</span><span><kbd>Shift + Enter</kbd> apply current message</span><span><kbd>Shift + Tab</kbd> pause & settings</span></p>
       <div className="onboarding-actions">
         <button className="primary-button" autoFocus onClick={onClose}>{closeLabel}</button>

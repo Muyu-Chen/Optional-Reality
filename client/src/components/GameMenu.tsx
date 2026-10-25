@@ -28,7 +28,7 @@ export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume,
     <div className={`stage-overlay${ended ? ' stage-overlay--ended' : ''}${telemetry.won ? ' stage-overlay--complete' : ''}`}>
       <section className={`game-menu glass${telemetry.won ? ' game-menu--complete' : ''}`} role="dialog" aria-modal="false" aria-labelledby="menu-title">
         {telemetry.won ? <CompletionResult
-          level={level} stars={telemetry.stars} nextLevel={nextLevel}
+          level={level} stars={telemetry.stars} overtime={telemetry.overtime} nextLevel={nextLevel}
           onNext={() => nextLevel && onChooseLevel(nextLevel.id)} onRetry={onRetry}
         /> : <>
           <span className="menu-eyebrow">{ended ? 'ANOTHER POSSIBILITY' : 'TAKE YOUR TIME'}</span>

@@ -11,7 +11,7 @@ function send(world: PhysicsWorld,text: string) {
   expect(prepared.status,prepared.error).toBe('ready');
   world.applyMessages([{text,operations:messageOperations(prepared)}]);world.start();
 }
-function advance(world: PhysicsWorld,ticks=3600) { for(let i=0;i<ticks&&world.running;i++)world.step(); }
+function advance(world: PhysicsWorld,ticks=7200) { for(let i=0;i<ticks&&world.running;i++)world.step(); }
 
 describe('multiple rebounds', () => {
   it.each([280,360,480,560])('allows a wide second-message timing window at tick %s', tick => {

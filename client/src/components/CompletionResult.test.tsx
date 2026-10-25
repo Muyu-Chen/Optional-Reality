@@ -17,6 +17,13 @@ function showMenu(state: Partial<Telemetry> = {}, level = levels[0]) {
 }
 
 describe('game completion result', () => {
+  it('shows actual pickups separately from the overtime-adjusted award', () => {
+    showMenu({won:true,overtime:true,stars:{collected:3,total:3}});
+    expect(screen.getByRole('status',{name:'Stars 2 of 3'})).toBeTruthy();
+    expect(screen.getByText('OVERTIME CLEAR · −1 STAR')).toBeTruthy();
+    expect(screen.getByText(/3 collected − 1 overtime star = 2 earned/)).toBeTruthy();
+    expect(screen.queryByText('FULL SCORE')).toBeNull();
+  });
   it.each([0, 1, 2])('celebrates an ordinary exit with %i stars without awarding full score', collected => {
     const { onChooseLevel, onRetry } = showMenu({ won: true, stars: { collected, total: 3 } });
     expect(screen.getByRole('dialog', { name: 'You found a way.' })).toBeTruthy();

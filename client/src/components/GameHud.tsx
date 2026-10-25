@@ -31,6 +31,7 @@ export function GameHud({ level, telemetry, secondsLeft, menuOpen, onRetry, onRe
         </div>
       </div>
       <div className="hud-controls">
+        {telemetry.overtime && <span className="overtime-tag" role="status">OVERTIME · walls active · −1 star</span>}
         <span className={`game-clock ${secondsLeft <= 5 ? 'urgent' : ''}`} data-testid="time-left">
           {secondsLeft}<small>s</small>
         </span>

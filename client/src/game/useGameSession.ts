@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { OVERTIME_SECONDS } from '../domain/round';
 import { accelerationLabel } from '../../../shared/acceleration';
 import { applyRules } from '../../../shared/rules';
 import { appliedFeedback } from '../domain/feedback';
@@ -137,7 +138,7 @@ export function useGameSession(level: LevelDefinition) {
     canUndo: !!events.length, ended, absorbing, previewError, messageErrors,
     canSend: !ended && !onboarding.visible,
     stateLabel: absorbing ? 'Finding another reality…' : gameStateLabel(telemetry),
-    secondsLeft: Math.max(0, Math.ceil(level.timeLimitSeconds - telemetry.tick * STEP_MS / 1000)),
+    secondsLeft: Math.max(0, Math.ceil(level.timeLimitSeconds + (telemetry.overtime?OVERTIME_SECONDS:0) - telemetry.tick * STEP_MS / 1000)),
     tutorial: level.tutorials?.find(item => item.id === telemetry.tutorialId),
     send,
     queueInput: () => { if (!onboarding.isVisible()) queue.queueMessage(); },
@@ -158,5 +159,5 @@ export function useGameSession(level: LevelDefinition) {
 
 function gameStateLabel(telemetry: Telemetry) {
   return telemetry.won ? 'Complete' : telemetry.outOfBounds ? 'Out of bounds' : telemetry.fell ? 'Try again' : telemetry.timedOut ? 'Time’s up'
-    : telemetry.tutorialId ? 'Learning' : telemetry.running ? 'Running' : telemetry.started ? 'Paused' : 'Ready';
+    : telemetry.tutorialId ? 'Learning' : telemetry.running ? telemetry.overtime ? 'Overtime · −1 star' : 'Running' : telemetry.started ? 'Paused' : 'Ready';
 }

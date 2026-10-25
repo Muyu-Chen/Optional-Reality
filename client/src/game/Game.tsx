@@ -1,3 +1,4 @@
+import { completionStars } from '../domain/round';
 import { useEffect, useState } from 'react';
 import { accelerationLabel } from '../../../shared/acceleration';
 import { GameHud } from '../components/GameHud';
@@ -8,7 +9,7 @@ import { RuleComposer } from '../components/RuleComposer';
 import { RulesDrawer } from '../components/RulesDrawer';
 import { TeachingOverlay, TimingHint } from '../components/TeachingOverlay';
 import type { LevelDefinition } from '../levels/types';
-import { editableRuleLabels } from '../levels/presentation';
+import { editableRuleLabels, naturalRuleExample } from '../levels/presentation';
 import { useGameSession } from './useGameSession';
 import { LevelOnboarding } from '../components/LevelOnboarding';
 import { levelLabel } from '../levels/progression';
@@ -28,8 +29,8 @@ export function Game({ level, chooseLevel, onTitle, onLevelSelect, onCompleted }
   const [showRules, setShowRules] = useState(false);
   const allowedRules = editableRuleLabels(level);
   useEffect(() => {
-    if (telemetry.won) onCompleted?.(level.id, telemetry.stars.collected);
-  }, [level.id, telemetry.won, telemetry.stars.collected, onCompleted]);
+    if (telemetry.won) onCompleted?.(level.id, completionStars(telemetry.stars.collected,telemetry.overtime));
+  }, [level.id, telemetry.won, telemetry.stars.collected, telemetry.overtime, onCompleted]);
 
   return (
     <main className={`game-shell ${level.presentation === 'bakery' ? 'bakery-theme' : ''}${game.absorbing ? ' game-shell--absorbing' : ''}`}>
@@ -50,7 +51,7 @@ export function Game({ level, chooseLevel, onTitle, onLevelSelect, onCompleted }
       <RuleComposer input={queue.input} editing={!!queue.editing} full={queue.messages.length >= 24}
         disabled={game.absorbing || onboarding.visible}
         editableRules={allowedRules}
-        placeholder={`e.g. ${level.instructions.suggestedMessages[0]}`} api={queue.api}
+        placeholder={`e.g. ${naturalRuleExample(level)}`} api={queue.api}
         storageAvailable={queue.storageAvailable} onInput={queue.setInput} onQueue={game.queueInput}
         onApplyCurrent={game.applyCurrent} preparing={queue.preparing}
         onCancel={queue.cancelEditing} />
