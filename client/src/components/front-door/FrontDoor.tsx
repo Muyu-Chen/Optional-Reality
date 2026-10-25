@@ -42,7 +42,7 @@ export function FrontDoor({ view, progress, storageAvailable, onPlay, onTitle, o
               <strong>Desktop only</strong><p>{mobileNotice ? 'This game cannot be played on a phone. Open this website on a computer with a keyboard and mouse to play.' : 'Enjoy the introduction on your phone. To play, open this website on a computer with a keyboard and mouse.'}</p></aside>}
             <p className="journey-continue-note">{recent ? <>Return to <strong>{recent.title}</strong>.<br />A fresh attempt; your messages stay with you.</> : 'Nine little worlds. More than one way through.'}</p>
           </div>
-          <div className="journey-title-art"><TitleIllustration /></div>
+          <div className="journey-title-art"><TitleIllustration /><span className="journey-art-caption">POWERED BY STEAM.<br /><strong>REWRITTEN BY YOU.</strong></span></div>
         </section>}
       {view === 'title' && <GameIntro />}
       <footer className="journey-footer"><span>{storageAvailable ? 'Your journey is saved on this device.' : 'Browser storage is unavailable. Progress stays in this tab.'}</span>
