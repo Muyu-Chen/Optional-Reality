@@ -1,6 +1,6 @@
-import { parseCommand, type Operation } from '../../../shared/commands';
+import { parseCommands, type Operation } from '../../../shared/commands';
 import { normalizeCommand } from '../../../shared/command-language';
-import { limitAbsoluteOperation, type RuleAdjustment } from '../../../shared/rule-limits';
+import { limitAbsoluteOperations, type RuleAdjustment } from '../../../shared/rule-limits';
 import { applyRules, GRAVITY_CONTEXT, gravityState, type RuleContext, type RuleState } from '../../../shared/rules';
 
 export interface Message {
@@ -12,15 +12,16 @@ export interface Message {
 export interface AppliedEvent { id: string; text: string; tick: number; acceleration: RuleState['acceleration']; operations: Operation[]; understoodAs?: string; adjustments?: RuleAdjustment[] }
 export const messageOperations = (message: Message) => message.operations || (message.operation ? [message.operation] : []);
 export function prepareMessage(id: string, text: string, context?: RuleContext, rules?: RuleState): Message {
-  const parsed = parseCommand(text, context);
-  if (!parsed.operation) return { id, text: text.trim(), status: 'error', error: parsed.error, requiresAI: true };
+  const parsed = parseCommands(text, context);
+  if (!parsed.operations) return { id, text: text.trim(), status: 'error', error: parsed.error, requiresAI: true };
   try {
-    const limited = context ? limitAbsoluteOperation(parsed.operation,context) : { operation: parsed.operation };
-    if (context && rules) applyRules(rules, [limited.operation], context);
+    const limited = context ? limitAbsoluteOperations(parsed.operations,context) : { operations: parsed.operations, adjustments: [] };
+    if (context && rules) applyRules(rules, limited.operations, context);
     const normalized = normalizeCommand(text);
-    return { id, text: text.trim(), status: 'ready', operation: limited.operation, source: 'local',
+    return { id, text: text.trim(), status: 'ready', source: 'local',
+      ...(limited.operations.length === 1 ? { operation: limited.operations[0] } : { operations: limited.operations }),
       ...(normalized !== text.trim() ? { understoodAs: normalized } : {}),
-      ...(limited.adjustment ? { adjustments: [limited.adjustment] } : {}),
+      ...(limited.adjustments.length ? { adjustments: limited.adjustments } : {}),
     };
   } catch (error) { return { id, text: text.trim(), status: 'error', error: error instanceof Error ? error.message : 'Invalid command.' }; }
 }

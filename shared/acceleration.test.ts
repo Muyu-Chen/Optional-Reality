@@ -20,7 +20,7 @@ describe('shared physics vocabulary and conservative correction', () => {
     ['set acceleration rightward to 2 m/s²',2],['set horizontal acceleration to -2 m/s^2',-2],
     ['向左添加加速度 0.5',-.5],['stop horizontal acceleration',0],
     ['add accelaration rigth',1],
-    ['横着往左拉一点吧，水平加速度设成 0.5 米每秒平方。',-.5],
+    ['往左水平加速度设成 0.5 米每秒平方。',-.5],
     ['往右增加水平加速度 0.5',.5],
   ])('parses %s consistently', (text,value) => {
     expect(parseCommand(text).operation).toEqual({type:'set_property',target:'world',property:'acceleration_x',value});

@@ -1,60 +1,29 @@
 import { applyRules, gravityState, GRAVITY_CONTEXT, OperationSchema, type Operation, type RuleContext } from './rules';
-import { surfaceTarget } from './surface-target';
-import { normalizeCommand } from './command-language';
-import { parseAcceleration } from './acceleration-command';
-import { PHYSICS_CAPABILITIES } from './physics-capabilities';
+import { parseCommandTree } from './command-parser';
+import { compileCommandTree } from './command-compiler';
 import { normalizeAccelerationOperation } from './acceleration';
 import { parseAdditiveCommand } from './additive-command';
 export { Acceleration, OperationSchema, type Operation } from './rules';
 export type ParsedCommand = { operation: Operation; error?: never } | { operation?: never; error: string };
+export type ParsedCommands = { operations: Operation[]; error?: never } | { operations?: never; error: string };
 
-export function parseCommand(input: string, context?: RuleContext): ParsedCommand {
+export function parseCommands(input: string, context?: RuleContext): ParsedCommands {
   const additive = parseAdditiveCommand(input, context);
-  if (additive) return 'operations' in additive ? { operation: additive.operations[0] } : additive;
-  const parsed = parseInput(input,context);
-  return parsed.operation ? {operation:normalizeAccelerationOperation(parsed.operation)} : parsed;
+  if (additive) return additive;
+  try {
+    return { operations: compileCommandTree(parseCommandTree(input, context), context) };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : 'Use AI preparation for this message.' };
+  }
 }
-function parseInput(input: string, context?: RuleContext): ParsedCommand {
-  input = normalizeCommand(input);
-  const text = input.trim().toLowerCase().replace(/[“”"'.!?。！]/g, '').replace(/\s+/g, ' ');
-  const raw = input.trim().toLowerCase().replace(/'s\b/g, '').replace(/[“”"']/g, '').replace(/[.!?。！]+$/g, '');
-  const device = (kind: string) => context?.targets.find(target => target.kind === kind)?.id;
-  if (/\band\b|\bthen\b|\bfor\b.*\b(seconds?|minutes?)\b|\d\s*[eE][+-]?\d|同时|并且|然后/.test(raw)) return { error: 'Use AI preparation for combined or timed instructions; the local parser handles one direct operation.' };
-  if (/^when (the )?(energy )?(core|ball|bread|loaf) (touches|hits) (the )?(sensor|bell),? open (the )?(gate|shutter)$/.test(raw) || /^当.*(触|碰).*(传感器|感应器|铃).*开.*(门|卷帘)$/.test(raw)) {
-    if (!context?.sensors[0] || !context.gates[0]) return { error: 'This scene has no sensor-to-gate condition.' };
-    return { operation: { type: 'add_sensor_trigger', sensor: context.sensors[0], gate: context.gates[0] } };
-  }
-  if (/\b(core|ball|bread|loaf|block|slider|cube)\b|teleport|小球|能量球|滑块|面包(?!机)/.test(text)) return { error: 'Modify the environment, not the core.' };
-  if (/^(add|enable|turn on)( the)? gravity$/.test(text) || text === '加重力') return { operation: { type: 'set_gravity', acceleration: 1 } };
-  if (/^(stop|disable|remove|turn off)( the)? gravity$/.test(text) || /^(no gravity|gravity\s*=\s*0)$/.test(text) || text === '停止重力') return { operation: { type: 'set_gravity', acceleration: 0 } };
-  if (/^reverse( the)? gravity$/.test(text) || text === '反转重力') return { operation: { type: 'reverse_gravity' } };
-  if (/\bwhen\b|\bif\b|当|如果/.test(text)) return { error: 'Only the sensor-to-gate condition is supported. Send other rules manually.' };
-  const number = raw.match(/-?(?:\d+(?:\.\d+)?|\.\d+)/);
-  const value = number ? Number(number[0]) : undefined;
-  const acceleration = parseAcceleration(raw);
-  if (acceleration) return acceleration;
-  if (/gravity|重力/.test(text) && value !== undefined) return { operation: { type: 'set_gravity', acceleration: /upward|向上/.test(text) ? -Math.abs(value) : value } };
-  const options = [
-    ['conveyor_speed', device('conveyor')],
-    ['spring_power', device('spring')],
-    ['fan_power', device('fan')],
-    ['angular_speed', device('rotor')],
-    ['restitution', 'world'],
-    ['friction', 'world'],
-  ] as const;
-  for (const [property, defaultTarget] of options) {
-    const pattern = PHYSICS_CAPABILITIES[property].commandPattern;
-    if (!pattern.test(text)) continue;
-    const resolved = property === 'restitution' || property === 'friction' ? surfaceTarget(raw, context) : { target: defaultTarget };
-    if ('error' in resolved && resolved.error) return { error: resolved.error };
-    const target = resolved.target;
-    if (!target) return { error: 'This device is not present in the current scene.' };
-    if (/reverse|反转/.test(text)) return { operation: { type: 'scale_property', target, property, factor: -1 } };
-    const amount = /stop|off|关闭|停止/.test(text) ? 0 : value;
-    if (amount === undefined) return { error: 'Include a number, or use AI preparation for free-form language.' };
-    return { operation: { type: 'set_property', target, property, value: /counterclockwise|anticlockwise|逆时针/.test(text) ? -Math.abs(amount) : amount } };
-  }
-  return { error: 'Use a supported numeric environment command, or prepare this message with AI.' };
+
+// Compatibility for callers expecting exactly one operation. Queue preparation
+// uses parseCommands so one player message can contain a complete program.
+export function parseCommand(input: string, context?: RuleContext): ParsedCommand {
+  const parsed = parseCommands(input, context);
+  if (!parsed.operations) return { error: parsed.error };
+  return parsed.operations.length === 1 ? { operation: parsed.operations[0] }
+    : { error: 'This message contains multiple operations; use parseCommands.' };
 }
 
 export function applyOperation(current: number, candidate: unknown): number {

@@ -11,28 +11,27 @@ interface Capability {
   unit: string;
   targetKinds: readonly string[];
   meaning: string;
-  commandPattern: RegExp;
   commandNames: readonly string[];
 }
 export const PHYSICS_CAPABILITIES = {
   gravity: { label: 'Acceleration', range: ACCELERATION_RANGE, unit: 'm/s²', targetKinds: [],
-    meaning: 'Legacy input alias for acceleration_y. Never a separate force or state parameter.', commandPattern: /gravity|重力/, commandNames: ['gravity', '重力'] },
+    meaning: 'Legacy input alias for acceleration_y. Never a separate force or state parameter.', commandNames: ['gravity', '重力'] },
   acceleration_x: { label: 'Acceleration', range: ACCELERATION_RANGE, unit: 'm/s²', targetKinds: ['environment'],
-    meaning: 'x component of the single environment acceleration vector: positive right, negative left. Preserve y when editing x. Add defaults to magnitude 1.', commandPattern: /acceleration|加速度/, commandNames: ['horizontal acceleration', 'acceleration_x', '水平加速度'] },
+    meaning: 'x component of the single environment acceleration vector: positive right, negative left. Preserve y when editing x. Add defaults to magnitude 1.', commandNames: ['horizontal acceleration', 'acceleration_x', '水平加速度'] },
   acceleration_y: { label: 'Acceleration', range: ACCELERATION_RANGE, unit: 'm/s²', targetKinds: ['environment'],
-    meaning: 'y component of the same acceleration vector: positive down, negative up. Gravity is an alias. Preserve x when editing y; replace this component rather than adding a second force. Add defaults to magnitude 1.', commandPattern: /gravity|重力|acceleration|加速度/, commandNames: ['vertical acceleration', 'acceleration_y', '竖直加速度', '垂直加速度', 'gravity', '重力'] },
+    meaning: 'y component of the same acceleration vector: positive down, negative up. Gravity is an alias. Preserve x when editing y; replace this component rather than adding a second force. Add defaults to magnitude 1.', commandNames: ['vertical acceleration', 'acceleration_y', '竖直加速度', '垂直加速度', 'gravity', '重力'] },
   restitution: { label: 'Surface bounce', range: [0, 1.5], unit: 'coefficient', targetKinds: ['environment', 'surface'],
-    meaning: 'Collision restitution. World sets the default; a named surface overrides it.', commandPattern: /bounce|elastic|restitution|弹性/, commandNames: ['restitution', 'bounce', 'bounciness', 'elasticity', '弹性系数', '弹性', '弹力'] },
+    meaning: 'Collision restitution. World sets the default; a named surface overrides it.', commandNames: ['restitution', 'bounce', 'bounciness', 'elasticity', '弹性系数', '弹性', '弹力'] },
   friction: { label: 'Surface friction', range: [0, 1], unit: 'coefficient', targetKinds: ['environment', 'surface'],
-    meaning: 'Contact friction. World sets the default; a named surface overrides it.', commandPattern: /friction|摩擦/, commandNames: ['friction', '摩擦系数', '摩擦'] },
+    meaning: 'Contact friction. World sets the default; a named surface overrides it.', commandNames: ['friction', '摩擦系数', '摩擦'] },
   conveyor_speed: { label: 'Conveyor speed', range: [-3, 3], unit: 'device control', targetKinds: ['conveyor'],
-    meaning: 'Signed belt drive control; zero stops the drive, negative reverses it. Not a direct actor velocity.', commandPattern: /conveyor|belt|传送带/, commandNames: ['conveyor', 'belt', '传送带'] },
+    meaning: 'Signed belt drive control; zero stops the drive, negative reverses it. Not a direct actor velocity.', commandNames: ['conveyor', 'belt', '传送带'] },
   spring_power: { label: 'Spring strength', range: [0, 3], unit: 'device control', targetKinds: ['spring'],
-    meaning: 'Spring strength; zero disables it. Passive elastic springs use contact restoring force; powered toasters use automatic charge and release.', commandPattern: /spring|toaster|弹簧|面包机/, commandNames: ['spring', 'toaster', '弹簧', '面包机'] },
+    meaning: 'Spring strength; zero disables it. Passive elastic springs use contact restoring force; powered toasters use automatic charge and release.', commandNames: ['spring', 'toaster', '弹簧', '面包机'] },
   fan_power: { label: 'Airflow', range: [-2, 2], unit: 'device control', targetKinds: ['fan'],
-    meaning: 'Multiplier of the configured wind acceleration inside its area; negative reverses it, zero disables it.', commandPattern: /fan|wind|风扇/, commandNames: ['fan', 'wind', '风扇'] },
+    meaning: 'Multiplier of the configured wind acceleration inside its area; negative reverses it, zero disables it.', commandNames: ['fan', 'wind', '风扇'] },
   angular_speed: { label: 'Wheel speed', range: [-3, 3], unit: 'device control', targetKinds: ['rotor'],
-    meaning: 'Signed rotor speed control; zero stops it, negative reverses it. Not an actor angular velocity.', commandPattern: /wheel|rotor|rotation|转轮|转盘/, commandNames: ['wheel', 'rotor', 'rotation', '转轮', '转盘'] },
+    meaning: 'Signed rotor speed control; zero stops it, negative reverses it. Not an actor angular velocity.', commandNames: ['wheel', 'rotor', 'rotation', '转轮', '转盘'] },
 } as const satisfies Record<PhysicsProperty, Capability>;
 
 export function propertiesForTarget(kind: string): Partial<Record<PhysicsProperty, readonly [number, number]>> {
