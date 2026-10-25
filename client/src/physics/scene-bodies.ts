@@ -33,7 +33,8 @@ export function createSceneBodies(level: LevelDefinition) {
   }
   const { ball: definition, viewport } = level;
   const options = {
-    friction: 1, frictionStatic: 0, frictionAir: 0, restitution: definition.restitution, label: definition.id,
+    // Sliding blocks use the contact-load solver; balls retain Matter's rotational friction.
+    friction: definition.shape ? 0 : 1, frictionStatic: 0, frictionAir: 0, restitution: definition.restitution, label: definition.id,
   };
   const ball = definition.shape?.kind === 'box'
     ? Bodies.rectangle(...definition.position, definition.shape.width, definition.shape.height, options)

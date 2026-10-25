@@ -44,25 +44,27 @@ describe('multiple rebounds', () => {
 });
 
 describe('friction runway', () => {
-  it.each([420,450,500,550,600])('can brake throughout a forgiving green-bay window at x=%s', x => {
+  it.each([300,330,360,400,430])('can brake before the bay and coast into it with all stars at x=%s', x => {
     const world=new PhysicsWorld(frictionRunway);
     try {
       send(world,'Set surface friction to 0');
       while(world.running&&world.ball.position.x<x)world.step();
       expect(world.won).toBe(false);expect(world.goal.progress).toBe(0);
       send(world,'Set surface friction to 0.3');advance(world);
-      expect(world.won,JSON.stringify(world.snapshot())).toBe(true);expect(world.goal.progress).toBe(1);
+      expect(world.won,JSON.stringify(world.snapshot())).toBe(true);expect(world.goal.progress).toBe(1);expect(world.stars.fullScore).toBe(true);
       expect(world.ball.angle).toBe(0);
     } finally {world.destroy();}
   });
-  it.each([.1,.2,.3,.5])('accepts different braking strengths: %s', coefficient => {
+  it.each([.2,.3,.5,.8])('accepts different physical stopping distances at friction %s', coefficient => {
     const world=new PhysicsWorld(frictionRunway);
     try {
-      send(world,'Set surface friction to 0');advance(world,270);
+      send(world,'Set surface friction to 0');
+      const brakingX=580-2*2/(2*coefficient*2)*frictionRunway.viewport.pixelsPerMetre;
+      while(world.running&&world.ball.position.x<brakingX)world.step();
       send(world,`Set surface friction to ${coefficient}`);advance(world);expect(world.won).toBe(true);
     } finally {world.destroy();}
   });
-  it.each([250,665])('cannot park by braking outside the target at x=%s', x => {
+  it.each([100,500])('cannot park when braking too early or too late at x=%s', x => {
     const world=new PhysicsWorld(frictionRunway);
     try {
       send(world,'Set surface friction to 0');while(world.running&&world.ball.position.x<x)world.step();

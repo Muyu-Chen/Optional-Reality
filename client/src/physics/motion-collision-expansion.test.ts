@@ -77,13 +77,13 @@ describe('new motion and collision puzzles', () => {
     } finally { world.destroy(); }
   });
 
-  it.each([200, 240, 280, 320, 350])('can park after the wall rebound when braking at returning x=%s', x => {
+  it.each([400, 440, 480, 520, 560])('can brake before the dock and coast into it after the wall rebound at returning x=%s', x => {
     expect(play('return-to-dock', w => w.ball.velocity.x < 0 && w.ball.position.x <= x, 'Set surface friction to 0.3'))
       .toMatchObject({ won: true, full: true, overtime: false });
   });
 
   it('can park on the outward trip without claiming the stars beyond the dock', () => {
-    expect(play('return-to-dock', w => w.ball.position.x >= 280, 'Set surface friction to 0.3'))
+    expect(play('return-to-dock', w => w.ball.position.x >= 280, 'Set surface friction to 1'))
       .toMatchObject({ won: true, full: false, overtime: false });
   });
 

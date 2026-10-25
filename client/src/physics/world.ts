@@ -10,6 +10,7 @@ import { SimulationJournal } from './simulation-journal';
 import { GoalTracker } from './goal';
 import { StarCollection } from './stars';
 import { outsidePlayArea, playAreaBounds, type PlayAreaEdge } from './play-area';
+import { SliderFriction } from './slider-friction';
 
 const { Engine, Composite } = Matter;
 export const STEP_MS = 1000 / 120;
@@ -52,6 +53,7 @@ export class PhysicsWorld {
   lastRuleChange: { revision:number; tick:number; checkpoint:number; before:RuleState; after:RuleState } | null = null;
   private history: { before: RuleState; operations: readonly Operation[]; text: string }[] = [];
   private readonly surfaces: Map<string, Matter.Body[]>;
+  private readonly sliderFriction: SliderFriction;
   get commandCount() { return this.history.length; }
 
   constructor(readonly level: LevelDefinition, seenTutorials: Iterable<string> = []) {
@@ -64,6 +66,7 @@ export class PhysicsWorld {
     const scene = createSceneBodies(level);
     this.ball = scene.ball;
     this.surfaces = scene.surfaces;
+    this.sliderFriction=new SliderFriction(this.engine,this.ball,new Set(this.surfaces.keys()),!!level.ball.shape);
     Composite.add(this.engine.world, scene.bodies);
     this.devices = new DeviceRuntime(level, this.engine, this.ball);
     this.goal = new GoalTracker(level);
@@ -127,7 +130,9 @@ export class PhysicsWorld {
       }
     }
     const previous: readonly [number,number]=[this.ball.position.x,this.ball.position.y];
+    this.sliderFriction.beforeStep(STEP_MS);
     Engine.update(this.engine, STEP_MS);
+    this.sliderFriction.afterStep();
     this.tick++;
     this.devices.afterStep(this.rules);
     this.stars.update(this.ball,previous);
