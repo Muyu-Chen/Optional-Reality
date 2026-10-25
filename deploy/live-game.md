@@ -1,6 +1,48 @@
 # 线上游戏 — 2026-10-24
 
-## 当前版本：连续物理、游戏反馈与图示教学
+## 当前版本：鸟、加速度反馈、碰撞手感与 Gemini 接口
+
+- 游戏：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，应用版本 `5e73f8aba01a5c5d8654425d2efb04b04c1509fe`，release `20261025T030845Z-5e73f8a`（UTC；本地日期 2026-10-24）。
+- 应用 current：`/opt/optional-reality/releases/20261025T030845Z-5e73f8a`；静态 current：`/var/www/muu-tech/releases/20261025T030845Z-5e73f8a-optional-reality-game`。正式服务 active，只监听 `127.0.0.1:3001`，临时 3115 服务已停止。
+- 三个 subagent 分别完成独立鸟模块、加速度指示模块与碰撞呈现模块：小鸟 1.6 倍/鹰 1.8 倍及独立翼姿；星星旁的真实向量方向/数值和 600ms 变化强调；按真实入射法向速度产生的接触波纹和最多 8% 视觉压缩。碰撞观察器 700 tick 对照确认不改变物理轨迹。
+- 固定提交独立全新安装后，74 个 Vitest 文件、653 项测试，加首页 13 项 Node 测试共 666 项通过；类型检查与生产构建通过。测试限制四进程，避免共享机器并行超时；没有放宽断言或单项超时。JS 包大于 500kB 的原有构建提示仍存在。
+- 公网 20 个静态资源与独立构建逐字节一致，health/configured 正常。浏览器确认新资源、放大鸟和向量徽标，并实际完成 bounce 满分路线、0/3 到 3/3 与结算，warning/error 为空。
+- 真实公网 API 验证向下/向上/反转仍依次得到 `(2,20)`、`(2,-20)`、`(2,20)`，保留水平分量。
+- Gemini 接入共享 `/api/compile`，通过 `AI_PROVIDER=gemini` 与独立 `GEMINI_API_KEY` 切换。接口和 mock 测试已发布；本地新 key 尚未填写，真实 Gemini 请求没有运行。线上持久配置继续使用原 DeepSeek 服务与原 key，发布未上传开发机 `.env` 或替换服务器配置。
+- 保留 Node、Apache/TLS、服务单元及持久配置权限 root:optional-reality 640。现场证据与资源清单位于忽略目录 `.localwork/deploy-game-feel/`。
+
+### 备份与校验
+
+- 服务器备份：`/var/backups/optional-reality/20261025T030845Z-5e73f8a/`；本地：`.localwork/backups/game-feel-20261025T030845Z-5e73f8a/`，目录 700、文件 600，两端归档 SHA256 一致。源码备份排除 `.env` 和依赖，旧 release 与哈希资源保留。
+- `site.tar.gz`：`7da5547129737aa58d3bfaf063ea2e18a36cccc9c3aa0ce63bb41a18bc9460b9`。
+- `app-source.tar.gz`：`df6a5270d4951baae3de8e0529b25886ab98d92d57a9d250a715f76b57b4cf92`。
+- HTML：`a46558ba9d8a0295fb8a09abf8c4cda28a58536ece452e555781b16881239ddd`。
+- JS `index-DsOxP1JX.js`：`0669c775f2b2af93e649b783a6344167ca3bc19f4f5ce68d56fe9256d354b83e`。
+- CSS `index-BnZ4Hu6a.css`：`a2e698b9dc43f3be3499ff896f0e81c83ac7b829399bf471cb14c37fa392f44b`。
+
+### 回退到上一整合版
+
+核对两个 current 仍为本节版本后再执行；若已有新发布，停止核对对应记录。代码成对回退，持久 `.env` 保持不变。
+
+```sh
+set -eu
+app_root=/opt/optional-reality
+site_root=/var/www/muu-tech
+test "$(readlink -f "$app_root/current")" = "/opt/optional-reality/releases/20261025T030845Z-5e73f8a"
+test "$(readlink -f "$site_root/current")" = "/var/www/muu-tech/releases/20261025T030845Z-5e73f8a-optional-reality-game"
+test -f "/opt/optional-reality/releases/20261025T024029Z-75af06a/server/src/index.ts"
+test -f "/var/www/muu-tech/releases/20261025T024029Z-75af06a-optional-reality-game/demo/index.html"
+apache2ctl configtest
+ln -s "/opt/optional-reality/releases/20261025T024029Z-75af06a" "$app_root/.rollback-app-$$"
+mv -Tf "$app_root/.rollback-app-$$" "$app_root/current"
+systemctl restart optional-reality
+curl -fsS --retry 15 --retry-connrefused --retry-delay 1 http://127.0.0.1:3001/api/health
+ln -s "/var/www/muu-tech/releases/20261025T024029Z-75af06a-optional-reality-game" "$site_root/.rollback-web-$$"
+mv -Tf "$site_root/.rollback-web-$$" "$site_root/current"
+curl -fsS https://muuyyy.cfd/api/health
+```
+
+## 历史版本：连续物理、游戏反馈与图示教学
 
 - 游戏：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，应用版本 `75af06a59d145e9325acb14dee46d13d51842e3b`，release `20261025T024029Z-75af06a`。标识使用 UTC，本地发布日期为 2026-10-24。
 - 应用 current：`/opt/optional-reality/releases/20261025T024029Z-75af06a`；静态 current：`/var/www/muu-tech/releases/20261025T024029Z-75af06a-optional-reality-game`。前后端同版，正式服务 active，仅监听 `127.0.0.1:3001`；临时 3115 验证服务已停止。

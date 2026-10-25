@@ -111,3 +111,5 @@ React + TypeScript + Vite 管理界面；Matter.js + Canvas 2D 运行、绘制�
 满分路线、消息操作与向量语义见 [星星玩法约定](./docs/star-gameplay.md)；九关的具体路线见 [阶段式物理解谜](./docs/phase-puzzles.md)。
 
 本轮整合版 `75af06a` 已发布：场景绘图、连续被动弹簧、首页实时动画、背景生态、出口吸入、音效、消息快捷操作、三课图示教学和规则清单展开均已上线。独立构建通过 616 项测试，公网三星路线和真实 API 已验收。线上具体版本以 [部署记录](./deploy/live-game.md) 为准，最新验证见 [verification.md](./docs/verification.md)。
+
+最新鸟、加速度反馈与碰撞手感版本 `5e73f8a` 已上线，独立构建通过 666 项测试。Gemini 接口同版提供，真实 Gemini 调用等待配置新 key；线上仍使用保留的 DeepSeek 配置。备份、资源校验及成对回退见 [部署记录](./deploy/live-game.md)。
