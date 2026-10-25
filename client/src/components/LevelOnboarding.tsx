@@ -8,10 +8,11 @@ interface LevelOnboardingProps {
   levelTitle: string;
   editableRules: readonly string[];
   onClose: () => void;
-  onLoadStarters: () => void;
+  onLoadStarters?: () => void;
+  closeLabel?: string;
 }
 
-export function LevelOnboarding({ lesson, levelLabel, levelTitle, editableRules, onClose, onLoadStarters }: LevelOnboardingProps) {
+export function LevelOnboarding({ lesson, levelLabel, levelTitle, editableRules, onClose, onLoadStarters, closeLabel = "Let's play" }: LevelOnboardingProps) {
   return <div className="onboarding-scrim">
     <section className="onboarding-card" role="dialog" aria-modal="true" aria-labelledby="onboarding-title" aria-describedby="onboarding-pause"
       onKeyDown={event => {
@@ -37,8 +38,8 @@ export function LevelOnboarding({ lesson, levelLabel, levelTitle, editableRules,
       <p className="onboarding-score"><span aria-hidden="true">★ ★ ★</span> Reach the exit to pass. Collect all three stars, then exit for full score. Leaving the play area ends the run.</p>
       <p className="onboarding-keys"><span><kbd>Enter</kbd> queue</span><span><kbd>Shift + Enter</kbd> apply current message</span><span><kbd>Shift + Tab</kbd> pause & settings</span></p>
       <div className="onboarding-actions">
-        <button className="primary-button" autoFocus onClick={onClose}>Let's play</button>
-        <button className="onboarding-load" onClick={onLoadStarters}>{lesson.starterLabel || 'Load starter messages'}</button>
+        <button className="primary-button" autoFocus onClick={onClose}>{closeLabel}</button>
+        {onLoadStarters && <button className="onboarding-load" onClick={onLoadStarters}>{lesson.starterLabel || 'Load starter messages'}</button>}
       </div>
     </section>
   </div>;

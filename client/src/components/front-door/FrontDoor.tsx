@@ -43,6 +43,6 @@ export function FrontDoor({ view, progress, storageAvailable, onPlay, onTitle, o
       <footer className="journey-footer"><span>{storageAvailable ? 'Your journey is saved on this device.' : 'Browser storage is unavailable. Progress stays in this tab.'}</span>
         <span>★ {journeyStars(progress)} / {availableStars} <span className="journey-footer-extra">stars · All levels open</span></span></footer>
     </div>
-    {settings && <FrontDoorSettings onClose={closeSettings} returnFocus={settingsTrigger.current} />}
+    {settings && <FrontDoorSettings levelId={recent?.id} onClose={closeSettings} returnFocus={settingsTrigger.current} />}
   </main>;
 }

@@ -20,6 +20,18 @@ function skipIntros() {
 }
 
 describe('title screen and chapter selection', () => {
+  it('reopens the beginner tutorial from title settings without starting a game', async () => {
+    skipIntros(); const { api } = await openFrontDoor();
+    await click('Settings'); await click('Replay beginner tutorial');
+    expect(screen.getByRole('dialog', { name: onboardingFor('gravity-lab')!.title })).toBeTruthy();
+    expect(document.querySelector('canvas')).toBeNull();
+    expect(api.fetch).not.toHaveBeenCalled();
+    await click('Back to settings');
+    expect(screen.getByRole('dialog', { name: 'Set the mood.' })).toBeTruthy();
+    await click('Replay beginner tutorial');
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.getByRole('dialog', { name: 'Set the mood.' })).toBeTruthy();
+  });
   it('opens a real title screen at /demo/ without starting a hidden world or requesting AI', async () => {
     const { api } = await openFrontDoor();
     expect(screen.getByRole('heading', { name: 'Reality is optional.' })).toBeTruthy();
