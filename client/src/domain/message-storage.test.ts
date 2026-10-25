@@ -27,7 +27,7 @@ describe('stored message drafts', () => {
     expect(messages).toHaveLength(24);
     expect(new Set(messages.map(message => message.id)).size).toBe(24);
     expect(messages.every(message => message.status === 'ready' && message.source === 'local')).toBe(true);
-    expect(messages.every(message => message.operation?.type === 'set_gravity')).toBe(true);
+    expect(messages.every(message => message.operation?.type === 'set_property')).toBe(true);
   });
 
   it('keeps per-level drafts separate and validates against the active level’s permissions', () => {

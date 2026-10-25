@@ -1,8 +1,9 @@
 // Engine-supported controls, shared by every level, the parser, UI and compiler.
 // A catalog entry does not create a device or grant access to preset structures.
-export const PROPERTY_NAMES = ['gravity', 'acceleration_x', 'restitution', 'friction', 'conveyor_speed', 'spring_power', 'fan_power', 'angular_speed'] as const;
+import { ACCELERATION_RANGE } from './acceleration';
+export const PROPERTY_NAMES = ['gravity', 'acceleration_x', 'acceleration_y', 'restitution', 'friction', 'conveyor_speed', 'spring_power', 'fan_power', 'angular_speed'] as const;
 export type PhysicsProperty = typeof PROPERTY_NAMES[number];
-export const ENVIRONMENT_PROPERTIES = ['gravity', 'acceleration_x', 'restitution', 'friction'] as const;
+export const ENVIRONMENT_PROPERTIES = ['acceleration_x', 'acceleration_y', 'restitution', 'friction'] as const;
 
 interface Capability {
   label: string;
@@ -13,10 +14,12 @@ interface Capability {
   commandPattern: RegExp;
 }
 export const PHYSICS_CAPABILITIES = {
-  gravity: { label: 'Gravity', range: [-10, 10], unit: 'm/s²', targetKinds: ['environment'],
-    meaning: 'Vertical acceleration: positive down, negative up, zero preserves momentum. Add/enable defaults to 1.', commandPattern: /gravity|重力/ },
-  acceleration_x: { label: 'Horizontal acceleration', range: [-10, 10], unit: 'm/s²', targetKinds: ['environment'],
-    meaning: 'Horizontal acceleration: positive right, negative left, zero preserves momentum. Add right/left defaults to +1/-1. Vertical acceleration uses gravity.', commandPattern: /acceleration|加速度/ },
+  gravity: { label: 'Acceleration', range: ACCELERATION_RANGE, unit: 'm/s²', targetKinds: [],
+    meaning: 'Legacy input alias for acceleration_y. Never a separate force or state parameter.', commandPattern: /gravity|重力/ },
+  acceleration_x: { label: 'Acceleration', range: ACCELERATION_RANGE, unit: 'm/s²', targetKinds: ['environment'],
+    meaning: 'x component of the single environment acceleration vector: positive right, negative left. Preserve y when editing x. Add defaults to magnitude 1.', commandPattern: /acceleration|加速度/ },
+  acceleration_y: { label: 'Acceleration', range: ACCELERATION_RANGE, unit: 'm/s²', targetKinds: ['environment'],
+    meaning: 'y component of the same acceleration vector: positive down, negative up. Gravity is an alias. Preserve x when editing y; replace this component rather than adding a second force. Add defaults to magnitude 1.', commandPattern: /gravity|重力|acceleration|加速度/ },
   restitution: { label: 'Surface bounce', range: [0, 1.5], unit: 'coefficient', targetKinds: ['environment', 'surface'],
     meaning: 'Collision restitution. World sets the default; a named surface overrides it.', commandPattern: /bounce|elastic|restitution|弹性/ },
   friction: { label: 'Surface friction', range: [0, 1], unit: 'coefficient', targetKinds: ['environment', 'surface'],

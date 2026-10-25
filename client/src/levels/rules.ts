@@ -25,7 +25,7 @@ export function ruleContext(level: LevelDefinition): RuleContext {
   return context;
 }
 export function initialRules(level: LevelDefinition): RuleState {
-  const state: RuleState = { gravity: level.initialGravity, values: { world: { acceleration_x: 0, restitution: level.environment?.restitution ?? 0, friction: level.environment?.friction ?? 0 } }, triggers: [] };
+  const state: RuleState = { acceleration:{x:level.initialAcceleration[0],y:level.initialAcceleration[1]}, values: { world: { restitution: level.environment?.restitution ?? 0, friction: level.environment?.friction ?? 0 } }, triggers: [] };
   for (const track of level.tracks) if (track.material) state.values[track.id] = { ...track.material };
   for (const device of level.devices || []) {
     switch (device.kind) {

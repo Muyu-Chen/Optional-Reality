@@ -1,3 +1,4 @@
+import { accelerationAxis } from './acceleration';
 import { describe, expect, it } from 'vitest';
 import { levels } from '../client/src/levels/catalog';
 import { initialRules, ruleContext } from '../client/src/levels/rules';
@@ -12,8 +13,8 @@ describe('universal environment capabilities', () => {
     expect(message).toMatchObject({ status: 'ready', source: 'local', understoodAs: 'add acceleration to right',
       operation: { type: 'set_property', target: 'world', property: 'acceleration_x', value: 1 } });
     const next = applyRules(current, [message.operation], context);
-    expect(next.values.world.acceleration_x).toBe(1);
-    expect(current.values.world.acceleration_x).toBe(0);
+    expect(next.acceleration.x).toBe(1);
+    expect(current.acceleration.x).toBe(0);
   });
   it.each(levels)('uses the shared limits for every base property in $id', level => {
     const current = initialRules(level), context = ruleContext(level);
@@ -23,7 +24,7 @@ describe('universal environment capabilities', () => {
       for (const [requested, actual] of [[minimum - 100, minimum], [maximum + 100, maximum]]) {
         const operation: Operation = { type: 'set_property', target: 'world', property, value: requested };
         const next = applyRules(current, [operation], context);
-        expect(property === 'gravity' ? next.gravity : next.values.world[property]).toBe(actual);
+        expect(accelerationAxis(property) ? next.acceleration[accelerationAxis(property)!] : next.values.world[property]).toBe(actual);
       }
     }
   });

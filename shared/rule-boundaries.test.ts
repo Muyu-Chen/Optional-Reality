@@ -1,3 +1,4 @@
+import { accelerationAxis } from './acceleration';
 import { describe, expect, it } from 'vitest';
 import { levels } from '../client/src/levels/catalog';
 import { realityBreakdown } from '../client/src/levels/reality-breakdown';
@@ -15,7 +16,7 @@ describe('rule ranges and permissions', () => {
     const set = (value: number) => ({ type: 'set_property', target, property, value });
     for (const value of range) expect(() => applyRules(current, [set(value)], context)).not.toThrow();
     for (const value of [range[0] - .001, range[1] + .001]) {
-      const next=applyRules(current,[set(value)],context),applied=property === 'gravity' ? next.gravity : next.values[target]?.[property];
+      const next=applyRules(current,[set(value)],context),applied=target === 'world' && accelerationAxis(property) ? next.acceleration[accelerationAxis(property)!] : next.values[target]?.[property];
       expect(applied).toBe(Math.max(range[0],Math.min(range[1],value)));expect(current).toEqual(before);
     }
     for (const value of [NaN, Infinity, -Infinity]) {
@@ -52,7 +53,7 @@ describe('rule ranges and permissions', () => {
       { type: 'set_gravity', acceleration: -0 }, { type: 'reverse_gravity' },
       { type: 'set_property', target: 'fan-main', property: 'fan_power', value: -0 },
     ], context);
-    expect(Object.is(next.gravity, -0)).toBe(false);
+    expect(Object.is(next.acceleration.y, -0)).toBe(false);
     expect(Object.is(next.values['fan-main'].fan_power, -0)).toBe(false);
   });
 

@@ -117,13 +117,13 @@ describe('AI preparation and player action races', () => {
     await queue(freeText);
     await api.complete(0, gravity);
     await click('Send now');
-    expect(screen.getByText('Gravity now pulls downward at 1 m/s².')).toBeTruthy();
+    expect(screen.getByText('Acceleration now pulls downward at 1 m/s².')).toBeTruthy();
     await click('Try again');
     expect(api.pending).toHaveLength(1);
     expect(lab().world.tick).toBe(0);
     expect(lab().world.commandCount).toBe(0);
     expect(lab().world.gravity).toBe(0);
-    expect(screen.queryByText('Gravity now pulls downward at 1 m/s².')).toBeNull();
+    expect(screen.queryByText('Acceleration now pulls downward at 1 m/s².')).toBeNull();
     expect(button('Send now').disabled).toBe(false);
     await click('Send now');
     expect(lab().world.gravity).toBe(1);

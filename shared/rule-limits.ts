@@ -1,4 +1,5 @@
 import type { Operation, PropertyName, RuleContext } from './rules';
+import { normalizeAccelerationOperation } from './acceleration';
 
 export interface RuleAdjustment {
   target: string; property: PropertyName; requested: number; applied: number;
@@ -13,16 +14,16 @@ export function limitValue(value: number, range: readonly [number, number]) {
 // Absolute values are bounded before queueing. Relative rules remain relative;
 // the executor limits their resolved result against the same scene ranges.
 export function limitAbsoluteOperation(operation: Operation, context: RuleContext): { operation: Operation; adjustment?: RuleAdjustment } {
-  if (operation.type !== 'set_gravity' && operation.type !== 'set_property') return { operation };
-  const target = operation.type === 'set_gravity' ? 'world' : operation.target;
-  const property = operation.type === 'set_gravity' ? 'gravity' : operation.property;
+  operation = normalizeAccelerationOperation(operation);
+  if (operation.type !== 'set_property') return { operation };
+  const {target,property} = operation;
   const definition = context.targets.find(item => item.id === target);
   const range = definition?.properties[property];
   if (!range) throw new Error(`The ${target}.${property} property cannot be edited in this scene. Modify the environment, not the core.`);
   if (definition.editableProperties && !definition.editableProperties.includes(property)) throw new Error(`${definition.label || target}: ${property} cannot be edited in this level.`);
-  const requested = operation.type === 'set_gravity' ? operation.acceleration : operation.value;
+  const requested = operation.value;
   const applied = limitValue(requested, range);
-  const bounded = operation.type === 'set_gravity' ? { ...operation, acceleration: applied } : { ...operation, value: applied };
+  const bounded = { ...operation, value: applied };
   return { operation: bounded, ...(requested !== applied ? { adjustment: { target, property, requested, applied, minimum: range[0], maximum: range[1] } } : {}) };
 }
 

@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import { limitAbsoluteOperation, limitValue } from './rule-limits';
 import { PHYSICS_CAPABILITIES, PROPERTY_NAMES } from './physics-capabilities';
+import { ACCELERATION_RANGE, accelerationAxis, normalizeAccelerationOperation } from './acceleration';
 export { ENVIRONMENT_PROPERTIES } from './physics-capabilities';
 
-export const Acceleration = z.number().finite().min(PHYSICS_CAPABILITIES.gravity.range[0]).max(PHYSICS_CAPABILITIES.gravity.range[1]);
+export const Acceleration = z.number().finite().min(ACCELERATION_RANGE[0]).max(ACCELERATION_RANGE[1]);
 export const Property = z.enum(PROPERTY_NAMES);
 export type PropertyName = z.infer<typeof Property>;
 const Id = z.string().min(1).max(80);
@@ -21,15 +22,16 @@ export interface RuleContext {
   gates: string[];
 }
 export const RuleStateSchema = z.object({
-  gravity: Acceleration,
+  acceleration: z.object({x:Acceleration,y:Acceleration}).strict(),
   values: z.record(Id, z.partialRecord(Property, z.number().finite().min(-100).max(100))),
   triggers: z.array(z.object({ sensor: Id, gate: Id }).strict()).max(24),
 }).strict();
 export type RuleState = z.infer<typeof RuleStateSchema>;
-export const GRAVITY_CONTEXT: RuleContext = { targets: [{ id: 'world', kind: 'environment', properties: { gravity: PHYSICS_CAPABILITIES.gravity.range } }], sensors: [], gates: [] };
-export const gravityState = (gravity: number): RuleState => ({ gravity, values: {}, triggers: [] });
+export const GRAVITY_CONTEXT: RuleContext = { targets: [{ id: 'world', kind: 'environment', properties: { acceleration_x: PHYSICS_CAPABILITIES.acceleration_x.range, acceleration_y: PHYSICS_CAPABILITIES.acceleration_y.range } }], sensors: [], gates: [] };
+export const gravityState = (gravity: number): RuleState => ({ acceleration:{x:0,y:gravity}, values: {}, triggers: [] });
 
 export function propertyRange(context: RuleContext, target: string, property: PropertyName) {
+  if (property === 'gravity') property = 'acceleration_y';
   const range = context.targets.find(item => item.id === target)?.properties[property];
   if (!range) throw new Error(`The ${target}.${property} property cannot be edited in this scene. Modify the environment, not the core.`);
   return range;
@@ -44,11 +46,12 @@ function checkEditable(context: RuleContext, target: string, property: PropertyN
 }
 export function validateRuleState(input: unknown, context: RuleContext): RuleState {
   const state = RuleStateSchema.parse(input);
-  checkValue(context, 'world', 'gravity', state.gravity);
+  checkValue(context, 'world', 'acceleration_x', state.acceleration.x);
+  checkValue(context, 'world', 'acceleration_y', state.acceleration.y);
   for (const [target, properties] of Object.entries(state.values)) {
     if (!context.targets.some(item => item.id === target)) throw new Error('Unknown environment target.');
     for (const [property, value] of Object.entries(properties)) {
-      if (property === 'gravity') throw new Error('Gravity must use the top-level rule state.');
+      if (accelerationAxis(property)) throw new Error('Acceleration must use the single vector in rule state.');
       checkValue(context, target, property as PropertyName, value!);
     }
   }
@@ -61,26 +64,22 @@ function validateTrigger(trigger: { sensor: string; gate: string }, context: Rul
 export function applyRules(current: RuleState, candidates: readonly unknown[], context: RuleContext): RuleState {
   const next = structuredClone(validateRuleState(current, context));
   for (const candidate of candidates) {
-    const operation = limitAbsoluteOperation(OperationSchema.parse(candidate),context).operation;
+    const operation = normalizeAccelerationOperation(limitAbsoluteOperation(OperationSchema.parse(candidate),context).operation);
     if (operation.type === 'add_sensor_trigger') {
       validateTrigger(operation, context);
       if (!next.triggers.some(item => item.sensor === operation.sensor && item.gate === operation.gate)) next.triggers.push({ sensor: operation.sensor, gate: operation.gate });
       continue;
     }
-    if (operation.type === 'set_gravity' || operation.type === 'reverse_gravity') {
-      checkEditable(context, 'world', 'gravity');
-      const value = operation.type === 'set_gravity' ? operation.acceleration : -next.gravity;
-      checkValue(context, 'world', 'gravity', value); next.gravity = value || 0; continue;
-    }
     const { target, property } = operation;
     checkEditable(context, target, property);
-    const previous = property === 'gravity' && target === 'world' ? next.gravity : next.values[target]?.[property]
+    const axis = target === 'world' ? accelerationAxis(property) : undefined;
+    const previous = axis ? next.acceleration[axis] : next.values[target]?.[property]
       ?? (context.targets.find(item => item.id === target)?.kind === 'surface' ? next.values.world?.[property]
-        : target === 'world' && property === 'acceleration_x' ? 0 : undefined);
+        : undefined);
     const requested = operation.type === 'set_property' ? operation.value : previous === undefined ? NaN : previous * operation.factor;
     const value = limitValue(requested,propertyRange(context,target,property));
     checkValue(context, target, property, value);
-    if (property === 'gravity' && target === 'world') next.gravity = value || 0;
+    if (axis) next.acceleration[axis] = value || 0;
     else (next.values[target] ||= {})[property] = value || 0;
   }
   return validateRuleState(next, context);

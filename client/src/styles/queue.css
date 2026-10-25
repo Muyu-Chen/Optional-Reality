@@ -61,7 +61,8 @@
   display:flex;
   align-items:center;
   gap:5px;
-  flex-shrink:0
+  flex-shrink:0;
+  margin-left:auto
 }
 .delete-message {
   display:grid;
@@ -122,9 +123,9 @@
   line-height:1.4;
   white-space:nowrap
 }
-.upcoming-list {
+.pending-list {
   overflow:auto;
-  max-height:180px;
+  max-height:300px;
   min-height:0;
   scrollbar-width:thin;
   scrollbar-color:#a8b49255 transparent
@@ -136,11 +137,8 @@
 .upcoming-message .message-text {
   font-size:12px
 }
-.upcoming-message .parsed-rule {
-  display:none
-}
-.queue-dock.expanded .upcoming-list {
-  max-height:130px
+.queue-dock.expanded .pending-list {
+  max-height:220px
 }
 .queue-management {
   padding:10px 14px;

@@ -102,11 +102,11 @@
   .send-now span {
     display:none
   }
-  .upcoming-list { max-height:90px }
+  .pending-list { max-height:90px }
   .upcoming-message {
     padding:6px 12px
   }
-  .upcoming-message .message-meta,.upcoming-message .parsed-rule {
+  .upcoming-message .message-meta {
     display:none
   }
   .upcoming-message .message-text {
@@ -118,7 +118,7 @@
     bottom:248px;
     z-index:5
   }
-  .queue-dock.expanded .upcoming-list {
+  .queue-dock.expanded .pending-list {
     max-height:170px
   }
   .composer-dock {

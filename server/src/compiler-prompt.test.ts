@@ -10,7 +10,7 @@ import { loadConfig } from './config';
 const config = loadConfig({ AI_API_KEY: 'test-only-never-a-real-key' });
 const operations = [
   { type: 'set_property', target: 'world', property: 'acceleration_x', value: 2 },
-  { type: 'set_gravity', acceleration: 1 },
+  {type:'set_property',target:'world',property:'acceleration_y',value:1 },
   { type: 'set_property', target: 'world', property: 'restitution', value: .8 },
   { type: 'set_property', target: 'world', property: 'friction', value: .3 },
 ];
@@ -37,22 +37,22 @@ describe('shared compiler vocabulary and stable prefixes (mocked API)', () => {
     expect(sent(fetcher).messages[0]).toEqual({ role: 'system', content: COMPILER_SYSTEM });
     expect(result.messages[0].operations).toEqual(operations);
     const next = applyRules(input.rules, result.messages[0].operations, ruleContext(level));
-    expect(next.gravity).toBe(1);
-    expect(next.values.world).toMatchObject({ acceleration_x: 2, restitution: .8, friction: .3 });
+    expect(next.acceleration.y).toBe(1);
+    expect(next.values.world).toMatchObject({ restitution: .8, friction: .3 });
     expect(input.rules).toEqual(initialRules(level));
   });
   it('keeps all static scene bytes before changed state and player instructions', async () => {
     const level = levels[0], input = request(level), fetcher = provider();
     await compileRules(input, config, undefined, fetcher);
     const changed = { ...input, sceneVersion: 9, queueRevision: 10, requestId: 'different',
-      rules: { ...input.rules, gravity: 3 }, messages: [{ id: 'm2', text: 'Reverse horizontal acceleration.' }] };
+      rules: { ...input.rules, acceleration:{x:0,y:3} }, messages: [{ id: 'm2', text: 'Reverse horizontal acceleration.' }] };
     await compileRules(changed, config, undefined, fetcher);
     const first = sent(fetcher), second = sent(fetcher, 1);
     expect(second.messages[0]).toEqual(first.messages[0]);
     const scenePrefix = (content: string) => content.slice(0, content.indexOf(',"currentRules":'));
     expect(scenePrefix(first.messages[1].content)).not.toBe('');
     expect(scenePrefix(second.messages[1].content)).toBe(scenePrefix(first.messages[1].content));
-    expect(JSON.parse(second.messages[1].content)).toMatchObject({ currentRules: { gravity: 3 }, messages: changed.messages });
+    expect(JSON.parse(second.messages[1].content)).toMatchObject({ currentRules: { acceleration:{x:0,y:3} }, messages: changed.messages });
     expect(first.messages[1].content).not.toBe(second.messages[1].content);
     // A different scene changes scene data, while retaining the universal system vocabulary.
     await compileRules(request(levels.at(-1)!), config, undefined, fetcher);

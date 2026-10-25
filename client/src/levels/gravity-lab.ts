@@ -13,7 +13,7 @@ export const gravityLab: LevelDefinition = {
   title: 'Gravity Lab',
   viewport: { width: 800, height: 510, pixelsPerMetre: 80 },
   timeLimitSeconds: 30,
-  initialGravity: 0,
+  initialAcceleration:[0,0],
 
 
   ball: {
@@ -28,7 +28,9 @@ export const gravityLab: LevelDefinition = {
     { from: [45, 455], to: [770, 455] },
   ],
   exit: { id: 'exit', label: 'EXIT', x: 728, y: 240, width: 49, height: 68 },
+  stars:[{id:'descent',position:[200,230],radius:14},{id:'valley',position:[350,380],radius:14},{id:'inertia',position:[660,288],radius:14}],
   instructions: {
+    timingLesson:'ramp',
     objective: 'Touch the exit',
     hint: 'Send “add gravity” to begin. Send “stop gravity” as the ball leaves the track.',
     sceneDescription: 'Live physics scene with a floating ball, a curved track, and an exit. The world starts with zero gravity.',

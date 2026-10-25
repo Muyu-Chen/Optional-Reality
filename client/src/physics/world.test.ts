@@ -106,7 +106,7 @@ describe('zero-gravity lab', () => {
 const smallLevel: LevelDefinition = {
   id: 'runtime-test', number: 7, title: 'Small chamber',
   viewport: { width: 420, height: 320, pixelsPerMetre: 40 },
-  timeLimitSeconds: 2, initialGravity: -.5,
+  timeLimitSeconds: 2, initialAcceleration:[0,-.5],
   ball: { id: 'test-ball', label: 'TEST', position: [55, 125], velocity: [.5, 0], radius: 9, restitution: 0 },
   tracks: [{ id: 'shelf', points: [[140, 230], [300, 230]], thickness: 8 }],
   guideLines: [],
@@ -121,7 +121,7 @@ describe('level-driven physics', () => {
   it('uses the supplied spawn, gravity, velocity, unit scale, and room dimensions', () => {
     const world = new PhysicsWorld(smallLevel);
     try {
-      expect(world.snapshot()).toMatchObject({ x: 55, y: 125, gravity: -.5, tick: 0, started: false });
+      expect(world.snapshot()).toMatchObject({ x: 55, y: 125, acceleration:{x:0,y:-.5}, tick: 0, started: false });
       expect(initialTelemetry(smallLevel)).toEqual(world.snapshot());
       world.start();
       for (let i = 0; i < 120; i++) world.step();
@@ -174,7 +174,7 @@ describe('level-driven physics', () => {
     try {
       first.setGravity(1); first.start();
       for (let i = 0; i < 120; i++) first.step();
-      expect(second.snapshot()).toMatchObject({ x: 55, y: 125, gravity: -.5, tick: 0, started: false });
+      expect(second.snapshot()).toMatchObject({ x: 55, y: 125, acceleration:{x:0,y:-.5}, tick: 0, started: false });
       expect(second.ball).not.toBe(first.ball);
       expect(smallLevel).toEqual(definition);
       first.destroy();

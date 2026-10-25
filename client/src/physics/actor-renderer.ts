@@ -16,7 +16,7 @@ export function drawActor(ctx: CanvasRenderingContext2D, world: PhysicsWorld) {
   ctx.restore();
   if(!world.started) {
     ctx.save();ctx.fillStyle='#7e906e';ctx.font='12px ui-monospace,monospace';ctx.textAlign='center';
-    ctx.fillText(level.initialGravity===0?'NO GRAVITY':'READY TO MOVE',x,y-r-15);
+    ctx.fillText(!world.rules.acceleration.x&&!world.rules.acceleration.y?'NO ACCELERATION':'READY TO MOVE',x,y-r-15);
     if(level.ball.velocity[0])drawForceArrow(ctx,x+r+9,y,[level.ball.velocity[0],0],39,'#93a47a');
     ctx.restore();
   }

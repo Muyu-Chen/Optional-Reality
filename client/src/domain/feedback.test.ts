@@ -13,16 +13,16 @@ describe('applied environment captions', () => {
     expect(appliedFeedback(operations,before,after,realityBreakdown)).toEqual(['Fan power increased to 2 (limited from 3).']);
   });
   it('reads the resolved gravity instead of repeating a relative command', () => {
-    const before = {...initialRules(gravityLab),gravity:2};
+    const before = {...initialRules(gravityLab),acceleration:{x:0,y:2}};
     const operations = [{type:'reverse_gravity'}] as const;
     const after = applyRules(before,operations,ruleContext(gravityLab));
-    expect(appliedFeedback(operations,before,after,gravityLab)).toEqual(['Gravity now pulls upward at 2 m/s².']);
+    expect(appliedFeedback(operations,before,after,gravityLab)).toEqual(['Acceleration now pulls upward at 2 m/s².']);
   });
   it('shows the final result once when a message changes gravity several times', () => {
     const before = initialRules(gravityLab);
     const operations = [{type:'set_gravity',acceleration:2},{type:'set_gravity',acceleration:0}] as const;
     const after = applyRules(before,operations,ruleContext(gravityLab));
-    expect(appliedFeedback(operations,before,after,gravityLab)).toEqual(['Gravity turned off. Momentum remains.']);
+    expect(appliedFeedback(operations,before,after,gravityLab)).toEqual(['Vertical acceleration turned off. Momentum remains.']);
   });
   it('uses actual device values and scene names for a combined rule', () => {
     const before = initialRules(realityBreakdown);

@@ -2,7 +2,8 @@ import type { LevelDefinition } from '../levels/types';
 import { PhysicsWorld, STEP_MS, type Telemetry } from './world';
 import { drawBakery } from './bakery-renderer';
 import { drawGeometry } from './geometry-renderer';
-import { drawHorizontalAcceleration } from './acceleration-renderer';
+import { drawAcceleration } from './acceleration-renderer';
+import { drawStars } from './star-renderer';
 
 export class CanvasLab {
   world: PhysicsWorld;
@@ -80,7 +81,8 @@ export class CanvasLab {
     ctx.setTransform(scale, 0, 0, scale, left+(availableWidth-width*scale)/2, top+(availableHeight-height*scale)/2);
     if (this.level.presentation === 'bakery') drawBakery(ctx, this.world, this.trail);
     else drawGeometry(ctx,this.world,this.trail);
-    drawHorizontalAcceleration(ctx,this.world);
+    drawAcceleration(ctx,this.world);
+    drawStars(ctx,this.world);
   }
 
   destroy() {

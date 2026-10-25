@@ -1,6 +1,7 @@
 import type { LevelDefinition } from '../levels/types';
 import { levelLabel } from '../levels/progression';
 import type { Telemetry } from '../physics/world';
+import { StarProgress } from './StarProgress';
 
 interface GameHudProps {
   level: LevelDefinition;
@@ -21,6 +22,7 @@ export function GameHud({ level, telemetry, secondsLeft, menuOpen, onRetry, onRe
         <span>OPTIONAL REALITY / {levelLabel(level)}</span>
         <h1>{level.title}</h1>
         <p>{level.instructions.objective}</p>
+        <StarProgress {...telemetry.stars} />
       </div>
       <div className="hud-controls">
         <span className={`game-clock ${secondsLeft <= 5 ? 'urgent' : ''}`} data-testid="time-left">

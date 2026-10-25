@@ -9,7 +9,7 @@ export interface Message {
   understoodAs?: string;
   adjustments?: RuleAdjustment[];
 }
-export interface AppliedEvent { id: string; text: string; tick: number; gravity: number; operations: Operation[]; understoodAs?: string; adjustments?: RuleAdjustment[] }
+export interface AppliedEvent { id: string; text: string; tick: number; acceleration: RuleState['acceleration']; operations: Operation[]; understoodAs?: string; adjustments?: RuleAdjustment[] }
 export const messageOperations = (message: Message) => message.operations || (message.operation ? [message.operation] : []);
 export function prepareMessage(id: string, text: string, context?: RuleContext, rules?: RuleState): Message {
   const parsed = parseCommand(text, context);
@@ -42,12 +42,12 @@ export function applyBatch(messages: Message[], ids: string[], current: number |
     const operations = messageOperations(message);
     if (message.status !== 'ready' || !operations.length) throw new Error('Only ready messages can be sent.');
     rules = applyRules(rules, operations, context);
-    events.push({ id: message.id, text: message.text, tick, gravity: rules.gravity, operations,
+    events.push({ id: message.id, text: message.text, tick, acceleration: {...rules.acceleration}, operations,
       ...(message.understoodAs ? { understoodAs: message.understoodAs } : {}),
       ...(message.adjustments ? { adjustments: message.adjustments } : {}),
     });
   }
-  return { gravity: rules.gravity, rules, events,
+  return { acceleration: {...rules.acceleration}, rules, events,
     messages: messages.map(message => ids.includes(message.id) ? { ...message, status: 'sent' as const } : message),
   };
 }

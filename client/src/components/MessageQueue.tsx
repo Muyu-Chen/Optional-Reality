@@ -48,7 +48,7 @@ export function MessageQueue(props: MessageQueueProps) {
           {managing ? 'Done' : 'Manage'}
         </button>
       </div>
-      {pending[0] ? renderMessage(pending[0], 0) : (
+      {pending.length ? <div className="pending-list">{pending.map(renderMessage)}</div> : (
         <div className="empty-queue">
           <p>{sent.length ? 'What changes next?' : 'A different world starts with a message.'}</p>
           <span>Queue a rule below. Send it when you choose.</span>
@@ -57,9 +57,6 @@ export function MessageQueue(props: MessageQueueProps) {
           </button>}
         </div>
       )}
-      {pending.length > 1 && <div className="upcoming-list">
-        {pending.slice(1).map((message, index) => renderMessage(message, index + 1))}
-      </div>}
       {managing && (
         <div className="queue-management">
           <p>Selected messages apply together, in queue order.</p>

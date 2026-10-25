@@ -14,11 +14,11 @@ import type { CompileRequest } from '../../shared/compiler';
 
 const config = loadConfig({ AI_API_KEY: 'test-only-never-a-real-key' });
 const request = (): CompileRequest => ({ requestId: 'request-1', levelId: realityBreakdown.id, sceneVersion: 2, queueRevision: 4,
-  messages: [{ id: 'm1', text: 'Halve the gravity and make the surfaces more bouncy.' }], rules: { ...initialRules(realityBreakdown), gravity: 2 },
+  messages: [{ id: 'm1', text: 'Halve the gravity and make the surfaces more bouncy.' }], rules: { ...initialRules(realityBreakdown), acceleration:{x:0,y:2} },
 });
 const answer = (operations: unknown[], id = 'm1', error: string | null = null) => ({ messages: [{ id, operations, error }] });
 const provider = (output: unknown, reason = 'stop') => vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ choices: [{ finish_reason: reason, message: { content: JSON.stringify(output) } }] }), { headers: { 'content-type': 'application/json' } }));
-const valid = () => answer([{ type: 'scale_property', target: 'world', property: 'gravity', factor: .5 }, { type: 'set_property', target: 'world', property: 'restitution', value: .7 }]);
+const valid = () => answer([{ type: 'scale_property', target: 'world', property: 'acceleration_y', factor: .5 }, { type: 'set_property', target: 'world', property: 'restitution', value: .7 }]);
 const servers: Server[] = [];
 afterEach(async () => { for (const server of servers.splice(0)) { server.closeAllConnections(); await new Promise<void>(resolve => server.close(() => resolve())); } });
 async function endpoint(key = config.apiKey, fetcher = provider(valid())) {
@@ -46,7 +46,7 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
     const result = await compileRules(input, config, undefined, fetcher);
     expect(result).toMatchObject({ requestId: input.requestId, sceneVersion: 2, queueRevision: 4 });
     expect(result.messages[0].operations).toEqual(valid().messages[0].operations);
-    expect(input.rules.gravity).toBe(2);
+    expect(input.rules.acceleration.y).toBe(2);
     const [url, init] = fetcher.mock.calls[0];
     expect(url).toBe('https://api.deepseek.com/chat/completions');
     const sent = JSON.parse(String(init?.body));
@@ -67,7 +67,7 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
     const tutorial={...request(),levelId:gravityLab.id,rules:initialRules(gravityLab)};
     await expect(compileRules(tutorial,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:.9}])))).resolves.toMatchObject({messages:[{operations:[{value:.9}]}]});
     const reflection={...request(),levelId:bounce.id,rules:initialRules(bounce)};
-    await expect(compileRules(reflection,config,undefined,provider(answer([{type:'reverse_gravity'}])))).resolves.toMatchObject({messages:[{operations:[{type:'reverse_gravity'}]}]});
+    await expect(compileRules(reflection,config,undefined,provider(answer([{type:'reverse_gravity'}])))).resolves.toMatchObject({messages:[{operations:[{type:'scale_property',target:'world',property:'acceleration_y',factor:-1}]}]});
     const result=await compileRules(reflection,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:.9}])));
     expect(result.messages[0].operations).toHaveLength(1);
   });

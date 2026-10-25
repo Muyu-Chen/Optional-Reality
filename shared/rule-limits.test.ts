@@ -12,7 +12,7 @@ describe('deterministic rule limits',()=>{
   it.each([
     ['Set fan power to 10',2],['Set fan power to -10',-2],['Set fan power to 1.25',1.25],
     ['Set spring power to -5',0],['Set surface friction to 10',1],['Set surface bounce to -5',0],
-    ['Set gravity to 999',10],['Set gravity to -99',-10],['add acceleration right word 100',10],
+    ['Set gravity to 999',100],['Set gravity to -999',-100],['add acceleration right word 999',100],
   ])('prepares %s using the permitted bound %s', (text,value)=>{
     const message=prepareMessage('id',text,context,initialRules(realityBreakdown));
     expect(message.status).toBe('ready');

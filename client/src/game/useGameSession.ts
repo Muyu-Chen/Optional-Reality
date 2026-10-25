@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { accelerationLabel } from '../../../shared/acceleration';
 import { applyRules } from '../../../shared/rules';
 import { appliedFeedback } from '../domain/feedback';
 import { applyBatch, messageOperations, retryMessages, type AppliedEvent, type Message } from '../domain/queue';
@@ -13,7 +14,7 @@ import { useMessageQueue } from './useMessageQueue';
 // Coordinates the queue and world at player action boundaries, never on every physics tick.
 export function useGameSession(level: LevelDefinition) {
   const context = useMemo(() => ruleContext(level), [level]);
-  const [notice, setNotice] = useState(`${level.initialGravity === 0 ? 'Zero gravity.' : `Initial gravity = ${level.initialGravity} m/s².`} Your first sent message starts the ${level.timeLimitSeconds}-second experiment.`);
+  const [notice, setNotice] = useState(`${accelerationLabel({x:level.initialAcceleration[0],y:level.initialAcceleration[1]})}. Your first sent message starts the ${level.timeLimitSeconds}-second run.`);
   const { canvasRef, labRef, telemetry } = useGameWorld(level);
   const queue = useMessageQueue(level, labRef, setNotice);
   const controls = useGameControls(labRef, queue.preparing);
@@ -44,12 +45,7 @@ export function useGameSession(level: LevelDefinition) {
       setEvents(previous => [...previous, ...result.events]);
       queue.clearSelection(ids);
       lab.report();
-      const rule = result.gravity === 0 ? 'gravity = 0'
-        : `${result.gravity > 0 ? 'downward' : 'upward'} gravity, a = ${Math.abs(result.gravity).toFixed(1)} m/s²`;
-      const changesOnlyGravity = result.events.every(event => event.operations.every(operation => (
-        operation.type === 'set_gravity' || operation.type === 'reverse_gravity'
-      )));
-      setNotice(`${ids.length === 1 ? 'Message sent' : `${ids.length} messages sent in queue order`}. ${changesOnlyGravity ? `Now ${rule}.` : 'Environment rules applied.'}${lab.world.running ? '' : lab.world.tutorialId ? ' Choose Continue when ready.' : ' Resume to see the result.'}`);
+      setNotice(`${ids.length === 1 ? 'Message sent' : `${ids.length} messages sent in queue order`}. ${accelerationLabel(result.rules.acceleration)}.${lab.world.running ? '' : lab.world.tutorialId ? ' Choose Continue when ready.' : ' Resume to see the result.'}`);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : 'The batch could not be sent.');
     }

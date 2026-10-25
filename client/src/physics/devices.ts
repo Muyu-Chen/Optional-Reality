@@ -3,7 +3,7 @@ import type { RuleState } from '../../../shared/rules';
 import type { LevelDefinition, Rect } from '../levels/types';
 
 const { Bodies, Body, Composite, Constraint } = Matter;
-export interface SpringState { phase: 'idle' | 'charging' | 'launched'; elapsed: number; anchor?: Matter.Constraint }
+export interface SpringState { phase: 'idle' | 'charging' | 'launched'; elapsed: number; anchor?: Matter.Constraint; origin?: {x:number;y:number} }
 export interface DeviceEvent { type: 'spring_charging' | 'spring_released'; deviceId: string }
 const overlaps = (ball: Matter.Body, radius: number, area: Rect) => {
   const x = Math.max(area.x, Math.min(ball.position.x, area.x + area.width));
@@ -73,11 +73,16 @@ export class DeviceRuntime {
           if (power <= 0) break;
           if (state.phase === 'idle' && touching) {
             state.phase='charging';state.elapsed=0;
+            state.origin={...ball.position};
             state.anchor=Constraint.create({bodyA:ball,pointB:{...ball.position},stiffness:1,damping:.2,length:0});
             Composite.add(this.engine.world,state.anchor);
             Body.setVelocity(ball,{x:0,y:0});Body.setAngularVelocity(ball,0);
             this.events.push({type:'spring_charging',deviceId:device.id});
           } else if(state.phase === 'charging') state.elapsed+=dt;
+          if(state.phase==='charging' && state.anchor && state.origin) {
+            const fraction=Math.min(1,state.elapsed/(device.chargeSeconds || dt));
+            state.anchor.pointB.y=state.origin.y+(device.compressionDistance || 0)*fraction;
+          }
           if(state.phase === 'charging' && state.elapsed+1e-8 >= (device.chargeSeconds ?? 0)) {
             if(state.anchor) Composite.remove(this.engine.world,state.anchor);
             state.anchor=undefined;state.phase='launched';

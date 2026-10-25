@@ -17,9 +17,10 @@ export interface TrackDefinition {
 }
 
 export interface Rect { readonly x: number; readonly y: number; readonly width: number; readonly height: number }
+export interface StarDefinition { readonly id: string; readonly position: Point; readonly radius?: number }
 export type DeviceDefinition =
   | { readonly kind: 'conveyor'; readonly id: string; readonly area: Rect; readonly speed: number }
-  | { readonly kind: 'spring'; readonly id: string; readonly area: Rect; readonly power: number; readonly launchBase: Point; readonly launchPerPower: Point; readonly chargeSeconds?: number }
+  | { readonly kind: 'spring'; readonly id: string; readonly area: Rect; readonly power: number; readonly launchBase: Point; readonly launchPerPower: Point; readonly chargeSeconds?: number; readonly compressionDistance?: number }
   | { readonly kind: 'fan'; readonly id: string; readonly area: Rect; readonly power: number; readonly acceleration: Point }
   | { readonly kind: 'rotor'; readonly id: string; readonly position: Point; readonly radius: number; readonly angularSpeed: number }
   | { readonly kind: 'sensor'; readonly id: string; readonly position: Point; readonly radius: number }
@@ -40,7 +41,7 @@ export interface LevelDefinition {
     readonly pixelsPerMetre: number;
   };
   readonly timeLimitSeconds: number;
-  readonly initialGravity: number;
+  readonly initialAcceleration: Point;
   readonly devices?: readonly DeviceDefinition[];
   readonly commandLimit?: number;
   readonly failOnFall?: boolean;
@@ -59,6 +60,7 @@ export interface LevelDefinition {
   };
   readonly tracks: readonly TrackDefinition[];
   readonly guideLines: readonly Line[];
+  readonly stars?: readonly StarDefinition[];
   readonly exit: {
     readonly id: string;
     readonly label: string;
@@ -69,6 +71,7 @@ export interface LevelDefinition {
     readonly condition?: { readonly kind: 'settle'; readonly seconds: number; readonly maxSpeed: number };
   };
   readonly instructions: {
+    readonly timingLesson?: 'ramp' | 'spring';
     readonly objective: string;
     readonly hint: string;
     readonly sceneDescription: string;

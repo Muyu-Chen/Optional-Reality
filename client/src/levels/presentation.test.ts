@@ -10,7 +10,7 @@ import { frictionRunway } from './friction-runway';
 import { catchCup } from './catch-cup';
 
 describe('player-facing capabilities', () => {
-  const base = ['Gravity','Horizontal acceleration','Surface bounce','Surface friction'];
+  const base = ['Acceleration','Surface bounce','Surface friction'];
   it.each([
     [gravityLab, base],
     [bounce, base],

@@ -3,6 +3,19 @@ import { gravityLab } from '../levels/gravity-lab';
 import { PhysicsWorld } from './world';
 
 describe('environment acceleration axes', () => {
+  it('applies downward 20 and then upward 20 through the same vector without changing velocity instantly',()=>{
+    const world=new PhysicsWorld({...gravityLab,tracks:[],guideLines:[],ball:{...gravityLab.ball,position:[300,180]}});
+    try{
+      world.applyMessages([{text:'down',operations:[{type:'set_gravity',acceleration:20}]}]);world.start();
+      for(let i=0;i<60;i++)world.step();
+      expect(world.engine.gravity.y).toBe(20);expect(world.ball.position.y).toBeCloseTo(383.33,1);
+      const velocity=world.ball.velocity.y;
+      world.applyMessages([{text:'up',operations:[{type:'set_property',target:'world',property:'acceleration_y',value:-20}]}]);
+      expect(world.ball.velocity.y).toBe(velocity);world.step();
+      expect(world.ball.velocity.y).toBeGreaterThan(0);expect(world.ball.velocity.y).toBeLessThan(velocity);
+      expect(world.rules.acceleration).toEqual({x:0,y:-20});
+    }finally{world.destroy();}
+  });
   it('uses m/s², keeps inertia after stopping, and undoes/retries without velocity edits', () => {
     const world=new PhysicsWorld({...gravityLab,tracks:[],guideLines:[],ball:{...gravityLab.ball,position:[300,180]}});
     try {

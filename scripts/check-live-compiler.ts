@@ -9,6 +9,7 @@ import { levels } from '../client/src/levels/catalog';
 import { initialRules } from '../client/src/levels/rules';
 import type { Operation } from '../shared/rules';
 import { CompileResponseSchema, type CompileRequest } from '../shared/compiler';
+import { normalizeAccelerationOperation } from '../shared/acceleration';
 
 dotenv({ path: fileURLToPath(new URL('../.env', import.meta.url)), quiet: true });
 const config = loadConfig();
@@ -40,17 +41,18 @@ const cases = [
   { text: 'Switch off gravity and add a rightward acceleration of 2 m/s².', operations: [set('gravity', 0), set('acceleration_x', 2)] },
   { text: '给环境一个往上 0.75 米每秒平方的加速度。', operations: [set('gravity', -.75)] },
   { text: 'Please accelerate everything towards the left with magnitude 0.25 m/s².', operations: [set('acceleration_x', -.25)] },
+  { text: 'Set gravity downward to 20 m/s².', operations: [set('gravity',20)] },
 ];
 const reports: { level: string; kind: string; passed: boolean; milliseconds: number; cases?: number; error?: string; cacheHitTokens?: number; cacheMissTokens?: number }[] = [];
 const details: unknown[] = [];
 function canonical(operations: readonly Operation[]) {
-  return operations.map(operation => operation.type === 'set_gravity' ? set('gravity', operation.acceleration) : operation)
+  return operations.map(normalizeAccelerationOperation)
     .map(operation => JSON.stringify(operation, Object.keys(operation).sort())).sort();
 }
 async function check(levelId: string, tests: { text: string; operations: Operation[] }[], rejection = false, kind = 'shared') {
   const level = levels.find(item => item.id === levelId)!;
   const rules = initialRules(level);
-  rules.values.world.acceleration_x = 1;
+  rules.acceleration.x = 1;
   const input = { requestId: crypto.randomUUID(), levelId, sceneVersion: 1, queueRevision: 1,
     rules, messages: tests.map((test, index) => ({ id: `m${index}`, text: test.text })) };
   let usage: { prompt_cache_hit_tokens?: number; prompt_cache_miss_tokens?: number } = {};

@@ -4,7 +4,6 @@ import { bakeryText, strokePath, type Ctx } from './bakery/drawing';
 import { drawBread } from './bakery/bread';
 import { drawBakeryDevice } from './bakery/devices';
 import { drawBakeryRoom } from './bakery/room';
-import { drawGravityKey } from './visual-language';
 
 // Rendering reads the Matter.js world; no simulation or command parser lives here.
 export function drawBakery(ctx: Ctx, world: PhysicsWorld, trail: readonly Point[]) {
@@ -12,7 +11,6 @@ export function drawBakery(ctx: Ctx, world: PhysicsWorld, trail: readonly Point[
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   drawBakeryRoom(ctx);
-  drawGravityKey(ctx, world.gravity, 510, 43);
   for (const device of level.devices || []) drawBakeryDevice(ctx, device, world);
   if (trail.length > 1) {
     ctx.setLineDash([2, 7]);

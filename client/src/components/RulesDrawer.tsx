@@ -1,3 +1,4 @@
+import { accelerationLabel, type AccelerationVector } from '../../../shared/acceleration';
 import type { RuleState } from '../../../shared/rules';
 import type { LevelDefinition } from '../levels/types';
 import { ruleContext } from '../levels/rules';
@@ -5,7 +6,7 @@ import { tierFor } from '../levels/progression';
 
 interface RulesDrawerProps {
   level: LevelDefinition;
-  gravity: number;
+  acceleration: AccelerationVector;
   rules?: RuleState;
   commandCount: number;
   onClose: () => void;
@@ -13,7 +14,7 @@ interface RulesDrawerProps {
   onLoadExample: () => void;
 }
 
-export function RulesDrawer({ level, gravity, rules, commandCount, onClose, onSuggest, onLoadExample }: RulesDrawerProps) {
+export function RulesDrawer({ level, acceleration, rules, commandCount, onClose, onSuggest, onLoadExample }: RulesDrawerProps) {
   const tier = tierFor(level);
   const context = ruleContext(level);
   return (
@@ -30,7 +31,7 @@ export function RulesDrawer({ level, gravity, rules, commandCount, onClose, onSu
       </div>
       <button className="quiet-button" onClick={onLoadExample}>Load starter messages</button>
       <dl>
-        <div><dt>Gravity</dt><dd>{gravity} m/s²</dd></div>
+        <div><dt>Acceleration</dt><dd>{accelerationLabel(acceleration)}</dd></div>
         {Object.entries(rules?.values || {}).flatMap(([target, properties]) => (
           Object.entries(properties).map(([property, value]) => (
             <div key={target + property}>

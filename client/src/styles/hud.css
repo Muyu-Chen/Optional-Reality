@@ -39,6 +39,17 @@
   color:var(--muted);
   margin:7px 0 0
 }
+.game-title>.star-progress,.star-progress {
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin:6px 0 0;
+  color:#806627;
+  font:12px ui-monospace,monospace;
+  letter-spacing:0
+}
+.completion-score .star-progress { font-size:20px }
+.completion-score p { color:var(--muted);font-size:12px }
 .hud-controls {
   margin-left:auto;
   display:flex;

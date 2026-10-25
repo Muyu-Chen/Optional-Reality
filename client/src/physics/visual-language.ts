@@ -25,15 +25,6 @@ export function drawForceArrow(ctx: CanvasRenderingContext2D, x: number, y: numb
   ctx.stroke();
 }
 
-export function drawGravityKey(ctx: CanvasRenderingContext2D, gravity: number, x: number, y: number) {
-  ctx.save();
-  ctx.fillStyle = physicsColours.gravity;
-  ctx.font = '13px ui-monospace,monospace';
-  ctx.fillText(gravity === 0 ? 'GRAVITY OFF · MOMENTUM REMAINS' : `GRAVITY ${gravity > 0 ? '↓' : '↑'} ${Math.abs(gravity).toFixed(1)} m/s²`, x + 24, y);
-  if (gravity) drawForceArrow(ctx, x + 6, y - 20 + (gravity < 0 ? 24 : 0), [0, gravity], 24, physicsColours.gravity);
-  ctx.restore();
-}
-
 export function drawBounceMarks(ctx: CanvasRenderingContext2D, points: readonly Point[], restitution: number) {
   ctx.save();
   ctx.strokeStyle = physicsColours.bounce;

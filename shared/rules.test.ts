@@ -25,10 +25,10 @@ describe('environment rule semantics', () => {
     ] }];
     const state = initialRules(realityBreakdown);
     const result = applyBatch(messages, ['multi'], state, 5, context);
-    expect(result.rules.gravity).toBe(2);
+    expect(result.rules.acceleration.y).toBe(2);
     expect(result.rules.values.world.restitution).toBe(.7);
     expect(result.events).toHaveLength(1);
-    expect(state.gravity).toBe(8);
+    expect(state.acceleration.y).toBe(8);
     expect(result.messages[0].status).toBe('sent');
   });
   it('rejects core edits, direct gate edits, foreign devices, and nonfinite values', () => {

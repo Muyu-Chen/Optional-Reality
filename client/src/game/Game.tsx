@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { accelerationLabel } from '../../../shared/acceleration';
 import { GameHud } from '../components/GameHud';
 import { GameMenu } from '../components/GameMenu';
 import { MessageQueue } from '../components/MessageQueue';
@@ -39,18 +40,17 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
           {showRules ? 'Close rules' : 'Rules & hints'} ⌁
         </button>
         <span data-testid="active-gravity">
-          {telemetry.gravity === 0 ? 'g = 0' : `g ${telemetry.gravity > 0 ? '↓' : '↑'} ${Math.abs(telemetry.gravity).toFixed(1)} m/s²`}
+          {accelerationLabel(telemetry.acceleration)}
         </span>
-        {!!world?.rules.values.world?.acceleration_x && <span aria-label="Horizontal acceleration">aₓ {world.rules.values.world.acceleration_x > 0 ? '→' : '←'} {Math.abs(world.rules.values.world.acceleration_x)} m/s²</span>}
         <span>{game.stateLabel}</span>
       </div>
-      {showRules && <RulesDrawer level={level} gravity={telemetry.gravity} rules={world?.rules}
+      {showRules && <RulesDrawer level={level} acceleration={telemetry.acceleration} rules={world?.rules}
         commandCount={world?.commandCount || 0} onClose={() => setShowRules(false)}
         onSuggest={queue.setInput} onLoadExample={queue.loadExample} />}
       <p className="game-toast" role="status" title={game.notice}>{game.notice}</p>
       {game.tutorial && !controls.menuOpen && <TeachingOverlay tutorial={game.tutorial}
         preparing={queue.preparing} onContinue={game.continueTutorial} />}
-      {level.number === 1 && !game.ended && <TimingHint hasMessages={!!queue.messages.length} telemetry={telemetry} />}
+      {level.instructions.timingLesson && !game.ended && <TimingHint lesson={level.instructions.timingLesson} hasMessages={!!queue.messages.length} telemetry={telemetry} />}
       {(controls.menuOpen || game.ended) && <GameMenu level={level} telemetry={telemetry} preparing={queue.preparing}
         onChooseLevel={chooseLevel} onResume={controls.resumeGame} onRetry={game.retryWorld}
         onReset={game.resetWorld} onReplayTeaching={game.replayTeaching} />}

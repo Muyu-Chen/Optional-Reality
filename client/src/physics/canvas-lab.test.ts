@@ -1,3 +1,5 @@
+vi.mock('./star-renderer', () => ({drawStars:vi.fn()}));
+vi.mock('./acceleration-renderer', () => ({drawAcceleration:vi.fn()}));
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { gravityLab } from '../levels/gravity-lab';
@@ -88,7 +90,7 @@ describe('Canvas lifecycle and fixed simulation time', () => {
     old.start(); frame(1); frame(40);
     lab.reset();
     expect(lab.world).not.toBe(old);
-    expect(lab.world.snapshot()).toMatchObject({ gravity: 0, tick: 0, running: false, started: false });
+    expect(lab.world.snapshot()).toMatchObject({ acceleration:{x:0,y:0}, tick: 0, running: false, started: false });
     expect(lab.world.commandCount).toBe(0);
     expect(lab.world.seenTutorials.has('seen')).toBe(true);
     expect(old.engine.world.bodies).toHaveLength(0);

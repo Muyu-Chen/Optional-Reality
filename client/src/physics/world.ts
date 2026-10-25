@@ -5,15 +5,16 @@ import { applyRules, type Operation, type RuleState } from '../../../shared/rule
 import { DeviceRuntime } from './devices';
 import { createSceneBodies } from './scene-bodies';
 import { GoalTracker } from './goal';
+import { StarCollection } from './stars';
 
 const { Engine, Composite } = Matter;
 export const STEP_MS = 1000 / 120;
 
-export interface Telemetry { running: boolean; started: boolean; gravity: number; tick: number; won: boolean; timedOut: boolean; fell: boolean; tutorialId: string | null; x: number; y: number }
+export interface Telemetry { running: boolean; started: boolean; acceleration: RuleState['acceleration']; stars: {collected:number;total:number}; tick: number; won: boolean; timedOut: boolean; fell: boolean; tutorialId: string | null; x: number; y: number }
 
 export function initialTelemetry(level: LevelDefinition): Telemetry {
   return {
-    running: false, started: false, gravity: level.initialGravity, tick: 0,
+    running: false, started: false, acceleration:{x:level.initialAcceleration[0],y:level.initialAcceleration[1]}, stars:{collected:0,total:level.stars?.length || 0}, tick: 0,
     won: false, timedOut: false, fell: false, tutorialId: null, x: level.ball.position[0], y: level.ball.position[1],
   };
 }
@@ -21,7 +22,7 @@ export function initialTelemetry(level: LevelDefinition): Telemetry {
 export class PhysicsWorld {
   engine: Matter.Engine;
   ball: Matter.Body;
-  gravity: number;
+  get gravity() { return this.rules.acceleration.y; }
   readonly limitTicks: number;
   tick = 0;
   started = false;
@@ -34,23 +35,24 @@ export class PhysicsWorld {
   rules: RuleState;
   readonly devices: DeviceRuntime;
   readonly goal: GoalTracker;
+  readonly stars: StarCollection;
   private history: { before: RuleState; operations: readonly Operation[]; text: string }[] = [];
   private readonly surfaces: Map<string, Matter.Body[]>;
   get commandCount() { return this.history.length; }
 
   constructor(readonly level: LevelDefinition, seenTutorials: Iterable<string> = []) {
     this.seenTutorials = new Set(seenTutorials);
-    const { viewport, initialGravity } = level;
+    const { viewport, initialAcceleration } = level;
     this.rules = initialRules(level);
-    this.gravity = initialGravity;
     this.limitTicks = Math.round(level.timeLimitSeconds * 1000 / STEP_MS);
-    this.engine = Engine.create({ gravity: { x: 0, y: initialGravity, scale: viewport.pixelsPerMetre / 1_000_000 } });
+    this.engine = Engine.create({ gravity: { x: initialAcceleration[0], y: initialAcceleration[1], scale: viewport.pixelsPerMetre / 1_000_000 } });
     const scene = createSceneBodies(level);
     this.ball = scene.ball;
     this.surfaces = scene.surfaces;
     Composite.add(this.engine.world, scene.bodies);
     this.devices = new DeviceRuntime(level, this.engine, this.ball);
     this.goal = new GoalTracker(level);
+    this.stars = new StarCollection(level);
     this.syncRules();
   }
 
@@ -84,8 +86,8 @@ export class PhysicsWorld {
     return next;
   }
   private syncRules() {
-    this.gravity = this.rules.gravity; this.engine.gravity.y = this.gravity;
-    this.engine.gravity.x = this.rules.values.world?.acceleration_x ?? 0;
+    this.engine.gravity.y = this.rules.acceleration.y;
+    this.engine.gravity.x = this.rules.acceleration.x;
     for (const [id, bodies] of this.surfaces) for (const body of bodies) {
       body.restitution = this.rules.values[id]?.restitution ?? this.rules.values.world?.restitution ?? 0;
       body.friction = this.rules.values[id]?.friction ?? this.rules.values.world?.friction ?? 0;
@@ -104,9 +106,11 @@ export class PhysicsWorld {
         this.seenTutorials.add(tutorial.id);this.tutorialId=tutorial.id;this.pause();return;
       }
     }
+    const previous: readonly [number,number]=[this.ball.position.x,this.ball.position.y];
     Engine.update(this.engine, STEP_MS);
     this.tick++;
     this.devices.afterStep(this.rules);
+    this.stars.update(this.ball,previous);
     if (this.goal.update(this.ball, STEP_MS / 1000)) {
       this.won = true;
       this.running = false;
@@ -117,7 +121,7 @@ export class PhysicsWorld {
     }
   }
   snapshot(): Telemetry {
-    return { running: this.running, started: this.started, gravity: this.gravity, tick: this.tick, won: this.won, timedOut: this.timedOut, fell: this.fell, tutorialId: this.tutorialId, x: this.ball.position.x, y: this.ball.position.y };
+    return { running: this.running, started: this.started, acceleration:{...this.rules.acceleration}, stars:this.stars.snapshot(), tick: this.tick, won: this.won, timedOut: this.timedOut, fell: this.fell, tutorialId: this.tutorialId, x: this.ball.position.x, y: this.ball.position.y };
   }
   destroy() { Composite.clear(this.engine.world, false); Engine.clear(this.engine); }
 }
