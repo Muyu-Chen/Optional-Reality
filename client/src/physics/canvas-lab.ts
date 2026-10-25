@@ -99,8 +99,10 @@ export class CanvasLab {
     const delta = document.hidden ? 0 : Math.min(time - (this.previousTime || time), 50);
     this.previousTime = time;
     this.visualTime+=delta/1000;
-    this.scenery.advance(delta/1000,this.world.rules.acceleration,!document.hidden&&this.world.running,!!this.motion?.matches);
-    this.landscape.advance(delta/1000,this.world.rules.acceleration,!document.hidden&&this.world.running,!!this.motion?.matches);
+    // Results freeze gameplay, not the decorative world's independent physics.
+    const backgroundActive=!document.hidden&&(this.world.running||this.world.won||this.world.timedOut);
+    this.scenery.advance(delta/1000,this.world.rules.acceleration,backgroundActive,!!this.motion?.matches);
+    this.landscape.advance(delta/1000,this.world.rules.acceleration,backgroundActive,!!this.motion?.matches);
     this.feedback.advance(this.visualTime,!!this.motion?.matches);
     if (this.world.running) {
       this.accumulator += delta;

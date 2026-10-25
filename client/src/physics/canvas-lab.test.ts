@@ -3,10 +3,13 @@ vi.mock('./acceleration-renderer', () => ({drawAcceleration:vi.fn()}));
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { gravityLab } from '../levels/gravity-lab';
+import { bounce } from '../levels/bounce';
+import { toaster } from '../levels/toaster';
 import { CanvasLab } from './canvas-lab';
 import Matter from 'matter-js';
 import { drawExitTransition } from './exit-transition-renderer';
 import { drawPuzzleBackdrop } from './scene-backdrop';
+import { drawBakery } from './bakery-renderer';
 
 vi.mock('./geometry-renderer', () => ({ drawGeometry: vi.fn() }));
 vi.mock('./scene-backdrop', () => ({ drawPuzzleBackdrop: vi.fn() }));
@@ -43,12 +46,12 @@ function frame(time: number) {
   frames.delete(id);
   callback(time);
 }
-function setup(immersive = false, configure?: (canvas: HTMLCanvasElement) => void) {
+function setup(immersive = false, configure?: (canvas: HTMLCanvasElement) => void, level = gravityLab) {
   const canvas = document.createElement('canvas');
   Object.defineProperties(canvas, { clientWidth: { value: 1366 }, clientHeight: { value: 768 } });
   configure?.(canvas);
   const report = vi.fn();
-  const lab = new CanvasLab(canvas, gravityLab, report, immersive);
+  const lab = new CanvasLab(canvas, level, report, immersive);
   labs.push(lab);
   return { lab, canvas, report };
 }
@@ -160,6 +163,45 @@ function reachExit(lab: CanvasLab) {
 }
 
 describe('Canvas exit presentation lifecycle', () => {
+  it('keeps background birds, clouds, residents and water moving behind the result without changing gameplay',()=>{
+    const {lab,report}=setup(false,undefined,bounce);reachExit(lab);
+    const result=lab.world.snapshot(),position={...lab.world.ball.position};
+    for(let i=1;i<=24;i++)frame(18+i*50);
+    expect(report.mock.lastCall![0].exitTransition).toBe('complete');
+    const last=vi.mocked(drawPuzzleBackdrop).mock.lastCall!;
+    const before=structuredClone({landscape:last[3],ambient:last[4]});
+    for(let i=25;i<=34;i++)frame(18+i*50);
+    const after=vi.mocked(drawPuzzleBackdrop).mock.lastCall!;
+    expect(after[3].time).toBeGreaterThan(before.landscape.time);
+    expect(after[3].residents[0].x).not.toBe(before.landscape.residents[0].x);
+    expect(after[3].water).not.toEqual(before.landscape.water);
+    expect(after[4]!.birds[0].x).not.toBe(before.ambient!.birds[0].x);
+    expect(after[4]!.clouds[0].x).not.toBe(before.ambient!.clouds[0].x);
+    expect(lab.world.snapshot()).toEqual(result);expect(lab.world.ball.position).toEqual(position);
+  });
+  it('also keeps failure scenery alive, while hidden tabs, reduced motion and retry still stop it',()=>{
+    const {lab}=setup();
+    Matter.Body.setPosition(lab.world.ball,{x:900,y:250});lab.world.start();frame(1);frame(18);
+    expect(lab.world.outOfBounds).toBe('right');const result=lab.world.snapshot();
+    const before=structuredClone(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]);frame(68);
+    const moving=structuredClone(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]);expect(moving.time).toBeGreaterThan(before.time);
+    vi.spyOn(document,'hidden','get').mockReturnValue(true);document.dispatchEvent(new Event('visibilitychange'));frame(10001);frame(20001);
+    expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]).toEqual(moving);
+    vi.spyOn(document,'hidden','get').mockReturnValue(false);document.dispatchEvent(new Event('visibilitychange'));frame(30001);
+    expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]).toEqual(moving);
+    motion.matches=true;frame(30051);expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]).toEqual(moving);
+    motion.matches=false;frame(30101);expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3].time).toBeGreaterThan(moving.time);
+    expect(lab.world.snapshot()).toEqual(result);
+    lab.reset();const initial=structuredClone(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]);frame(30151);frame(30201);
+    expect(initial.time).toBe(0);expect(vi.mocked(drawPuzzleBackdrop).mock.lastCall![3]).toEqual(initial);
+  });
+  it('continues the bakery window ecosystem after completion without advancing the result clock',()=>{
+    const {lab}=setup(false,undefined,toaster);reachExit(lab);
+    const result=lab.world.snapshot(),before=structuredClone(vi.mocked(drawBakery).mock.lastCall![3]);
+    for(let i=1;i<=34;i++)frame(18+i*50);
+    expect(vi.mocked(drawBakery).mock.lastCall![3]!.time).toBeGreaterThan(before!.time);
+    expect(lab.world.snapshot()).toEqual(result);
+  });
   it('reports success immediately but releases the result only after the visual absorption', () => {
     const { lab, report } = setup();reachExit(lab);
     const result = lab.world.snapshot(), position = { ...lab.world.ball.position };
