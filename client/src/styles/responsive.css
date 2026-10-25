@@ -1,9 +1,9 @@
 @media(max-width:1000px) {
   :root,.game-canvas {
     --scene-left:16px;
-    --scene-right:318px;
-    --scene-top:120px;
-    --dock-width:280px
+    --scene-right:338px;
+    --scene-top:130px;
+    --dock-width:300px
   }
   .game-hud {
     left:16px;
@@ -14,11 +14,11 @@
     right:18px
   }
   .game-title h1 {
-    font-size:23px
+    font-size:25px
   }
   .game-title>p {
     max-width:260px;
-    font-size:13px
+    font-size:14px
   }
   .hud-controls {
     gap:4px
@@ -45,8 +45,8 @@
   :root,.game-canvas {
     --scene-left:12px;
     --scene-right:12px;
-    --scene-top:140px;
-    --scene-bottom:410px;
+    --scene-top:146px;
+    --scene-bottom:460px;
     --dock-width:calc(100% - 28px)
   }
   .game-hud {
@@ -58,12 +58,12 @@
     font-size:21px
   }
   .game-title>span {
-    font-size:10px;
-    letter-spacing:.7px
+    font-size:12px;
+    letter-spacing:0
   }
   .game-title>p {
     max-width:210px;
-    font-size:12px
+    font-size:13px
   }
   .hud-controls {
     gap:6px
@@ -78,32 +78,32 @@
   }
   .queue-dock {
     top:auto;
-    bottom:274px;
+    bottom:296px;
     right:14px;
-    max-height:130px
+    max-height:160px
   }
   .dock-heading {
     padding:9px 12px;
-    font-size:12px
+    font-size:13px
   }
   .current-message {
     padding:8px 12px
   }
   .message-text {
-    font-size:15px;
+    font-size:18px;
     margin:5px 0
   }
   .parsed-rule {
-    font-size:12px
+    font-size:14px
   }
   .send-now {
     padding:5px 8px;
-    font-size:12px
+    font-size:13px
   }
   .send-now span {
     display:none
   }
-  .pending-list { max-height:90px }
+  .pending-list { max-height:116px }
   .upcoming-message {
     padding:6px 12px
   }
@@ -111,12 +111,12 @@
     display:none
   }
   .upcoming-message .message-text {
-    font-size:14px;
+    font-size:18px;
     margin:0
   }
   .queue-dock.expanded {
     max-height:58svh;
-    bottom:274px;
+    bottom:296px;
     z-index:5
   }
   .queue-dock.expanded .pending-list {
@@ -128,8 +128,8 @@
     padding-bottom:9px
   }
   .composer-dock textarea {
-    min-height:55px;
-    font-size:15px
+    min-height:70px;
+    font-size:18px
   }
   .editable-rules {
     font-size:13px;
@@ -141,18 +141,18 @@
   }
   .composer-bottom>span {
     max-width:none;
-    font-size:12px
+    font-size:13px
   }
   .bottom-hud {
     bottom:10px;
     left:14px;
     right:14px;
-    font-size:12px;
+    font-size:13px;
     gap:10px;
     flex-wrap:wrap
   }
   .bottom-hud>.quiet-button {
-    font-size:12px
+    font-size:13px
   }
   .game-toast {
     display:none
@@ -161,19 +161,19 @@
     padding:3px 12px 10px
   }
   .empty-queue>p {
-    font-size:15px;
+    font-size:19px;
     margin-bottom:4px
   }
   .empty-queue>span {
-    font-size:12px
+    font-size:14px
   }
   .starter-button {
     margin-top:6px;
-    font-size:12px
+    font-size:13px
   }
   .stage-overlay {
-    top:140px;
-    bottom:410px
+    top:146px;
+    bottom:460px
   }
   .game-menu {
     padding:18px;
@@ -205,7 +205,7 @@
   }
   .rules-drawer {
     left:14px;
-    bottom:414px;
+    bottom:464px;
     max-height:50svh
   }
   .queue-management {
@@ -216,6 +216,7 @@
   }
 }
 @media(prefers-reduced-motion:reduce) {
+  button { transition:none }
   .current-message {
     animation:none
   }

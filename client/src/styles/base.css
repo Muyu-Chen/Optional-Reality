@@ -1,8 +1,9 @@
 :root {
-  font-family:Inter,'Segoe UI',system-ui,-apple-system,sans-serif;
+  font-family:ui-rounded,'SF Pro Rounded','Avenir Next','Trebuchet MS',system-ui,sans-serif;
   color:#203b30;
   background:#f5f1e7;
-  font-size:15px;
+  font-size:16px;
+  font-weight:500;
   font-synthesis:none;
   color-scheme:light;
   --ink:#203b30;
@@ -13,14 +14,17 @@
   --glass:#fffcf2ed;
   --gold:#e9ab24;
   --gold-ink:#805713;
-  --body-size:15px;
-  --small-size:12px;
+  --body-size:16px;
+  --small-size:13px;
   --accent:#2f7755;
+  --panel-heading:#27543c;
+  --panel-heading-ink:#fffbea;
+  --button-shadow:#102f22;
   --scene-left:28px;
   --scene-top:96px;
-  --scene-right:366px;
+  --scene-right:386px;
   --scene-bottom:78px;
-  --dock-width:310px
+  --dock-width:330px
 }
 * {
   box-sizing:border-box
@@ -37,7 +41,8 @@ button,a,textarea,select {
 }
 button {
   cursor:pointer;
-  color:inherit
+  color:inherit;
+  transition:background-color .15s,box-shadow .15s,transform .15s
 }
 button:disabled {
   cursor:not-allowed;
@@ -74,6 +79,8 @@ summary {
   --glass:#fff9e8ed;
   --surface:#fff9e8;
   --surface-soft:#eee0c6;
+  --panel-heading:#53613d;
+  --button-shadow:#343e26;
   background:#f2e6ce
 }
 .game-canvas {
@@ -84,13 +91,13 @@ summary {
   display:block;
   --scene-left:28px;
   --scene-top:96px;
-  --scene-right:366px;
+  --scene-right:386px;
   --scene-bottom:78px
 }
 .glass {
   background:var(--glass);
-  border:1px solid #fffef6;
-  box-shadow:0 10px 32px #273d2810,0 0 0 1px var(--line);
+  border:2px solid #fffef6;
+  box-shadow:0 5px 0 #28433214,0 14px 30px #273d2818,0 0 0 1px var(--line);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px)
 }

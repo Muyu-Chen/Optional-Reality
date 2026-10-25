@@ -74,9 +74,23 @@
 }
 .result-star {
   display:block;
+  position:relative;
   flex:0 1 91px;
-  transform-origin:center;
-  animation:star-arrives .4s ease-out both
+  transform-origin:center
+}
+.result-star--collected {
+  animation:star-collected .46s cubic-bezier(.22,.75,.3,1.2) both;
+  animation-delay:var(--star-delay)
+}
+.result-star--collected::before {
+  content:'';
+  position:absolute;
+  inset:12%;
+  border-radius:50%;
+  background:radial-gradient(circle,#ffc64470,transparent 70%);
+  pointer-events:none;
+  animation:star-halo .5s ease-out both;
+  animation-delay:var(--star-delay)
 }
 .result-star:nth-child(2) {
   flex-basis:104px;
@@ -104,10 +118,18 @@
 .result-star--collected .result-star-shape {
   fill:var(--gold,#e9ab24);
   stroke:var(--gold-ink,#805713);
-  filter:drop-shadow(0 4px 0 #80571330)
+  filter:drop-shadow(0 4px 0 #80571330);
+  animation:star-lights .32s ease-out backwards;
+  animation-delay:var(--star-delay)
 }
 .result-star--collected .result-star-shine {
   stroke:#fff2c0
+}
+.result-star-sweep {
+  fill:#fff9dc;
+  opacity:0;
+  animation:star-sweep .38s ease-out both;
+  animation-delay:calc(var(--star-delay) + .15s)
 }
 .result-star-count {
   margin:0;
@@ -187,9 +209,24 @@
   from { opacity:0;transform:translateY(10px) }
   to { opacity:1;transform:translateY(0) }
 }
-@keyframes star-arrives {
-  from { opacity:0;transform:scale(.82) translateY(5px) }
-  to { opacity:1;transform:scale(1) translateY(0) }
+@keyframes star-collected {
+  0% { transform:scale(.82) rotate(-7deg) }
+  58% { transform:scale(1.12) rotate(2deg) }
+  100% { transform:scale(1) rotate(0) }
+}
+@keyframes star-lights {
+  from { fill:var(--surface-soft,#f0eadb);filter:drop-shadow(0 0 0 #80571300) }
+  to { fill:var(--gold,#e9ab24);filter:drop-shadow(0 4px 0 #80571330) }
+}
+@keyframes star-halo {
+  0% { opacity:0;transform:scale(.7) }
+  32% { opacity:.9 }
+  100% { opacity:0;transform:scale(1.5) }
+}
+@keyframes star-sweep {
+  0% { opacity:0;transform:translateX(0) }
+  25%,60% { opacity:.6 }
+  100% { opacity:0;transform:translateX(150px) }
 }
 @media(max-width:700px) {
   .stage-overlay--complete {
@@ -222,7 +259,11 @@
   }
 }
 @media(prefers-reduced-motion:reduce) {
-  .game-menu--complete,.result-star {
+  .game-menu--complete,.result-star--collected,.result-star--collected::before,
+  .result-star--collected .result-star-shape,.result-star-sweep {
     animation:none
+  }
+  .result-star--collected::before,.result-star-sweep {
+    display:none
   }
 }
