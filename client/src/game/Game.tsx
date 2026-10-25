@@ -12,6 +12,7 @@ import { editableRuleLabels } from '../levels/presentation';
 import { useGameSession } from './useGameSession';
 import { LevelOnboarding } from '../components/LevelOnboarding';
 import { levelLabel } from '../levels/progression';
+import { InitialStateBriefing } from '../components/InitialStateBriefing';
 
 interface GameProps {
   level: LevelDefinition;
@@ -77,6 +78,9 @@ export function Game({ level, chooseLevel, onTitle, onLevelSelect, onCompleted }
         onTitle={onTitle} onLevelSelect={onLevelSelect}
         onHowToPlay={onboarding.lesson ? game.showHowToPlay : undefined} />}
       </div>
+      <InitialStateBriefing key={`${level.id}:${game.attempt}`} level={level}
+        suspended={!world || onboarding.visible || controls.menuOpen || !!game.tutorial || game.ended}
+        started={telemetry.started} />
       {onboarding.visible && onboarding.lesson && <LevelOnboarding lesson={onboarding.lesson} levelLabel={levelLabel(level)} levelTitle={level.title}
         editableRules={allowedRules}
         onClose={() => onboarding.close()} onLoadStarters={game.loadOnboardingStarters} />}

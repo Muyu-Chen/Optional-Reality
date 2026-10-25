@@ -23,6 +23,7 @@ export function useGameSession(level: LevelDefinition) {
   const onboarding = useLevelOnboarding(level, labRef, queue.cancelImmediate, controls.openMenu);
   const [events, setEvents] = useState<AppliedEvent[]>([]);
   const [captions, setCaptions] = useState<Caption[]>([]);
+  const [attempt, setAttempt] = useState(0);
   const finishCaption = useCallback((id: string) => {
     setCaptions(previous => previous.filter(caption => caption.id !== id));
   }, []);
@@ -58,6 +59,7 @@ export function useGameSession(level: LevelDefinition) {
   }
 
   function clearAttemptFeedback() {
+    setAttempt(previous => previous + 1);
     setEvents([]);
     setCaptions([]);
     queue.clearSelection();
@@ -130,7 +132,7 @@ export function useGameSession(level: LevelDefinition) {
   const ended = telemetry.won || telemetry.timedOut;
   const absorbing = telemetry.won && telemetry.exitTransition === 'absorbing';
   return {
-    canvasRef, telemetry, queue, controls, onboarding, notice, captions, finishCaption,
+    canvasRef, telemetry, queue, controls, onboarding, notice, captions, finishCaption, attempt,
     world: labRef.current?.world,
     canUndo: !!events.length, ended, absorbing, previewError, messageErrors,
     canSend: !ended && !onboarding.visible,

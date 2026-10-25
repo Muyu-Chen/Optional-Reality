@@ -1,0 +1,38 @@
+.initial-briefing {
+  position:absolute;
+  z-index:12;
+  left:calc(var(--scene-left) + (100% - var(--scene-left) - var(--scene-right))/2);
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(490px,calc(100% - var(--scene-right) - var(--scene-left) - 24px));
+  max-height:calc(100dvh - 48px);
+  overflow:auto;
+  padding:18px 24px 16px;
+  border-radius:22px;
+  background:#fffcf6f7;
+  color:var(--ink);
+  animation:briefing-arrive .18s ease-out
+}
+.initial-briefing header { display:flex;align-items:center;justify-content:space-between;gap:12px }
+.initial-briefing header>span { color:var(--muted);font-size:12px;font-weight:750;letter-spacing:1.4px }
+.initial-briefing header button { border:0;background:transparent;font-size:24px;line-height:1;padding:2px 6px }
+.initial-briefing h2 { font-size:27px;line-height:1.15;margin:8px 0 18px }
+.initial-briefing dl { display:grid;gap:12px;margin:0 0 16px }
+.initial-briefing dl>div { display:flex;justify-content:space-between;align-items:center;gap:16px }
+.initial-briefing dt { display:flex;align-items:center;gap:8px;font-size:16px;font-weight:700 }
+.initial-briefing dd { margin:0;text-align:right;font-size:18px;font-weight:650 }
+.briefing-ball { flex:none;width:17px;height:17px;border-radius:50%;border:2px solid #305b35;background:#d2ed63 }
+.briefing-acceleration { width:17px;text-align:center;color:#8250b5;font-size:23px;line-height:17px }
+.initial-briefing ul { list-style:none;padding:0;margin:0;line-height:1.5;font-size:14px }
+.briefing-surfaces { color:#29648d }
+.initial-briefing .briefing-devices { display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:9px;color:var(--muted) }
+.initial-briefing p { margin:16px 0 0;padding-top:11px;border-top:1px solid var(--line);font-size:14px;color:var(--muted) }
+@keyframes briefing-arrive { from { opacity:0 } to { opacity:1 } }
+@media(max-width:700px) {
+  .initial-briefing { left:50%;top:42%;width:calc(100% - 32px);max-height:calc(100dvh - 48px);padding:16px 18px }
+  .initial-briefing h2 { font-size:24px }
+  .initial-briefing dl>div { gap:10px }
+  .initial-briefing dt { font-size:14px }
+  .initial-briefing dd { font-size:16px }
+}
+@media(prefers-reduced-motion:reduce) { .initial-briefing { animation:none } }
