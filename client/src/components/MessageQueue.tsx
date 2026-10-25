@@ -1,7 +1,9 @@
 import { type Message } from '../domain/queue';
 import { MessageCard } from './MessageCard';
+import type { LevelDefinition } from '../levels/types';
 
 interface MessageQueueProps {
+  level: LevelDefinition;
   messages: Message[];
   selected: Set<string>;
   managing: boolean;
@@ -35,7 +37,7 @@ export function MessageQueue(props: MessageQueueProps) {
   const ready = messages.filter(message => message.status === 'ready');
   const chosen = ready.filter(message => selected.has(message.id));
   const renderMessage = (message: Message, index: number) => (
-    <MessageCard key={message.id} message={message} index={index} count={pending.length}
+    <MessageCard key={message.id} level={props.level} message={message} index={index} count={pending.length}
       managing={managing} selected={selected.has(message.id)} preparing={preparing}
       canSend={canSend && !props.messageErrors[message.id]} validationError={props.messageErrors[message.id]}
       onSelect={props.onSelect} onEdit={props.onEdit} onDelete={props.onDelete}

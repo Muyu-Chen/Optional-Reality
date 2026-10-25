@@ -34,7 +34,9 @@ export function drawSurface(ctx: CanvasRenderingContext2D, track: TrackDefinitio
     const value=rules.values[track.id]?.[property] ?? rules.values.world?.[property] ?? 0;
     if(track.feature==='bounce')drawBounceMarks(ctx,track.points,value);else drawFrictionMarks(ctx,track,value);
     ctx.font=sceneFonts.label;ctx.fillStyle=physicsColours[track.feature];
-    ctx.fillText(track.label || (track.feature==='bounce'?'Bouncy surface':'Grip surface'),track.points[0][0]+10,track.points[0][1]+track.thickness/2+32);
+    const label = track.label || (track.feature==='bounce'?'Bouncy surface':'Grip surface');
+    const local = rules.values[track.id]?.[property] !== undefined;
+    ctx.fillText(local ? `${label} · ${Number(value.toFixed(3))}` : label,track.points[0][0]+10,track.points[0][1]+track.thickness/2+32);
   }
   ctx.restore();
 }

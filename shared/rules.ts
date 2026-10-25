@@ -3,6 +3,7 @@ import { limitAbsoluteOperation, limitValue } from './rule-limits';
 import { PHYSICS_CAPABILITIES, PROPERTY_NAMES } from './physics-capabilities';
 import { ACCELERATION_RANGE, accelerationAxis, normalizeAccelerationOperation } from './acceleration';
 import { requestedPropertyValue } from './property-change';
+import { applyGlobalSurfaceMaterial } from './surface-materials';
 export { ENVIRONMENT_PROPERTIES } from './physics-capabilities';
 
 export const Acceleration = z.number().finite().min(ACCELERATION_RANGE[0]).max(ACCELERATION_RANGE[1]);
@@ -81,6 +82,7 @@ export function applyRules(current: RuleState, candidates: readonly unknown[], c
     const requested = requestedPropertyValue(operation, previous);
     const value = limitValue(requested,propertyRange(context,target,property));
     checkValue(context, target, property, value);
+    applyGlobalSurfaceMaterial(next, operation, context);
     if (axis) next.acceleration[axis] = value || 0;
     else (next.values[target] ||= {})[property] = value || 0;
   }

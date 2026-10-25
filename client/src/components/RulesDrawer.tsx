@@ -35,7 +35,7 @@ export function RulesDrawer({ level, acceleration, rules, commandCount, onClose,
         {Object.entries(rules?.values || {}).flatMap(([target, properties]) => (
           Object.entries(properties).map(([property, value]) => (
             <div key={target + property}>
-              <dt>{target === 'world' ? 'Surfaces' : context.targets.find(item => item.id === target)?.kind} · {property.replaceAll('_', ' ')}</dt>
+              <dt>{target === 'world' ? 'All surfaces' : context.targets.find(item => item.id === target)?.label || target} · {property.replaceAll('_', ' ')}</dt>
               <dd>{value}</dd>
             </div>
           ))

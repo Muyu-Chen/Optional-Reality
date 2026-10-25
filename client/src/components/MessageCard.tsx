@@ -1,8 +1,10 @@
-import { describeOperation } from '../../../shared/commands';
+import type { LevelDefinition } from '../levels/types';
+import { scopedRulePreview } from '../domain/rule-scope';
 import { messageOperations, type Message } from '../domain/queue';
 import { RulePreview } from './RulePreview';
 
 interface MessageCardProps {
+  level: LevelDefinition;
   message: Message;
   index: number;
   count: number;
@@ -19,13 +21,13 @@ interface MessageCardProps {
   onPrepare?: (id: string) => void;
 }
 
-export function MessageCard({ message, index, count, managing, selected, preparing, canSend, validationError,
+export function MessageCard({ level, message, index, count, managing, selected, preparing, canSend, validationError,
   onSelect, onEdit, onDelete, onMove, onSend, onPrepare }: MessageCardProps) {
   const operations = messageOperations(message);
   const status = message.status === 'draft' ? preparing ? 'Interpreting…' : 'Waiting'
     : message.status === 'error' ? 'Needs editing' : 'Ready';
   const description = operations.length
-    ? operations.map(operation => describeOperation(operation).title).join(' · ')
+    ? scopedRulePreview(operations, level)
     : message.status === 'draft' ? preparing ? 'Interpreting your rule…' : 'Choose Prepare when you are ready.' : message.error || 'Your rule is being prepared.';
 
   return (

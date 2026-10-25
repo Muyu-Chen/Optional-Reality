@@ -40,7 +40,7 @@ export function Game({ level, chooseLevel, onTitle, onLevelSelect, onCompleted }
       <GameHud level={level} telemetry={telemetry} secondsLeft={game.secondsLeft} menuOpen={controls.menuOpen}
         onRetry={game.retryWorld} onResume={controls.resumeGame} onOpenMenu={controls.openMenu} onTitle={onTitle} />
       <div className="game-rule-controls" inert={game.absorbing || undefined}>
-      <MessageQueue messages={queue.messages} selected={queue.selected} managing={queue.managing}
+      <MessageQueue level={level} messages={queue.messages} selected={queue.selected} managing={queue.managing}
         preparing={queue.preparing} ended={game.ended} canSend={game.canSend} messageErrors={game.messageErrors} canUndo={game.canUndo}
         apiConfigured={queue.api.configured} previewError={game.previewError}
         onToggleManage={queue.toggleManaging} onSelect={queue.toggleSelection} onSelectAll={queue.selectMessages}

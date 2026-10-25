@@ -144,12 +144,13 @@ describe('complete-message fallback and execution boundaries', () => {
     const changed = applyRules(state, [set('acceleration_y', 3), set('acceleration_x', 4)], context);
     expect(applyBatch([relative], ['relative'], changed, 5, context).rules.acceleration).toEqual({ x: 2, y: 6 });
   });
-  it('global edits preserve existing local overrides after multiple statements', () => {
+  it('global edits reach local materials while preserving preset walls', () => {
     const state = initialRules(catchCup), before = structuredClone(state);
     const message = prepareMessage('global', 'set all surface bounce to .8 and double all surface friction', cup, state);
     const after = applyBatch([message], ['global'], state, 1, cup).rules;
     expect(after.values.world.restitution).toBe(.8);
-    expect(after.values['cup-base']).toEqual(before.values['cup-base']);
-    expect(after.values['launch-pad']).toEqual(before.values['launch-pad']);
+    expect(after.values['cup-base']).toEqual({ restitution: .8, friction: 1 });
+    expect(after.values['launch-pad']).toEqual({ restitution: .8 });
+    expect(after.values['cup-left']).toEqual(before.values['cup-left']);
   });
 });

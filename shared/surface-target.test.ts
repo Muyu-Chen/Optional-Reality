@@ -19,14 +19,15 @@ describe('scene-defined surface names', () => {
   it.each(['Set missing pad bounce to 0','Set cup lid bounce to 0','Set cupcake bounce to 0','Set block friction to 0'])('rejects unknown or protected targets: %s', text => {
     expect(parseCommand(text,ruleContext(catchCup)).error).toBeTruthy();
   });
-  it('keeps preset walls protected while global defaults do not erase local material overrides', () => {
+  it('changes editable surfaces globally while keeping preset walls protected', () => {
     for(const text of ['Set left cup wall bounce to 0.5']) {
       const result=parseCommand(text,ruleContext(catchCup));expect(result.operation).toBeDefined();
       expect(()=>applyRules(initialRules(catchCup),[result.operation],ruleContext(catchCup))).toThrow('cannot be edited');
     }
     const parsed=parseCommand('Set surface bounce to 0.5',ruleContext(catchCup));
     const next=applyRules(initialRules(catchCup),[parsed.operation],ruleContext(catchCup));
-    expect(next.values.world.restitution).toBe(.5);expect(next.values['cup-base'].restitution).toBe(1.05);
+    expect(next.values.world.restitution).toBe(.5);expect(next.values['cup-base'].restitution).toBe(.5);
+    expect(next.values['launch-pad'].restitution).toBe(.5);expect(next.values['cup-left'].restitution).toBe(0);
   });
   it('supports the Grip surface name, its aliases and existing runway messages', () => {
     for(const [text,target] of [
