@@ -7,6 +7,7 @@ import { SURFACE_SCOPE_POLICY } from './compiler-surface-policy';
 import { ARITHMETIC_POLICY } from './compiler-arithmetic-policy';
 import { QUALITATIVE_POLICY } from '../../shared/qualitative-commands';
 import { MEANING_POLICY } from './compiler-meaning-policy';
+import { SPRING_LANGUAGE_POLICY } from '../../shared/spring-language';
 
 // The schema defines the operation set. Type-checking requires a guide for each operation.
 const OPERATION_GUIDE = {
@@ -43,6 +44,7 @@ Example JSON: {"messages":[{"id":"m1","operations":[{"type":"set_property","targ
 export const COMPILER_SYSTEM = COMPILER_RULES
   + '\n' + ARITHMETIC_POLICY
   + '\n' + MEANING_POLICY
+  + '\n' + SPRING_LANGUAGE_POLICY
   + '\n' + QUALITATIVE_POLICY
   + '\n' + SURFACE_SCOPE_POLICY
   + '\nShared physics catalog (identical across every level):\n'

@@ -4,14 +4,17 @@ import { compileCommandTree } from './command-compiler';
 import { normalizeAccelerationOperation } from './acceleration';
 import { qualitativeProgram } from './qualitative-commands';
 import { parseAdditiveCommand } from './additive-command';
+import { springLanguageCommand } from './spring-language';
 export { Acceleration, OperationSchema, type Operation } from './rules';
 export type ParsedCommand = { operation: Operation; error?: never } | { operation?: never; error: string };
 export type ParsedCommands = { operations: Operation[]; understoodAs?: string; error?: never } | { operations?: never; error: string };
 
 export function parseCommands(input: string, context?: RuleContext): ParsedCommands {
-  const additive = parseAdditiveCommand(input, context);
-  if (additive) return additive;
   try {
+    const spring = springLanguageCommand(input,context);
+    if(spring)return spring;
+    const additive = parseAdditiveCommand(input, context);
+    if (additive) return additive;
     const qualitative = qualitativeProgram(input, context);
     if (qualitative) {
       const operations = compileCommandTree(qualitative, context);

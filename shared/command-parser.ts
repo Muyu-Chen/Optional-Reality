@@ -2,6 +2,7 @@ import { normalizeCommand } from './command-language';
 import type { CommandNode, CommandProgram, CommandSubject, TargetReference } from './command-ast';
 import type { PropertyName, RuleContext } from './rules';
 import { PHYSICS_CAPABILITIES as capabilities } from './physics-capabilities';
+import { SPRING_CONTROL_NAMES } from './spring-language';
 
 interface Token { text: string; number?: number }
 interface TargetWord { words: string[]; reference: TargetReference; kind?: string }
@@ -30,7 +31,7 @@ const propertyWords: readonly [PropertyName | 'acceleration', readonly string[]]
 ];
 const devices: readonly [string, PropertyName, readonly string[], readonly string[]][] = [
   ['fan', 'fan_power', capabilities.fan_power.commandNames, ['power', 'airflow', '功率', '风力']],
-  ['spring', 'spring_power', capabilities.spring_power.commandNames, ['power', 'strength', '功率', '力度']],
+  ['spring', 'spring_power', capabilities.spring_power.commandNames, SPRING_CONTROL_NAMES],
   ['conveyor', 'conveyor_speed', capabilities.conveyor_speed.commandNames, ['speed', '速度']],
   ['rotor', 'angular_speed', capabilities.angular_speed.commandNames, ['speed', 'angular speed', '速度', '转速']],
 ];
