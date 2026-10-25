@@ -57,6 +57,9 @@ MusicControl 与 SoundEffectsControl 统一由暂停设置组合，Game HUD 不�
 | `physics/devices.ts` | 接触判断、风场、传送带、有动力面包机、转轮和感应开门 |
 | `physics/elastic-spring.ts` | 被动弹簧的胡克弹力、阻尼与连续接触；不冻结或硬改物体速度 |
 | `physics/scene-backdrop.ts` | 独立场景背景绘画，保持前景与装饰层次 |
+| `physics/scenery/profiles.ts`、`layout.ts` | 九关纯视觉配置与插画坐标；不改变碰撞、规则或权限 |
+| `physics/scenery/living-world.ts`、`water-particles.ts` | 固定步长的远景居民与密集水粒子，暂停和销毁由 Canvas 生命周期统一控制 |
+| `physics/scenery/*-renderer.ts` | 宇宙、山谷、地标、人车与瀑布的独立只读绘图 |
 | `physics/scene-feedback.ts` | 从真实拾取结果生成短时视觉反馈，不回写评分 |
 | `physics/ambient-scenery.ts`、`ambient-scenery-renderer.ts` | 确定性的背景生态状态与绘画；只读取加速度，不创建物理体 |
 | `physics/ambient-bird-flight.ts`、`ambient-bird-renderer.ts` | 鸟的独立飞行状态、升力/拍翼和轮廓绘图；生态模块委托调用 |
@@ -78,7 +81,11 @@ MusicControl 与 SoundEffectsControl 统一由暂停设置组合，Game HUD 不�
 
 ## 规则与服务端
 
+`components/front-door/` 保存标题、选关、真实配置缩略图和设置；机械 SVG 装饰另在 `SteamDetails`。`game/journey-navigation.ts` 处理 URL，`journey-progress.ts` 校验并保存最近关卡与最佳星数，`useJourney.ts` 组合导航和存储；App 不承担画面或关卡细节。
+
 `shared/rules.ts` 保存声明式操作与校验，`shared/commands.ts` 做简单本地解析，`shared/compiler.ts` 定义编译协议。服务端由 `app.ts` 处理 HTTP，`compiler.ts` 负责场景权限与提示词，`ai-client.ts` 适配模型请求，`config.ts` 读取后端环境变量。
+
+`server/dev-api-proxy.ts` 仅供 Vite 开发服务器读取 `DEV_API_ORIGIN`，把 `/api` 转到指定的已有后端；只允许无凭据、无路径的 HTTPS 或本机 HTTP origin。它不属于模型请求适配层，也不会改变生产 `/api` 或把供应商 key 放入浏览器。
 
 `shared/acceleration.ts` 保存统一向量、范围、显示名称与旧 gravity 操作归一化；关卡 initialAcceleration、规则 acceleration、遥测与事件均只有同一向量。
 

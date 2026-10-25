@@ -28,10 +28,11 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 
 ## 游戏操作
 
+- `/demo/` 从开始界面进入游戏，独立关卡页按三个章节展示九关；保留 `?level=...` 直达入口。继续最近小关会开启新一轮并保留消息草稿，通关后记录本机最佳星数。
 - 全屏场景，右下半透明输入窗；**Enter 仅排队**，**Shift+Enter 只立即应用当前输入**，不连带执行旧消息。
 - Let It Roll、One More Turn 与 A Little More Bounce 首访显示居中的三步图示教学，模拟保持暂停；Let's play 只关闭并保留原队列。设置中的 How to play 可重看，刷新或重试不强制重复。
 - 消息自动解析，桌面侧栏优先呈现三条可操作摘要：18px 正文、彩色规则图标、28px 高的 **Send now** 和小删除按钮。小箭头展开完整原文、Understood as 与限幅详情；批量发送在管理菜单中。
-- 简单指令可本地准备，自由语言使用 DeepSeek Flash。Shift+Enter 需要 AI 时先暂停、解析成功后应用一次；失败保留消息。普通 Enter 解析完成后继续等待玩家发送。
+- 简单指令可本地准备，自由语言使用当前配置的兼容模型（线上为 Gemini）。Shift+Enter 需要 AI 时先暂停、解析成功后应用一次；失败保留消息。普通 Enter 解析完成后继续等待玩家发送。
 - **Shift+Tab** 暂停并打开设置；等待 AI 时打开设置会取消立即发送意图，解析结果保留为待发消息。
 - 左侧字幕显示实际修改结果，几秒后淡出。规则参数、提示、批量发送与历史收在菜单里。
 - 每关三颗星；到达出口可过关，收齐后到达出口才获满分，重试恢复全部星星。
@@ -44,6 +45,8 @@ AI 把玩家意图编译成受支持的声明式操作，Matter.js 真实运行�
 - 星星旁显示真实加速度方向和数值，变化时短暂强调。放大的小鸟与鹰独立飞行并响应方向变化；碰撞点有按入射速度产生的波纹和轻微视觉形变，保持物理轨迹不变。
 
 界面、连续弹簧、背景和出口动画的实现约定集中在 [游戏呈现说明](./docs/presentation.md)，具体发布状态见文末与部署记录。
+
+背景采用独立的生活世界与宇宙插画：瀑布、行人和汽车会响应实际加速度，零重力开场使用太空主题；装饰不参与关卡碰撞与评分。开始界面、选关和背景的边界见 [世界背景与游戏入口](./docs/world-and-navigation.md)。
 
 A Little More Bounce 首访会准备一条 `Set surface bounce to 0.9`，等待玩家发送；已有草稿或主动清空的队列保留。该普通路线可真实取得一颗星；三颗星加出口才是满分。
 
@@ -75,6 +78,8 @@ npm run dev
 默认配置为 `AI_BASE_URL=https://api.deepseek.com`、`AI_MODEL=deepseek-flash`，使用 JSON 输出并关闭思考模式。密钥仅由后端读取，不能使用 `VITE_` 变量传入前端；修改配置后重启 API。
 
 也可设置 `AI_PROVIDER=gemini`，填写独立的 `GEMINI_API_KEY`；默认模型 `gemini-3.1-flash-lite`。原 `AI_API_KEY` 和 DeepSeek 配置保留，改回 `AI_PROVIDER=compatible` 即可恢复。Gemini 不会使用旧服务的 key 作为后备，配置方法见 [服务端说明](./server/README.md)。
+
+如果 key 只放在线上，开发机可在 `.env` 设置 `DEV_API_ORIGIN=https://muuyyy.cfd`，再运行 `npm run dev:web`。Vite 仅转发 `/api` 到现有后端，浏览器仍访问本机地址，供应商密钥留在服务器。留空则连接本机 3001 后端；该设置只影响开发服务器，`npm start` 与生产构建继续使用本站 `/api`。
 
 ```sh
 npm test
