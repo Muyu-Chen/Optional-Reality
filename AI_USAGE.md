@@ -41,6 +41,7 @@ AI suggestions were checked with TypeScript, automated unit and integration test
 
 - The title gameplay illustration and the layered title sprites were generated with the built-in ImageGen tool. Their prompts and intended uses are retained in the [illustration provenance](./client/src/assets/title-gameplay-v1.md) and [layered-scene provenance](./client/src/assets/title-scene/README.md).
 - The playable physics geometry, tutorial SVG diagrams, animation timelines, and rendering logic are implemented in code. Title artwork is decorative and does not determine collisions or scoring.
+- The mobile introduction reuses those same title sprites. Its layout, chapter diagrams, QR code, and branded sharing cards are implemented in code; the QR is locally generated and decoded back to its target URL for verification.
 - Bakery artwork was adapted from yihanzhao231's `temp/1024-zyh@30d802f`, as credited in the main README; it is not presented as newly AI-generated artwork.
 
 ## Demo-video disclosure

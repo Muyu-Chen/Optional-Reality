@@ -1,6 +1,10 @@
 # 线上游戏 — 2026-10-25
 
-## 最新发布：循环演示视频
+## 最新发布：手机介绍页与扫码分享
+
+静态版本为 `20261025T111302Z-mobile-intro-7d173ddb-optional-reality-game`。[介绍页](https://optionalreality.site/intro) 整合双语品牌展示、循环实机录像、十五关概览、玩法、FAQ 和分享入口；适配手机宽度、内联视频与安全区。提供直达介绍页的 PNG／SVG 二维码、分享卡和社交预览图。三个域名共 147 个资源哈希及九张公开扫码图片验证通过。原游戏、API、全部服务 PID 与启动时间保持不变。详见 [手机介绍页发布记录](./mobile-introduction.md)。
+
+## 此前发布：循环演示视频
 
 静态版本为 `20261025T104814Z-demo-video-6d6a3614-optional-reality-game`，新增 [循环播放页](https://optionalreality.site/showcase/)、47 秒 720p MP4、循环 GIF 和中英字幕。视频包含章节选择、自动逐字输入与三个实际三星通关。原游戏文件和后端保持上一版，服务 PID 与启动时间均未变化。三个域名各 35 个资源、共 105 个哈希验证通过。详见 [演示视频发布记录](./demo-video.md)。
 

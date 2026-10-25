@@ -10,6 +10,8 @@ AI compiles the player's intent into supported declarative operations, while Mat
 
 ## Gameplay Demo
 
+The [mobile-friendly introduction](https://optionalreality.site/intro) brings together the game, demo, chapters, and sharing in English and Chinese. [Download its QR code](./site/assets/intro-20261025/intro-qr.png) or a [printable share card](./site/assets/intro-20261025/scan-card.png) for a demo table. The QR opens the introduction; playing the levels still requires a computer. See [Introduction and QR Sharing](./docs/mobile-introduction.md).
+
 A 47-second loop shows chapter selection, automatic character-by-character input, and real three-star completions in Motion, Collisions, and Devices. Open the [looping player](https://optionalreality.site/showcase/), or [watch / download the 720p MP4](./site/showcase/gameplay-loop.mp4). [Playback and recording notes](./site/showcase/README.md) include local playback, chapter timestamps, and captions.
 
 [![Looping gameplay demo: level selection, typed rules, and three-star completions](./site/showcase/preview.gif)](./site/showcase/gameplay-loop.mp4)
