@@ -3,6 +3,7 @@ import { accelerationLabel } from '../../../shared/acceleration';
 import { GameHud } from '../components/GameHud';
 import { GameMenu } from '../components/GameMenu';
 import { MessageQueue } from '../components/MessageQueue';
+import { MusicControl } from '../components/MusicControl';
 import { RuleCaption } from '../components/RuleCaption';
 import { RuleComposer } from '../components/RuleComposer';
 import { RulesDrawer } from '../components/RulesDrawer';
@@ -39,6 +40,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
         <button className="quiet-button" aria-expanded={showRules} onClick={() => setShowRules(!showRules)}>
           {showRules ? 'Close rules' : 'Rules & hints'} ⌁
         </button>
+        <MusicControl />
         <span data-testid="active-gravity">
           {accelerationLabel(telemetry.acceleration)}
         </span>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { MusicProvider } from './audio/MusicProvider';
 import { Game } from './game/Game';
 import { findLevel } from './levels/catalog';
 import { gravityLab } from './levels/gravity-lab';
@@ -17,5 +18,5 @@ export default function App() {
     setLevel(next);
   }
 
-  return <Game key={level.id} level={level} chooseLevel={chooseLevel} />;
+  return <MusicProvider><Game key={level.id} level={level} chooseLevel={chooseLevel} /></MusicProvider>;
 }
