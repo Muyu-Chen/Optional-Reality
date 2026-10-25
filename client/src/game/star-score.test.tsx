@@ -21,5 +21,11 @@ describe('visible star scoring',()=>{
     await startGame('bounce');await queue('surface bounce 0.9');await click('Send now');await advance(3600);
     expect(lab().world.won).toBe(true);expect(lab().world.stars.fullScore).toBe(false);
     expect(screen.getByText('Exit reached. Collect every star for full score.')).toBeTruthy();
+    expect(screen.queryByText(/cave dweller/)).toBeNull();
+  });
+  it('reserves the zero-star joke for a real exit with no pickups',async()=>{
+    await startGame('bounce');await queue('stop gravity');await click('Send now');await advance(3600);
+    expect(lab().world.won).toBe(true);expect(lab().world.stars.collected.size).toBe(0);
+    expect(screen.getByText('Not a single star? Even a cave dweller from a million years ago could get all three.')).toBeTruthy();
   });
 });

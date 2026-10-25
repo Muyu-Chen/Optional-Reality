@@ -2,6 +2,8 @@
 import { act, fireEvent, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { button, click, lab, manage, queue, rows, startGame } from '../test/game-harness';
+import { bounce } from '../levels/bounce';
+import { messageStorageKey } from '../domain/message-storage';
 
 const freeText = 'Please let the world pull down gently.';
 const gravity = [{ type: 'set_gravity' as const, acceleration: 1 }];
@@ -86,6 +88,7 @@ describe('AI preparation and player action races', () => {
   });
 
   it('aborts on level change and cannot write a previous level’s result into the new queue', async () => {
+    localStorage.setItem(messageStorageKey(bounce), '[]');
     const { api } = await startGame();
     await queue(freeText);
     const previous = lab();

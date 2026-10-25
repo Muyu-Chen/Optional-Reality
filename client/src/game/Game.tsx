@@ -3,7 +3,6 @@ import { accelerationLabel } from '../../../shared/acceleration';
 import { GameHud } from '../components/GameHud';
 import { GameMenu } from '../components/GameMenu';
 import { MessageQueue } from '../components/MessageQueue';
-import { MusicControl } from '../components/MusicControl';
 import { RuleCaption } from '../components/RuleCaption';
 import { RuleComposer } from '../components/RuleComposer';
 import { RulesDrawer } from '../components/RulesDrawer';
@@ -18,11 +17,12 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
   const [showRules, setShowRules] = useState(false);
 
   return (
-    <main className={`game-shell ${level.presentation === 'bakery' ? 'bakery-theme' : ''}`}>
+    <main className={`game-shell ${level.presentation === 'bakery' ? 'bakery-theme' : ''}${game.absorbing ? ' game-shell--absorbing' : ''}`}>
       <canvas className="game-canvas" ref={game.canvasRef} width={level.viewport.width} height={level.viewport.height}
         role="img" aria-label={level.instructions.sceneDescription} />
       <GameHud level={level} telemetry={telemetry} secondsLeft={game.secondsLeft} menuOpen={controls.menuOpen}
         onRetry={game.retryWorld} onResume={controls.resumeGame} onOpenMenu={controls.openMenu} />
+      <div className="game-rule-controls" inert={game.absorbing || undefined}>
       <MessageQueue messages={queue.messages} selected={queue.selected} managing={queue.managing}
         preparing={queue.preparing} ended={game.ended} canSend={game.canSend} messageErrors={game.messageErrors} canUndo={game.canUndo}
         apiConfigured={queue.api.configured} previewError={game.previewError}
@@ -31,29 +31,31 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
         onQueueAgain={queue.queueAgain} onUndo={game.undoLastRule} onClear={queue.clearMessages}
         onPrepare={() => queue.prepareQueue()} onLoadExample={queue.loadExample} />
       <RuleComposer input={queue.input} editing={!!queue.editing} full={queue.messages.length >= 24}
+        disabled={game.absorbing}
         editableRules={editableRuleLabels(level)}
         placeholder={`e.g. ${level.instructions.suggestedMessages[0]}`} api={queue.api}
         storageAvailable={queue.storageAvailable} onInput={queue.setInput} onQueue={queue.queueMessage}
+        onApplyCurrent={game.applyCurrent} preparing={queue.preparing}
         onCancel={queue.cancelEditing} />
+      </div>
       <RuleCaption captions={game.captions} finish={game.finishCaption} />
       <div className="bottom-hud">
-        <button className="quiet-button" aria-expanded={showRules} onClick={() => setShowRules(!showRules)}>
+        <button className="quiet-button" disabled={game.absorbing} aria-expanded={showRules} onClick={() => setShowRules(!showRules)}>
           {showRules ? 'Close rules' : 'Rules & hints'} ⌁
         </button>
-        <MusicControl />
         <span data-testid="active-gravity">
           {accelerationLabel(telemetry.acceleration)}
         </span>
         <span>{game.stateLabel}</span>
       </div>
-      {showRules && <RulesDrawer level={level} acceleration={telemetry.acceleration} rules={world?.rules}
+      {showRules && !game.absorbing && <RulesDrawer level={level} acceleration={telemetry.acceleration} rules={world?.rules}
         commandCount={world?.commandCount || 0} onClose={() => setShowRules(false)}
         onSuggest={queue.setInput} onLoadExample={queue.loadExample} />}
       <p className="game-toast" role="status" title={game.notice}>{game.notice}</p>
       {game.tutorial && !controls.menuOpen && <TeachingOverlay tutorial={game.tutorial}
         preparing={queue.preparing} onContinue={game.continueTutorial} />}
       {level.instructions.timingLesson && !game.ended && <TimingHint lesson={level.instructions.timingLesson} hasMessages={!!queue.messages.length} telemetry={telemetry} />}
-      {(controls.menuOpen || game.ended) && <GameMenu level={level} telemetry={telemetry} preparing={queue.preparing}
+      {(controls.menuOpen || game.ended) && !game.absorbing && <GameMenu level={level} telemetry={telemetry} preparing={queue.preparing}
         onChooseLevel={chooseLevel} onResume={controls.resumeGame} onRetry={game.retryWorld}
         onReset={game.resetWorld} onReplayTeaching={game.replayTeaching} />}
     </main>

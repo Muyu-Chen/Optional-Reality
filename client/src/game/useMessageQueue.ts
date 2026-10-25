@@ -1,4 +1,4 @@
-import { useState, type RefObject } from 'react';
+import { useCallback, useRef, useState, type RefObject } from 'react';
 import type { Message } from '../domain/queue';
 import type { LevelDefinition } from '../levels/types';
 import type { CanvasLab } from '../physics/canvas-lab';
@@ -7,7 +7,9 @@ import { usePreparedMessages } from './usePreparedMessages';
 export function useMessageQueue(level: LevelDefinition, labRef: RefObject<CanvasLab | null>, onNotice: (text: string) => void) {
   const prepared = usePreparedMessages(level, labRef, onNotice);
   const { messageRef, updateMessages, localMessage, api } = prepared;
-  const [input, setInput] = useState('');
+  const [input, setInputState] = useState('');
+  const inputRef = useRef('');
+  const setInput = useCallback((text:string) => {inputRef.current=text;setInputState(text);},[]);
   const [editing, setEditing] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [managing, setManaging] = useState(false);
@@ -30,16 +32,17 @@ export function useMessageQueue(level: LevelDefinition, labRef: RefObject<Canvas
   }
 
   function editMessage(message: Message) {
+    prepared.cancelImmediate();
     setEditing(message.id);
     setInput(message.text);
   }
 
-  function queueMessage() {
-    const text = input.trim();
-    if (!text) return;
+  function storeInput() {
+    const text = inputRef.current.trim();
+    if (!text) return null;
     if (!editing && messageRef.current.length >= 24) {
       onNotice('The demo holds 24 messages. Remove a message to add another.');
-      return;
+      return null;
     }
     const entry = localMessage(editing || crypto.randomUUID(), text);
     updateMessages(editing
@@ -47,8 +50,25 @@ export function useMessageQueue(level: LevelDefinition, labRef: RefObject<Canvas
       : [...messageRef.current, entry]);
     if (editing) clearSelection([editing]);
     cancelEditing();
+    return entry;
+  }
+
+  function queueMessage() {
+    if (labRef.current?.isAbsorbing) return;
+    const entry=storeInput();
+    if(!entry)return;
     onNotice(entry.status === 'ready' ? 'Message queued. Choose Send now when ready.'
       : api.configured ? 'Interpreting your message…' : 'Saved. Connect the AI service or use a starter command.');
+  }
+
+  function applyCurrent(onSend:(ids:string[])=>void) {
+    const lab=labRef.current;
+    if(!lab || lab.world.won || lab.world.timedOut || lab.isAbsorbing || prepared.isPreparing())return;
+    const entry=storeInput();
+    if(!entry)return;
+    if(entry.status==='ready')onSend([entry.id]);
+    else if(entry.status==='draft' && api.configured)void prepared.prepareQueue(true,{id:entry.id,onReady:onSend});
+    else onNotice(entry.error || 'This message needs editing before it can be applied.');
   }
 
   function removeMessage(messageId: string) {
@@ -95,7 +115,7 @@ export function useMessageQueue(level: LevelDefinition, labRef: RefObject<Canvas
   return {
     ...prepared, input, editing, selected, managing, setInput, clearSelection, toggleSelection,
     selectMessages: (ids: string[]) => setSelected(new Set(ids)),
-    cancelEditing, editMessage, queueMessage, removeMessage, moveMessage,
+    cancelEditing, editMessage, queueMessage, applyCurrent, removeMessage, moveMessage,
     loadExample, queueAgain, clearMessages, toggleManaging,
   };
 }

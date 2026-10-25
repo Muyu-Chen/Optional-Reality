@@ -3,9 +3,12 @@ import { afterEach, beforeEach, vi } from 'vitest';
 import type { CompileRequest } from '../../../shared/compiler';
 import type { Operation } from '../../../shared/rules';
 import type { PhysicsWorld } from '../physics/world';
+import type { ExitTransitionPhase, PresentationTelemetry } from '../physics/exit-transition';
+import { findLevel } from '../levels/catalog';
+import { messageStorageKey } from '../domain/message-storage';
 import App from '../App';
 
-interface TestLab { world: PhysicsWorld; report: () => void; destroyed: boolean }
+interface TestLab { world: PhysicsWorld; report: (phase?: ExitTransitionPhase) => void; destroyed: boolean; isAbsorbing: boolean }
 const fixtures = vi.hoisted(() => ({ labs: [] as TestLab[] }));
 
 // Keep the real Matter world and React tree. Only replace browser drawing and RAF
@@ -15,16 +18,23 @@ vi.mock('../physics/canvas-lab', async () => {
   return { CanvasLab: class {
     world: PhysicsWorld;
     destroyed = false;
-    constructor(_canvas: unknown, readonly level: PhysicsWorld['level'], private emit: (state: ReturnType<PhysicsWorld['snapshot']>) => void) {
+    private exitPhase: ExitTransitionPhase = 'idle';
+    constructor(_canvas: unknown, readonly level: PhysicsWorld['level'], private emit: (state: PresentationTelemetry) => void) {
       this.world = new PhysicsWorld(level);
       fixtures.labs.push(this);
       this.report();
     }
-    report() { this.emit(this.world.snapshot()); }
+    get isAbsorbing() { return this.exitPhase === 'absorbing'; }
+    report(phase?: ExitTransitionPhase) {
+      if (this.destroyed) return;
+      if (phase) this.exitPhase = phase;
+      this.emit({...this.world.snapshot(),exitTransition:this.exitPhase});
+    }
     reset() {
       const seen = this.world.seenTutorials;
       this.world.destroy();
       this.world = new PhysicsWorld(this.level, seen);
+      this.exitPhase = 'idle';
       this.report();
     }
     destroy() { this.destroyed = true; this.world.destroy(); }
@@ -76,7 +86,14 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-export async function startGame(level = 'gravity-lab', api = new ControlledApi()) {
+export async function startGame(level = 'gravity-lab', api = new ControlledApi(), savedMessages: readonly string[] | null = []) {
+  // Most interaction tests start with an intentionally empty queue. Pass null to
+  // exercise a genuine first visit, or supply explicit persisted drafts.
+  const definition = findLevel(level);
+  if (definition && savedMessages !== null) {
+    try { localStorage.setItem(messageStorageKey(definition), JSON.stringify(savedMessages)); }
+    catch { /* Storage failure is an explicit scenario in some integration tests. */ }
+  }
   window.history.replaceState(null, '', `/demo/?level=${level}`);
   vi.stubGlobal('fetch', api.fetch);
   const view = render(<App />, { reactStrictMode: true });

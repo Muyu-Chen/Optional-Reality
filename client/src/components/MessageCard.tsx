@@ -1,5 +1,6 @@
 import { describeOperation } from '../../../shared/commands';
 import { messageOperations, type Message } from '../domain/queue';
+import { RulePreview } from './RulePreview';
 
 interface MessageCardProps {
   message: Message;
@@ -47,12 +48,19 @@ export function MessageCard({ message, index, count, managing, selected, prepari
           </button>
         </div>
         </div>
-        <p className="message-text">{message.text}</p>
-        {message.understoodAs && <p className="parsed-rule">Understood as: {message.understoodAs}</p>}
-        {message.adjustments?.map((adjustment,i) => <p className="parsed-rule" key={i}>
-          Requested {adjustment.requested} → limited to {adjustment.applied} (range {adjustment.minimum} to {adjustment.maximum})
-        </p>)}
-        <p className={`parsed-rule ${message.status === 'error' ? 'error-copy' : ''}`}>{description}</p>
+        <p className="message-text" title={message.text}>{message.text}</p>
+        <RulePreview operations={operations} description={description} error={message.status==='error'} />
+        <details className="message-details" open={managing || undefined}>
+          <summary aria-label={`Details for message ${index+1}`} title="View full message and parsed rule">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+          </summary>
+          <p className="message-full-text">{message.text}</p>
+          {message.understoodAs && <p className="parsed-rule">Understood as: {message.understoodAs}</p>}
+          {message.adjustments?.map((adjustment,i) => <p className="parsed-rule" key={i}>
+            Requested {adjustment.requested} → limited to {adjustment.applied} (range {adjustment.minimum} to {adjustment.maximum})
+          </p>)}
+          <p className="parsed-rule">{description}</p>
+        </details>
         {validationError && <p className="parsed-rule error-copy">{validationError}</p>}
         {(managing || message.status === 'error') && (
           <div className="message-actions">

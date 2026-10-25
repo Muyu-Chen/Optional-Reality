@@ -13,7 +13,7 @@ export async function prepareWithAI(request: CompileRequest, signal: AbortSignal
   let output: unknown;
   try { output = await response.json(); } catch { throw new Error('The API server is unavailable. Start it with npm run dev or npm start.'); }
   if (!response.ok) {
-    const error = typeof output === 'object' && output !== null && 'error' in output && typeof output.error === 'string' ? output.error : 'AI preparation failed.';
+    const error = typeof output === 'object' && output !== null && 'error' in output && typeof output.error === 'string' ? output.error : 'Could not read this rule. Please try again.';
     throw new Error(error);
   }
   const result = CompileResponseSchema.parse(output);

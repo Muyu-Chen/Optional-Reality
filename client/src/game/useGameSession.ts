@@ -10,6 +10,7 @@ import { STEP_MS, type Telemetry } from '../physics/world';
 import { useGameControls } from './useGameControls';
 import { useGameWorld } from './useGameWorld';
 import { useMessageQueue } from './useMessageQueue';
+import { emitGameSound } from '../audio/game-sound-events';
 
 // Coordinates the queue and world at player action boundaries, never on every physics tick.
 export function useGameSession(level: LevelDefinition) {
@@ -17,7 +18,7 @@ export function useGameSession(level: LevelDefinition) {
   const [notice, setNotice] = useState(`${accelerationLabel({x:level.initialAcceleration[0],y:level.initialAcceleration[1]})}. Your first sent message starts the ${level.timeLimitSeconds}-second run.`);
   const { canvasRef, labRef, telemetry } = useGameWorld(level);
   const queue = useMessageQueue(level, labRef, setNotice);
-  const controls = useGameControls(labRef, queue.preparing);
+  const controls = useGameControls(labRef, queue.preparing, queue.cancelImmediate);
   const [events, setEvents] = useState<AppliedEvent[]>([]);
   const [captions, setCaptions] = useState<Caption[]>([]);
   const finishCaption = useCallback((id: string) => {
@@ -38,6 +39,7 @@ export function useGameSession(level: LevelDefinition) {
         return { id: crypto.randomUUID(), lines, group };
       });
       lab.world.applyMessages(result.events.map(event => ({ text: event.text, operations: event.operations })));
+      emitGameSound({kind:'rule'});
       setCaptions(previous => [...previous, ...feedback]);
       lab.world.start();
       controls.setMenuOpen(false);
@@ -122,15 +124,16 @@ export function useGameSession(level: LevelDefinition) {
     previewError = error instanceof Error ? error.message : 'Rules need preparing again.';
   }
   const ended = telemetry.won || telemetry.timedOut;
+  const absorbing = telemetry.won && telemetry.exitTransition === 'absorbing';
   return {
     canvasRef, telemetry, queue, controls, notice, captions, finishCaption,
     world: labRef.current?.world,
-    canUndo: !!events.length, ended, previewError, messageErrors,
+    canUndo: !!events.length, ended, absorbing, previewError, messageErrors,
     canSend: !ended && !queue.preparing,
-    stateLabel: gameStateLabel(telemetry),
+    stateLabel: absorbing ? 'Finding another reality…' : gameStateLabel(telemetry),
     secondsLeft: Math.max(0, Math.ceil(level.timeLimitSeconds - telemetry.tick * STEP_MS / 1000)),
     tutorial: level.tutorials?.find(item => item.id === telemetry.tutorialId),
-    send, resetWorld, retryWorld, undoLastRule, continueTutorial, replayTeaching,
+    send, applyCurrent: () => queue.applyCurrent(send), resetWorld, retryWorld, undoLastRule, continueTutorial, replayTeaching,
   };
 }
 

@@ -14,7 +14,7 @@ interface GameHudProps {
 }
 
 export function GameHud({ level, telemetry, secondsLeft, menuOpen, onRetry, onResume, onOpenMenu }: GameHudProps) {
-  const canResume = telemetry.started && !telemetry.running && !menuOpen && !telemetry.tutorialId;
+  const canResume = telemetry.started && !telemetry.running && !menuOpen && !telemetry.tutorialId && !telemetry.won && !telemetry.timedOut;
   return (
     <header className="game-hud">
       <a href="/" className="game-brand" aria-label="Optional Reality home">or</a>

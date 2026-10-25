@@ -25,6 +25,8 @@
 
 `audio/MusicProvider.tsx` 位于 App 的 keyed Game 外，关卡切换不会重建音乐会话。`MusicControl.tsx` 只显示和切换状态，`use-background-music.ts` 订阅 Context。`music-controller.ts` 管理可信手势、偏好存储、页面可见性与错误反馈；`music-engine.ts` 管理单个 Web Audio 图、短期调度、音量和资源清理；`music-score.ts` 保存原创音符数据。音乐不依赖物理时钟或 API。
 
+音效独立于音乐：`audio/game-sound-events.ts` 发布真实游戏事件，`sfx-controller.ts` 管理可信手势、独立偏好和即时订阅，`sfx-engine.ts` 用一个单独的 Web Audio 图合成短音并限制并发声部。`SoundEffectsProvider.tsx` 持有跨关卡控制器，设置组件只切换偏好。未解锁事件不入队；隐藏、重试、取消和卸载停止旧音源，返回不重放。
+
 ## 场景与物理
 
 | 位置 | 职责 |

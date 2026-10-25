@@ -3,6 +3,8 @@ import { levelLabel, tiers } from '../levels/progression';
 import type { LevelDefinition } from '../levels/types';
 import type { Telemetry } from '../physics/world';
 import { CompletionResult } from './CompletionResult';
+import { SoundEffectsControl } from './SoundEffectsControl';
+import { MusicControl } from './MusicControl';
 
 interface GameMenuProps {
   level: LevelDefinition;
@@ -37,6 +39,7 @@ export function GameMenu({ level, telemetry, preparing, onChooseLevel, onResume,
           </div>
         </>}
         <div className="menu-utilities">
+          {!telemetry.won && <div className="menu-audio-settings"><MusicControl /><SoundEffectsControl /></div>}
           <button className="quiet-button" onClick={onReset}>Restart & reprepare messages</button>
           {!!level.tutorials?.length && <button className="quiet-button" onClick={onReplayTeaching}>Replay teaching</button>}
         </div>

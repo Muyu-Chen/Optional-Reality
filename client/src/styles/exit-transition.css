@@ -1,0 +1,12 @@
+.game-rule-controls {
+  display:contents
+}
+.game-shell--absorbing .queue-dock,.game-shell--absorbing .composer-dock {
+  opacity:.45;
+  transition:opacity .16s ease
+}
+@media(prefers-reduced-motion:reduce) {
+  .game-shell--absorbing .queue-dock,.game-shell--absorbing .composer-dock {
+    transition:none
+  }
+}

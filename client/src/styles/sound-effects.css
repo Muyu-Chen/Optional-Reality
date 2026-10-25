@@ -1,0 +1,18 @@
+.sound-effects-control {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-height:30px
+}
+.sound-effects-control svg {
+  flex:none
+}
+
+.menu-audio-settings {
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px 12px;
+  margin:4px 0
+}

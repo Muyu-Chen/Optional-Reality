@@ -21,7 +21,10 @@ describe('game completion result', () => {
     const { onChooseLevel, onRetry } = showMenu({ won: true, stars: { collected, total: 3 } });
     expect(screen.getByRole('dialog', { name: 'You found a way.' })).toBeTruthy();
     expect(screen.getByRole('status', { name: `Stars ${collected} of 3` })).toBeTruthy();
-    expect(screen.getByText('Exit reached. Collect every star for full score.')).toBeTruthy();
+    expect(screen.getByText(collected === 0
+      ? 'Not a single star? Even a cave dweller from a million years ago could get all three.'
+      : 'Exit reached. Collect every star for full score.')).toBeTruthy();
+    if (collected > 0) expect(screen.queryByText(/cave dweller/)).toBeNull();
     expect(screen.queryByText('FULL SCORE')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Next level →' }));
     expect(onChooseLevel).toHaveBeenCalledExactlyOnceWith(levels[1].id);
@@ -37,6 +40,7 @@ describe('game completion result', () => {
     expect(screen.getByText('Full score. Every star collected.')).toBeTruthy();
     expect(screen.getByText(levels[0].title, { exact: true })).toBeTruthy();
     expect(screen.queryByText('Exit reached. Collect every star for full score.')).toBeNull();
+    expect(screen.queryByText(/cave dweller/)).toBeNull();
   });
 
   it('offers a working retry instead of a nonexistent next level at the end of the chapter', () => {
@@ -51,6 +55,7 @@ describe('game completion result', () => {
     rerender(<GameMenu {...props} preparing />);
     expect(screen.getByRole('button', { name: 'Resume' }).hasAttribute('disabled')).toBe(true);
     expect(screen.queryByRole('status')).toBeNull();
+    expect(screen.queryByText(/cave dweller/)).toBeNull();
     rerender(<GameMenu {...props} />);
     fireEvent.click(screen.getByRole('button', { name: 'Resume' }));
     expect(onResume).toHaveBeenCalledOnce();
@@ -61,6 +66,7 @@ describe('game completion result', () => {
     expect(screen.getByRole('dialog', { name: 'Mind the gap.' })).toBeTruthy();
     expect(screen.queryByRole('status')).toBeNull();
     expect(screen.queryByText('FULL SCORE')).toBeNull();
+    expect(screen.queryByText(/cave dweller/)).toBeNull();
     expect(screen.queryByRole('button', { name: 'Resume' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
     fireEvent.click(screen.getByRole('button', { name: 'Restart & reprepare messages' }));
