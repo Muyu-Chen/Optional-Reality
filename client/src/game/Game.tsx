@@ -17,6 +17,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
   const game = useGameSession(level);
   const { queue, controls, telemetry, world, onboarding } = game;
   const [showRules, setShowRules] = useState(false);
+  const allowedRules = editableRuleLabels(level);
 
   return (
     <main className={`game-shell ${level.presentation === 'bakery' ? 'bakery-theme' : ''}${game.absorbing ? ' game-shell--absorbing' : ''}`}>
@@ -35,7 +36,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
         onPrepare={() => queue.prepareQueue()} onLoadExample={queue.loadExample} />
       <RuleComposer input={queue.input} editing={!!queue.editing} full={queue.messages.length >= 24}
         disabled={game.absorbing || onboarding.visible}
-        editableRules={editableRuleLabels(level)}
+        editableRules={allowedRules}
         placeholder={`e.g. ${level.instructions.suggestedMessages[0]}`} api={queue.api}
         storageAvailable={queue.storageAvailable} onInput={queue.setInput} onQueue={game.queueInput}
         onApplyCurrent={game.applyCurrent} preparing={queue.preparing}
@@ -64,6 +65,7 @@ export function Game({ level, chooseLevel }: { level: LevelDefinition; chooseLev
         onHowToPlay={onboarding.lesson ? game.showHowToPlay : undefined} />}
       </div>
       {onboarding.visible && onboarding.lesson && <LevelOnboarding lesson={onboarding.lesson} levelLabel={levelLabel(level)} levelTitle={level.title}
+        editableRules={allowedRules}
         onClose={() => onboarding.close()} onLoadStarters={game.loadOnboardingStarters} />}
     </main>
   );

@@ -1,3 +1,5 @@
+import { AllowedRules } from './AllowedRules';
+
 interface RuleComposerProps {
   input: string;
   editing: boolean;
@@ -23,7 +25,7 @@ export function RuleComposer({ input, editing, full, placeholder, storageAvailab
           title={api.configured ? `AI ready · ${api.model}` : 'Local commands available'} />
         {editing && <button className="quiet-button" onClick={onCancel}>Cancel</button>}
       </div>
-      {editableRules && <p className="editable-rules" title={editableRules.join(' · ')}>You can change: {editableRules.join(' · ') || 'No editable rules'}</p>}
+      {editableRules && <AllowedRules rules={editableRules} />}
       <textarea id="message-input" value={input} maxLength={240} placeholder={placeholder} disabled={disabled}
         onChange={event => onInput(event.target.value)}
         onKeyDown={event => {

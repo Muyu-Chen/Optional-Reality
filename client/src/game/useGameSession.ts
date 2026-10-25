@@ -139,7 +139,15 @@ export function useGameSession(level: LevelDefinition) {
     queueInput: () => { if (!onboarding.isVisible()) queue.queueMessage(); },
     applyCurrent: () => { if (!onboarding.isVisible()) queue.applyCurrent(send); },
     showHowToPlay: () => { controls.setMenuOpen(false);onboarding.open(true); },
-    loadOnboardingStarters: () => { queue.loadExample();onboarding.close(); },
+    loadOnboardingStarters: () => {
+      const texts = onboarding.lesson?.starterMessages;
+      if (texts) {
+        queue.updateMessages(texts.map(text => queue.localMessage(crypto.randomUUID(), text)));
+        queue.clearSelection();queue.cancelEditing();
+        setNotice('Setup loaded. Send each message when you choose.');
+      } else queue.loadExample();
+      onboarding.close();
+    },
     resetWorld, retryWorld, undoLastRule, continueTutorial, replayTeaching,
   };
 }

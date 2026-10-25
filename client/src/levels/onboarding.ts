@@ -1,11 +1,14 @@
 export interface OnboardingStep {
   title: string;
   body: string;
-  diagram: 'queue' | 'ramp' | 'coast' | 'fall' | 'spring' | 'reverse';
+  diagram: 'queue' | 'ramp' | 'coast' | 'fall' | 'spring' | 'reverse' | 'soft-floor' | 'low-star' | 'rise';
 }
 export interface LevelOnboarding {
   title: string;
   steps: readonly OnboardingStep[];
+  intro?: string;
+  starterMessages?: readonly string[];
+  starterLabel?: string;
 }
 
 const lessons: Readonly<Record<string, LevelOnboarding>> = {
@@ -29,6 +32,20 @@ const lessons: Readonly<Record<string, LevelOnboarding>> = {
         body: 'The passive spring compresses on contact and rebounds naturally. By itself, it cannot lift the ball above its starting height.' },
       { title: 'Reverse gravity for more height', diagram: 'reverse',
         body: 'Send “reverse gravity” to turn the acceleration upward. Reach the two higher stars, then the exit.' },
+    ],
+  },
+  bounce: {
+    title: 'A softer landing. A higher route.',
+    intro: 'A bounce of 0.9 is an easy way to reach the exit. For all three stars, try the route below.',
+    starterMessages: ['Set surface bounce to 0.1', 'acceleration upward 1'],
+    starterLabel: 'Load three-star setup',
+    steps: [
+      { title: 'Soften the landing', diagram: 'soft-floor',
+        body: 'Send “Set surface bounce to 0.1” before the first landing. A soft surface keeps the ball near the low star.' },
+      { title: 'Watch the first landing', diagram: 'low-star',
+        body: 'Let the ball fall toward the blue floor. Its rightward momentum will carry it through the low star.' },
+      { title: 'Turn acceleration upward', diagram: 'rise',
+        body: 'As the ball reaches the floor, send “acceleration upward 1”. It collects the low star before rising through the higher two toward the exit.' },
     ],
   },
 };

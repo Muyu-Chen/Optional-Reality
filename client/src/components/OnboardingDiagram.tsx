@@ -15,6 +15,22 @@ export function OnboardingDiagram({ kind }: { kind: OnboardingStep['diagram'] })
       {kind === 'ramp' ? <path d="M76 20v26" className="lesson-vector" markerEnd={`url(#lesson-arrow-${kind})`} />
         : <><path d="M166 43h30" className="lesson-motion" markerEnd={`url(#lesson-arrow-${kind})`} /><text x="164" y="22" className="lesson-small-label">a = 0</text></>}
       <rect x="198" y="27" width="15" height="36" rx="3" className="lesson-exit" />
+    </> : kind === 'soft-floor' || kind === 'low-star' || kind === 'rise' ? <>
+      <path d="M18 90h184" className="lesson-bounce-floor" />
+      <path d="M31 82q4-7 8 0m20 0q4-7 8 0m20 0q4-7 8 0m20 0q4-7 8 0m20 0q4-7 8 0m20 0q4-7 8 0" className="lesson-bounce-pattern" />
+      {kind === 'rise' ? <>
+        <path d="M35 76q88 25 139-50" className="lesson-motion" strokeDasharray="4 5" />
+        <circle cx="123" cy="58" r="10" className="lesson-ball" />
+        <path d="M96 67V30" className="lesson-vector" markerEnd={`url(#lesson-arrow-${kind})`} />
+        <path d={star} transform="translate(147 48)" className="lesson-star" /><path d={star} transform="translate(174 24)" className="lesson-star" />
+        <rect x="198" y="12" width="15" height="36" rx="3" className="lesson-exit" />
+      </> : <>
+        <circle cx={kind === 'soft-floor' ? 58 : 103} cy={kind === 'soft-floor' ? 33 : 74} r="10" className="lesson-ball" />
+        <path d={star} transform="translate(143 74)" className="lesson-star" />
+        {kind === 'soft-floor' ? <path d="M89 24v32" className="lesson-vector" markerEnd={`url(#lesson-arrow-${kind})`} />
+          : <path d="M113 73h17" className="lesson-motion" />}
+        <text x="26" y="105" className="lesson-small-label">BOUNCE 0.1</text>
+      </>}
     </> : <>
       <path d="M83 94h54M99 94l22-6-22-6 22-6-22-6 22-6-11-5" className="lesson-spring" />
       <circle cx="110" cy={kind === 'fall' ? 22 : kind === 'spring' ? 52 : 34} r="10" className="lesson-ball" />

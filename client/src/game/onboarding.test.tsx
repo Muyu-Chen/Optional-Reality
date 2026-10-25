@@ -50,8 +50,8 @@ describe('first two level onboarding', () => {
     await fresh();expect(screen.queryByRole('dialog')).toBeNull();expect(lab().world.started).toBe(false);
   });
 
-  it('never auto-opens these lessons in later levels', async () => {
-    await fresh('bounce');expect(screen.queryByRole('dialog')).toBeNull();
+  it('never auto-opens these lessons in later levels without a lesson', async () => {
+    await fresh('multi-bounce');expect(screen.queryByRole('dialog')).toBeNull();
   });
 
   it('Escape dismisses without starting, while Shift+Tab goes to settings and remains paused', async () => {

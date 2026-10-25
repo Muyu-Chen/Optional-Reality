@@ -39,6 +39,7 @@
   margin:22px 0 10px
 }
 .onboarding-pause { font-size:16px;line-height:1.5;color:var(--muted);margin:0 0 23px }
+.onboarding-intro { max-width:760px;margin:-10px auto 20px;font-size:16px;line-height:1.5;color:var(--ink) }
 .onboarding-steps {
   list-style:none;
   padding:0;
@@ -61,6 +62,8 @@
 .lesson-ready { fill:#317452 }
 .lesson-ball { fill:#cbe65b;stroke:var(--ink);stroke-width:2 }
 .lesson-track { fill:none;stroke:var(--ink);stroke-width:6;stroke-linecap:round }
+.lesson-bounce-floor { fill:none;stroke:#2374c7;stroke-width:6;stroke-linecap:round }
+.lesson-bounce-pattern { fill:none;stroke:#2374c7;stroke-width:1.7;stroke-linecap:round }
 .lesson-vector { fill:none;stroke:#8250b5;stroke-width:2.5;color:#8250b5 }
 .lesson-motion { fill:none;stroke:var(--ink);stroke-width:2.5 }
 .lesson-spring-vector { fill:none;stroke:#2374c7;stroke-width:2.5 }
