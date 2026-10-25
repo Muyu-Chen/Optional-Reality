@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /camera/
-Sitemap: https://muuyyy.cfd/sitemap.xml
+Sitemap: https://optionalreality.site/sitemap.xml
