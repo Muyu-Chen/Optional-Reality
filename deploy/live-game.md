@@ -1,6 +1,48 @@
 # 线上游戏 — 2026-10-24
 
-## 当前版本：共享能力与真实 AI 验收
+## 当前版本：九关、星星评分与统一加速度
+
+- 游戏：[muuyyy.cfd/demo/](https://muuyyy.cfd/demo/)，应用版本 `f4b59d1a6b2b43c2b49d825f64e9bec322ef1a52`。
+- release ID `20261025T004029Z-f4b59d1`（UTC 标识；本地发布时间为 2026-10-24）。应用 current 指向 `/opt/optional-reality/releases/20261025T004029Z-f4b59d1`；静态 current 指向 `/var/www/muu-tech/releases/20261025T004029Z-f4b59d1-optional-reality-game`。
+- 九关均有三颗星，新增 One More Turn。到出口可普通通关，全部星星加出口获满分；多次反弹满分路线采用高弹性后增强向下加速度。每条消息均有小号 Send now 和删除按钮。
+- 前后端同时切换到单一 acceleration 向量协议，gravity 是竖直分量别名；方向与强度统一，向下 20 保留为 +20。旧页面需要刷新后使用新协议。
+- 独立源码安装后 437 项测试、类型检查、生产构建通过。私有端口 3113 预发布与正式 HTTPS API 各验证三条真实模型消息，向量依次为 (2,20)、(2,-20)、(2,20)。
+- 公网浏览器实际完成多次反弹与弹簧关 3/3 满分；重试恢复星星、30 秒及原消息。浏览器 warning/error 为空。九个 level URL、API 健康与配置状态正常。
+- 继续使用原 Node 24.22.1、systemd 与持久 `.env`；密钥文件与 Apache/TLS 配置保持原状，后端仅监听 127.0.0.1:3001。临时验收服务已停止。
+
+### 备份与资源校验
+
+- 服务器备份：`/var/backups/optional-reality/20261025T004029Z-f4b59d1/`；本地：`.localwork/backups/stars-20261025T004029Z-f4b59d1/`，目录 700、文件 600。包含旧站点、排除 `.env` 与 node_modules 的应用源码、目录指向、服务单元和 Apache 游戏配置。
+- `site.tar.gz` SHA256：`6b962b1d17c033ea1b566ac77053511955dee3bae45b88708e5b958cfdd2a070`。
+- `app-source.tar.gz` SHA256：`b2c5ffc6a543483679318429f096cdaf17625ad9d6c32b9e28db121d94763bf0`。服务器与本地归档均已复验。
+- 前端 HTML SHA256：`611ca38013b19e35d12b8c6723c72f9130d01b0eefbd7c0d9a1d4675a75da982`。
+- JS `index-CwtAjPSs.js` SHA256：`e4879180e03faa123b3837f20ec3cea68d748f87f1f675cac9f994fe4519ae59`；CSS `index-B4Zje0ET.css` SHA256：`b5065f32723017575f14b809f418c5be3432d63ed26464e935ad8aaf5ba941fa`。公网三份文件与独立构建完全一致。
+- 首页仅改 Eight → Nine，SHA256：`d2d3dc39f722a2c353a1ed3a6f1cf32e2eec4ec6871e3755028c249a92c8a1fa`；保留原站其他文件与旧哈希资源。
+- 线上截图和 API 验收结果：忽略目录 `.localwork/deploy-stars/`。
+
+### 回退到上一八关版
+
+前后端需一起回退；不回退持久 `.env`。以 root 执行，若 current 已变化则停止并核对后续发布。
+
+```sh
+set -eu
+app_root=/opt/optional-reality
+site_root=/var/www/muu-tech
+test "$(readlink -f "$app_root/current")" = "/opt/optional-reality/releases/20261025T004029Z-f4b59d1"
+test "$(readlink -f "$site_root/current")" = "/var/www/muu-tech/releases/20261025T004029Z-f4b59d1-optional-reality-game"
+test -f "/opt/optional-reality/releases/20261024T233406Z-fcfcbff/server/src/index.ts"
+test -f "/var/www/muu-tech/releases/20261024T233406Z-fcfcbff-optional-reality-game/demo/index.html"
+apache2ctl configtest
+ln -s "/opt/optional-reality/releases/20261024T233406Z-fcfcbff" "$app_root/.rollback-app-$$"
+mv -Tf "$app_root/.rollback-app-$$" "$app_root/current"
+systemctl restart optional-reality
+curl -fsS --retry 15 --retry-connrefused --retry-delay 1 http://127.0.0.1:3001/api/health
+ln -s "/var/www/muu-tech/releases/20261024T233406Z-fcfcbff-optional-reality-game" "$site_root/.rollback-web-$$"
+mv -Tf "$site_root/.rollback-web-$$" "$site_root/current"
+curl -fsS https://muuyyy.cfd/api/health
+```
+
+## 历史版本：共享能力与真实 AI 验收
 
 - 游戏：https://muuyyy.cfd/demo/；应用版本 `fcfcbff80a09cf54e2e8a8fbb88e204192cbc6c5`。
 - 发布目录 `20261024T233406Z-fcfcbff`（UTC 标识）；应用 current 指向 `/opt/optional-reality/releases/20261024T233406Z-fcfcbff`，静态 current 指向 `/var/www/muu-tech/releases/20261024T233406Z-fcfcbff-optional-reality-game`。
