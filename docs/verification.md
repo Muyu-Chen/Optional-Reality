@@ -174,3 +174,10 @@
 - 公网实际完成 bounce `.1 → 触地附近向上 1` 的三星路线，向量徽标同步改为向上，结算 3/3；浏览器 warning/error 为空。新鸟/加速度徽标与三条消息画面保存在 `.localwork/deploy-game-feel/live-three-modules.png`。
 - 现有公网真实模型仍正常编译并应用 `(2,20)`、`(2,-20)`、`(2,20)`；Gemini 配置和接口已上线，但新 key 未配置，真实 Gemini 请求没有发送。两份 key 使用独立字段，旧 key 保留，服务器持久配置未被开发机文件覆盖。
 - 服务器与本地备份校验一致，新旧 release 和旧哈希资源保留，回退步骤见 [部署记录](../deploy/live-game.md)。
+
+### 用户配置 Gemini 后的真实切换
+
+- 用户随后更新了服务器持久配置：AI_PROVIDER=gemini、独立 GEMINI_API_KEY 已填，原 AI_API_KEY 仍在。本地根 .env 的新 key 仍为空；没有上传或下载真实密钥。
+- 临时回环服务读取新配置后，用 Gemini 真实编译并验证 `(2,-1)`；随后重启正式服务。公网 status 为 configured:true、model:gemini-3.1-flash-lite，Gemini 对三条向下/向上/反转消息实际应用结果为 `(2,20)`、`(2,-20)`、`(2,20)`。
+- 浏览器提交英文拼写 twenty 的自由语言，显示 Interpreting 后经真实 Gemini 准备为向下 20，另外两条待发消息保留；服务提示为 AI ready · gemini-3.1-flash-lite，浏览器 warning/error 为空。完整截图为 `.localwork/deploy-game-feel/live-three-modules-full.png`。
+- 双 key 配置在服务器另存 root:root 600 的私有备份，重启前后 cmp 一致；临时服务已停，正式后端仍仅监听回环 3001。20 个静态资源复验仍与固定构建一致。此前“新 key 未配置”的记录为切换前状态。
