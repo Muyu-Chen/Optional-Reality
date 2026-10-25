@@ -5,6 +5,7 @@ import type { Operation, RuleContext } from '../../shared/rules';
 import type { LevelDefinition } from '../../client/src/levels/types';
 import { SURFACE_SCOPE_POLICY } from './compiler-surface-policy';
 import { ARITHMETIC_POLICY } from './compiler-arithmetic-policy';
+import { QUALITATIVE_POLICY } from '../../shared/qualitative-commands';
 import { MEANING_POLICY } from './compiler-meaning-policy';
 
 // The schema defines the operation set. Type-checking requires a guide for each operation.
@@ -42,6 +43,7 @@ Example JSON: {"messages":[{"id":"m1","operations":[{"type":"set_property","targ
 export const COMPILER_SYSTEM = COMPILER_RULES
   + '\n' + ARITHMETIC_POLICY
   + '\n' + MEANING_POLICY
+  + '\n' + QUALITATIVE_POLICY
   + '\n' + SURFACE_SCOPE_POLICY
   + '\nShared physics catalog (identical across every level):\n'
   + JSON.stringify(PROPERTY_NAMES.map(property => {
@@ -55,7 +57,7 @@ export function compilerInput(level: LevelDefinition, request: CompileRequest, c
   // Keep static scene data ahead of state and player messages for prefix reuse.
   return JSON.stringify({
     level: { id: level.id, title: level.title, description: level.instructions.sceneDescription,
-      playArea: { width:level.viewport.width, height:level.viewport.height, edges:'open', failure:'The actor fully leaving any edge ends the run. There are no implicit containment walls.' },
+      playArea: { width:level.viewport.width, height:level.viewport.height, edges:'open in normal time; fixed containment walls during the single 30-second rescue overtime', failure:'Before overtime, fully leaving an edge ends the run. Overtime walls are preset, read-only and cost one earned star on completion.' },
       editable: context },
     currentRules: request.rules, messages: request.messages,
   });

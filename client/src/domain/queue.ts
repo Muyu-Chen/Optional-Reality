@@ -20,7 +20,7 @@ export function prepareMessage(id: string, text: string, context?: RuleContext, 
     const normalized = normalizeCommand(text);
     return { id, text: text.trim(), status: 'ready', source: 'local',
       ...(limited.operations.length === 1 ? { operation: limited.operations[0] } : { operations: limited.operations }),
-      ...(normalized !== text.trim() ? { understoodAs: normalized } : {}),
+      ...(parsed.understoodAs ? { understoodAs: parsed.understoodAs } : normalized !== text.trim() ? { understoodAs: normalized } : {}),
       ...(limited.adjustments.length ? { adjustments: limited.adjustments } : {}),
     };
   } catch (error) { return { id, text: text.trim(), status: 'error', error: error instanceof Error ? error.message : 'Invalid command.' }; }

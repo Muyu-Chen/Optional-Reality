@@ -14,3 +14,11 @@ export function editableRuleLabels(level: LevelDefinition): string[] {
   if (context.sensors.length && context.gates.length) labels.push('Touch switch → gate');
   return [...new Set(labels)];
 }
+
+/** Prefer intuitive wording in the composer; exact values remain in the queue. */
+export function naturalRuleExample(level:LevelDefinition) {
+  if(['bounce','multi-bounce','catch-cup'].includes(level.id))return 'Make all surfaces almost perfectly bouncy';
+  if(level.id==='friction-runway')return 'Make the surface grippy';
+  if(level.id==='reality-breakdown')return 'Make the conveyor much slower';
+  return 'Give the ball a gentle upward acceleration';
+}

@@ -2,15 +2,21 @@ import { applyRules, gravityState, GRAVITY_CONTEXT, OperationSchema, type Operat
 import { parseCommandTree } from './command-parser';
 import { compileCommandTree } from './command-compiler';
 import { normalizeAccelerationOperation } from './acceleration';
+import { qualitativeProgram } from './qualitative-commands';
 import { parseAdditiveCommand } from './additive-command';
 export { Acceleration, OperationSchema, type Operation } from './rules';
 export type ParsedCommand = { operation: Operation; error?: never } | { operation?: never; error: string };
-export type ParsedCommands = { operations: Operation[]; error?: never } | { operations?: never; error: string };
+export type ParsedCommands = { operations: Operation[]; understoodAs?: string; error?: never } | { operations?: never; error: string };
 
 export function parseCommands(input: string, context?: RuleContext): ParsedCommands {
   const additive = parseAdditiveCommand(input, context);
   if (additive) return additive;
   try {
+    const qualitative = qualitativeProgram(input, context);
+    if (qualitative) {
+      const operations = compileCommandTree(qualitative, context);
+      return { operations, understoodAs: operations.map(operation => { const result = describeOperation(operation); const target = 'target' in operation ? operation.target : undefined; const label = context?.targets.find(item => item.id === target)?.label || (target === 'world' ? 'World' : target); return `${result.title}. ${target ? `Target: ${label}.` : result.detail}`; }).join(' ') };
+    }
     return { operations: compileCommandTree(parseCommandTree(input, context), context) };
   } catch (error) {
     return { error: error instanceof Error ? error.message : 'Use AI preparation for this message.' };
