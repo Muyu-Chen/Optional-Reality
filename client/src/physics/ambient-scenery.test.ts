@@ -9,7 +9,7 @@ function advance(scene:AmbientScenery,seconds:number,acceleration=down,fps=60) {
   for(let i=0;i<Math.round(seconds*fps);i++)scene.advance(1/fps,acceleration);
 }
 function canvas() {
-  const methods=['save','restore','beginPath','rect','clip','ellipse','fill','translate','rotate','moveTo','quadraticCurveTo','lineTo','stroke'] as const;
+  const methods=['save','restore','beginPath','closePath','rect','clip','ellipse','fill','translate','rotate','moveTo','quadraticCurveTo','lineTo','stroke'] as const;
   return Object.fromEntries(methods.map(name=>[name,vi.fn()])) as unknown as CanvasRenderingContext2D;
 }
 
