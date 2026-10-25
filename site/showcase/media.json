@@ -1,0 +1,56 @@
+{
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "duration": 46.833333,
+  "silent": true,
+  "transitionSeconds": 0.4,
+  "scenes": [
+    {
+      "scene": "title-open",
+      "duration": 2.2,
+      "start": 0.0
+    },
+    {
+      "scene": "00-gallery-motion",
+      "duration": 3.2,
+      "start": 1.8
+    },
+    {
+      "scene": "01-motion-final",
+      "duration": 13.833333,
+      "start": 4.6
+    },
+    {
+      "scene": "02-gallery-collisions",
+      "duration": 3.2,
+      "start": 18.033333
+    },
+    {
+      "scene": "03-collision-final",
+      "duration": 9.066667,
+      "start": 20.833333
+    },
+    {
+      "scene": "04-gallery-devices",
+      "duration": 3.2,
+      "start": 29.5
+    },
+    {
+      "scene": "05-toaster-final",
+      "duration": 13.433333,
+      "start": 32.3
+    },
+    {
+      "scene": "title-close",
+      "duration": 1.5,
+      "start": 45.333333
+    }
+  ],
+  "sourceCommit": "149dd96b67113e24fb4bc5ae371dc97d9ed6843f",
+  "files": {
+    "gameplay-loop.mp4": 2737759,
+    "preview.gif": 3133134,
+    "poster.jpg": 82811
+  }
+}

@@ -1,0 +1,36 @@
+# Looping gameplay demo
+
+**47 seconds · 1280 × 720 · 30 fps · silent · seamless opening/closing frame**
+
+[Download / watch the HD MP4](./gameplay-loop.mp4) · [Looping player](./index.html) · [English captions](./captions.en.vtt) · [中文字幕](./captions.zh.vtt)
+
+![Looping gameplay preview](./preview.gif)
+
+The footage includes chapter/level selection and visible automatic typing through the normal interface:
+
+| Start | Level | Recorded action | Result |
+| --- | --- | --- | --- |
+| 00:04.6 | 01.3 Bring It Back | Queue `acceleration leftward 1`; Start, then send near the middle star | 3/3 stars |
+| 00:20.8 | 02.5 Bank Shot | Type `Set surface bounce to 1`, then Send now | 3/3 stars |
+| 00:32.3 | 03.1 A Little Stored Energy | Start; first contact pauses; type `Set toaster power to 2`; Send now; Continue | 3/3 stars |
+
+The recording uses the actual browser UI, Matter.js simulation, collision geometry, and scoring. Only the typing and normal control clicks are automated. No body position, velocity, score, timing rule, or permission was modified. The explicit commands are recognized by the local parser, so this video does not demonstrate a live LLM request or claim model latency. See [AI usage and credits](../../AI_USAGE.md).
+
+The MP4 is H.264 with no audio track and fast-start metadata. An MP4 does not itself force every player to repeat; `index.html` sets `autoplay loop muted playsinline`, while `preview.gif` stores an infinite loop. The final title frame matches the opening title frame. The player respects reduced-motion preferences by waiting for Play, and includes native controls, restart, chapter jumps, optional Chinese/English captions, and MP4 download.
+
+To play locally:
+
+```sh
+python3 -m http.server 8794 --bind 127.0.0.1 --directory site
+# Open http://127.0.0.1:8794/showcase/
+```
+
+GitHub renders the looping GIF in Markdown; download the MP4 for full-resolution text. Serving the folder over HTTP also enables its caption tracks.
+
+Media was captured from gameplay source `149dd96b67113e24fb4bc5ae371dc97d9ed6843f`. [media.json](./media.json) records the encoded dimensions, timing, sizes, and scene list. The raw JPEG screencast frames stay in the ignored local work directory. With those frames and FFmpeg available, rebuild the edit with:
+
+```sh
+python3 scripts/build-demo-video.py .localwork/demo-video-20261025
+```
+
+This editor preserves capture timestamps, adds short crossfades, and exports the MP4, looping GIF, and poster. No production service is required to play the files.
