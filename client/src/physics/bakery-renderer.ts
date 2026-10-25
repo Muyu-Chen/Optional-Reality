@@ -6,9 +6,10 @@ import { drawBakeryDevice } from './bakery/devices';
 import { drawBakeryRoom } from './bakery/room';
 import { sceneColours } from './drawing-theme';
 import type { AmbientFrame } from './ambient-scenery';
+import type { ActorImpactPose } from './actor-impact-pose';
 
 // Rendering reads the Matter.js world; no simulation or command parser lives here.
-export function drawBakery(ctx: Ctx, world: PhysicsWorld, trail: readonly Point[],ambient?:AmbientFrame,reducedMotion=false) {
+export function drawBakery(ctx: Ctx, world: PhysicsWorld, trail: readonly Point[],ambient?:AmbientFrame,reducedMotion=false,actorPose?:ActorImpactPose) {
   const { level } = world;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -20,7 +21,7 @@ export function drawBakery(ctx: Ctx, world: PhysicsWorld, trail: readonly Point[
     ctx.setLineDash([]);
   }
   const { x, y } = world.ball.position;
-  if (!world.won) drawBread(ctx, x, y, level.ball.radius, world.ball.angle);
+  if (!world.won) drawBread(ctx, x, y, level.ball.radius, world.ball.angle,reducedMotion?undefined:actorPose);
   if (!world.started) bakeryText(ctx, 'START', 143, 389, 13, sceneColours.bakeryInk, '600');
   bakeryText(ctx, 'THE LAST ORDER / CHANGE THE RULES. CHOOSE THE MOMENT.', 27, 530, 12, sceneColours.bakeryInk);
 }

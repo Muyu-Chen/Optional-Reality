@@ -1,8 +1,10 @@
 import { oval, type Ctx } from './drawing';
+import { applyActorImpactPose, type ActorImpactPose } from '../actor-impact-pose';
 
-export function drawBread(ctx: Ctx, x: number, y: number, r: number, rotation = 0) {
+export function drawBread(ctx: Ctx, x: number, y: number, r: number, rotation = 0, pose?: ActorImpactPose) {
   ctx.save();
   ctx.translate(x, y);
+  applyActorImpactPose(ctx,pose);
   ctx.rotate(rotation);
   oval(ctx, 0, 2, r + 1, r - 1, '#80522b');
   oval(ctx, 0, -1, r, r - 1, '#c88e43');

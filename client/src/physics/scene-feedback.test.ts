@@ -44,4 +44,19 @@ describe('presentation feedback observes real simulation events',()=>{
       try{fresh.capture();expect(fresh.active).toHaveLength(0);}finally{fresh.dispose();retry.destroy();}
     }finally{feedback.dispose();world.destroy();}
   });
+
+  it('freezes impact deformation while paused even if other presentation time advances',()=>{
+    const world=new PhysicsWorld(bounce),feedback=new SceneFeedback(world);
+    try {
+      world.start();
+      for(let i=0;i<318;i++){feedback.advance(i/120);world.step();feedback.capture();}
+      expect(feedback.actorPose).toBeDefined();
+      const pose=feedback.actorPose,impacts=feedback.active.filter(cue=>cue.kind==='impact');
+      world.pause();feedback.advance(100);feedback.capture();
+      expect(feedback.actorPose).toEqual(pose);
+      expect(feedback.active.filter(cue=>cue.kind==='impact')).toEqual(impacts);
+      feedback.advance(100,true);expect(feedback.actorPose).toBeUndefined();
+      feedback.advance(100,false);feedback.capture();expect(feedback.actorPose).toBeUndefined();
+    }finally{feedback.dispose();world.destroy();}
+  });
 });

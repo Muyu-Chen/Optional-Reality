@@ -1,15 +1,18 @@
 import type { PhysicsWorld } from './world';
 import type { LevelDefinition } from '../levels/types';
 import { sceneColours } from './drawing-theme';
+import { applyActorImpactPose, type ActorImpactPose } from './actor-impact-pose';
 
-export function drawActor(ctx: CanvasRenderingContext2D, world: PhysicsWorld) {
+export function drawActor(ctx: CanvasRenderingContext2D, world: PhysicsWorld, pose?: ActorImpactPose) {
   if (world.won) return;
-  drawActorAt(ctx, world.level, world.ball.position, world.ball.angle);
+  drawActorAt(ctx, world.level, world.ball.position, world.ball.angle, pose);
 }
 
-export function drawActorAt(ctx: CanvasRenderingContext2D, level: LevelDefinition, position: {x:number;y:number}, angle = 0) {
+export function drawActorAt(ctx: CanvasRenderingContext2D, level: LevelDefinition, position: {x:number;y:number}, angle = 0, pose?: ActorImpactPose) {
   const {x,y}=position, r=level.ball.radius;
-  ctx.save();ctx.translate(x,y);ctx.rotate(angle);
+  ctx.save();ctx.translate(x,y);
+  if(!level.ball.shape)applyActorImpactPose(ctx,pose);
+  ctx.rotate(angle);
   const paint=ctx.createRadialGradient(-r*.35,-r*.4,r*.08,0,0,r*1.2);
   paint.addColorStop(0,'#f2ffa5');paint.addColorStop(.5,sceneColours.actor);paint.addColorStop(1,'#77aa37');
   ctx.fillStyle=paint;ctx.strokeStyle=sceneColours.actorOutline;ctx.lineWidth=2.5;ctx.beginPath();

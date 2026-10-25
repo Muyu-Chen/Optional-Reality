@@ -1,9 +1,12 @@
-import Matter from 'matter-js';
 import type { PhysicsWorld } from './world';
 import { physicsColours } from './visual-language';
 import { sceneColours } from './drawing-theme';
+import { ImpactFeedback } from './impact-feedback';
+import { drawImpacts } from './impact-renderer';
+import { actorImpactPose } from './actor-impact-pose';
+import type { ImpactPulse } from './impact-state';
 
-export interface VisualCue { kind:'star'|'impact'|'release'; x:number; y:number; born:number; colour:string }
+export interface VisualCue { kind:'star'|'release'; x:number; y:number; born:number; colour:string }
 
 // Observes actual contacts and pickups; never changes a body, a rule or the simulation clock.
 export class SceneFeedback {
@@ -12,17 +15,23 @@ export class SceneFeedback {
   private springs=new Map<string,string>();
   private time=0;
   private reduced=false;
-  private lastImpact=-1;
+  private impacts: ImpactFeedback;
+  private disposed=false;
   constructor(private world: PhysicsWorld) {
     this.seen=new Set(world.stars.collected);
-    Matter.Events.on(world.engine,'collisionStart',this.onCollision);
+    this.impacts=new ImpactFeedback(world);
   }
-  get active(): readonly VisualCue[] { return this.cues; }
+  get active(): readonly (VisualCue | ImpactPulse)[] { return [...this.cues,...this.impacts.state.active]; }
+  get actorPose() { return actorImpactPose(this.impacts.state.active,this.impacts.state.time,this.reduced); }
   advance(time:number,reduced=false) {
+    if(this.disposed)return;
     this.time=time;this.reduced=reduced;
     this.cues=reduced?[]:this.cues.filter(cue=>time-cue.born<(cue.kind==='star'?.65:.36));
+    this.impacts.advance(reduced);
   }
   capture() {
+    if(this.disposed)return;
+    this.impacts.advance(this.reduced);
     for(const star of this.world.level.stars || [])if(this.world.stars.collected.has(star.id)&&!this.seen.has(star.id)) {
       this.seen.add(star.id);this.add('star',...star.position,sceneColours.star);
     }
@@ -37,19 +46,8 @@ export class SceneFeedback {
     this.cues.push({kind,x,y,born:this.time,colour});
     if(this.cues.length>24)this.cues.shift();
   }
-  private onCollision=(event:Matter.IEventCollision<Matter.Engine>)=>{
-    if(this.time-this.lastImpact<.12||!this.world.running)return;
-    const {ball,level}=this.world;
-    if(Math.hypot(ball.velocity.x,ball.velocity.y)<.8)return;
-    const pair=event.pairs.find(pair=>pair.bodyA===ball||pair.bodyB===ball);
-    if(!pair)return;
-    const other=pair.bodyA===ball?pair.bodyB:pair.bodyA;
-    const track=level.tracks.find(track=>track.id===other.label);
-    const point=pair.collision.supports[0] || ball.position;
-    this.lastImpact=this.time;
-    this.add('impact',point.x,point.y,track?.feature?physicsColours[track.feature]:physicsColours.structure);
-  };
   draw(ctx:CanvasRenderingContext2D) {
+    drawImpacts(ctx,this.impacts.state.active,this.impacts.state.time);
     if(!this.cues.length)return;
     ctx.save();
     for(const cue of this.cues) {
@@ -63,5 +61,5 @@ export class SceneFeedback {
     }
     ctx.restore();
   }
-  dispose() { Matter.Events.off(this.world.engine,'collisionStart',this.onCollision);this.cues=[]; }
+  dispose() { if(this.disposed)return;this.disposed=true;this.impacts.dispose();this.cues=[];this.seen.clear();this.springs.clear(); }
 }

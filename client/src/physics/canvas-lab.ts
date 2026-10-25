@@ -122,8 +122,9 @@ export class CanvasLab {
     const scale = Math.min(availableWidth / width, availableHeight / height);
     ctx.setTransform(scale, 0, 0, scale, left+(availableWidth-width*scale)/2, top+(availableHeight-height*scale)/2);
     const ambient = this.scenery.snapshot();
-    if (this.level.presentation === 'bakery') drawBakery(ctx, this.world, this.trail,ambient,!!this.motion?.matches);
-    else drawGeometry(ctx,this.world,this.trail,ambient,!!this.motion?.matches);
+    const actorPose=this.feedback.actorPose;
+    if (this.level.presentation === 'bakery') drawBakery(ctx, this.world, this.trail,ambient,!!this.motion?.matches,actorPose);
+    else drawGeometry(ctx,this.world,this.trail,ambient,!!this.motion?.matches,actorPose);
     drawStars(ctx,this.world,this.visualTime,!!this.motion?.matches);
     this.feedback.draw(ctx);
     drawExitTransition(ctx,this.level,this.exit.visual);
