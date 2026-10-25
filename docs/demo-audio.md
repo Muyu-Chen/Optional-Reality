@@ -23,8 +23,18 @@ python3 scripts/build-demo-audio.py --voice-clips .localwork/demo-voice
 
 ## Verification and release
 
-Full FFmpeg decoding succeeded for both editions. Their compressed video-stream hashes exactly match the silent master. The website loop measured −18.9 LUFS integrated and −1.9 dBFS true peak; the narrated edition measured −16.7 LUFS and −3.0 dBFS true peak. Every voice segment fits its assigned scene window. Captions describe the spoken script; cue boundaries within each segment use proportional sentence timing.
+Full FFmpeg decoding succeeded for both editions. Their compressed video-stream hashes exactly match the silent master. The website loop measured −18.9 LUFS integrated and −1.9 dBFS true peak; the narrated edition measured −16.7 LUFS and −3.0 dBFS true peak. Every voice segment fits its assigned scene window. Captions describe the spoken script; cue boundaries now use local Whisper large-v3 word timestamps, with reviewed spelling and constrained first-word onsets.
 
 Browser checks covered sound enable/mute, native-control synchronization, preserved mute preference, caption display, paused narrated startup, 320 px local and 390 px public layouts without horizontal overflow, and public chapter seeking. Production serves byte ranges for seeking. The public introduction defaults to English and describes rule input as “any language supported by Google Gemini,” while retaining each level’s supported-editing boundaries.
 
 Static release `20261025T114207Z-demo-sound-optional-reality-game` was layered onto the latest twenty-one-level release. It preserves the game bundle, API release, configuration and QR/share assets. All 95 public files were hash-checked across three domains (285 checks), API health/configuration and existing hashed game assets passed, and four API services plus Apache retained their exact PIDs and start times. No service was stopped, restarted or reloaded for this static release.
+
+## Local Whisper subtitle update
+
+The user-provided `~/Downloads/youtube-demo.mp4` exactly matched the published narrated master. Existing local MLX Whisper large-v3 weights were found under `~/Transcribe-Models/models/large-v3`; no model or media was uploaded for transcription. Offline recognition completed in about eight seconds with word timestamps. Review corrected “Break the drift” to “Brake the drift,” capitalized the title and normalized hyphen spacing. All normalized subtitle words match the spoken script. First words were constrained to known actual narration onsets to exclude intro music from the cue.
+
+Reviewed English cues are exported as SRT/VTT and burned into a separate `youtube-demo-subtitled.mp4`, with high-contrast text and a dark translucent backing. The original input file remains intact. The burned version is H.264 1280 × 720 at 30 fps; its stereo AAC stream hash is identical to the input. Full decoding and timing/overlap checks passed. The web introduction and loop now enable English gameplay captions by default, and the narrated player enables the Whisper voiceover captions. Visitors can still turn web captions off. Downloads point to the subtitled upload edition.
+
+The confirmed narration script supplies the exact caption text and punctuation; Whisper supplies word timestamps. Alignment aborts on unexplained word mismatches. Final checks confirm that all 1,405 video-frame presentation timestamps and all audio-packet timestamps match the source exactly, and the audio-stream hash is unchanged. Only subtitle pixels are added to the picture.
+
+Final static release `20261025T120636Z-whisper-aligned-optional-reality-game` publishes the aligned captions and subtitled download. Existing game/API assets and services are preserved.

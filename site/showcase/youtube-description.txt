@@ -25,7 +25,7 @@ Original music: “A Little Different World,” composed in code for Optional Re
 Gameplay cues: reconstructed in post from the game's original synthesized sound designs and timed to the recorded actions.
 
 UPLOAD FILES
-youtube-demo.mp4 — 1280 × 720, 30 fps, H.264 video, stereo AAC audio, 47 seconds.
-narration.en.srt — English voiceover subtitles, uploaded separately in YouTube Studio.
+youtube-demo-subtitled.mp4 — 1280 × 720, 30 fps, H.264 video, stereo AAC audio, 47 seconds. English subtitles are burned into the picture.
+narration.en.srt — English voiceover captions recognized offline with local Whisper large-v3 and reviewed. Use these separately with the original youtube-demo.mp4 if you prefer switchable subtitles.
 
 The music/SFX loop shown on the website is gameplay-sound.mp4. The original silent source is gameplay-loop.mp4.

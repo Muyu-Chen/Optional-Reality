@@ -2,6 +2,7 @@ const video=document.getElementById('demo'),status=document.getElementById('stat
 const sound=document.getElementById('sound'),captions=document.getElementById('captions');
 const narrated=document.body.dataset.edition==='narrated';
 let soundPreference=null;
+let captionChoice=null;
 function soundState(){
   const audible=!video.muted&&video.volume>0;
   sound.textContent=audible?'Mute sound':'Enable sound';
@@ -26,8 +27,10 @@ document.getElementById('restart').addEventListener('click',()=>{video.currentTi
 document.getElementById('fullscreen').addEventListener('click',()=>{if(video.requestFullscreen)video.requestFullscreen().catch(()=>{status.textContent='Use the video controls to enter fullscreen.'});else if(video.webkitEnterFullscreen)video.webkitEnterFullscreen()});
 document.querySelectorAll('[data-seek]').forEach(button=>button.addEventListener('click',()=>{video.currentTime=Number(button.dataset.seek);resume()}));
 function captionState(){captions.setAttribute('aria-pressed',String(Array.from(video.textTracks).some(t=>t.language==='en'&&t.mode==='showing')))}
-captions.addEventListener('click',()=>{const show=captions.getAttribute('aria-pressed')!=='true';for(const track of video.textTracks)track.mode=show&&track.language==='en'?'showing':'disabled';captionState()});
+function showCaptions(show){for(const track of video.textTracks)track.mode=show&&track.language==='en'?'showing':'disabled';captionState()}
+captions.addEventListener('click',()=>{captionChoice=captions.getAttribute('aria-pressed')!=='true';showCaptions(captionChoice)});
+video.addEventListener('loadedmetadata',()=>{if(captionChoice===null)showCaptions(true)});
 video.textTracks.addEventListener('change',captionState);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)video.pause()});
 if(matchMedia('(prefers-reduced-motion: reduce)').matches){video.autoplay=false;video.pause();status.textContent='Reduced motion is enabled. Press play to watch.'}
-soundState();captionState();
+soundState();showCaptions(true);

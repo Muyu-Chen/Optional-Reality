@@ -1,6 +1,10 @@
 # 线上游戏 — 2026-10-25
 
-## 最新发布：演示配乐、音效与英文旁白
+## 最新发布：本地 Whisper 时间戳与默认字幕
+
+静态版本为 `20261025T120636Z-whisper-aligned-optional-reality-game`。使用本地 MLX Whisper large-v3 离线提取词级时间戳，字幕正文严格对齐已确认旁白稿，导出 14 段英文字幕及画面内固定字幕的 MP4；原音轨哈希、全部音频时间戳和 1405 帧画面时间戳均保持一致。介绍页、循环播放器、旁白版默认显示英文字幕，下载指向字幕版视频。三个域名 291 个资源哈希验证通过，API 与既有服务保持运行。详见 [字幕处理记录](../docs/demo-audio.md#local-whisper-subtitle-update)。
+
+## 此前发布：演示配乐、音效与英文旁白
 
 静态版本为 `20261025T114207Z-demo-sound-optional-reality-game`，在已上线的 21 关版本上追加音频与介绍页修改。网页循环录像加入原创配乐和重建的游戏提示音，点击 Watch 或 Enable sound 即可收听，静音选择与原生音量控件同步；另提供英文 Gemini 旁白版、SRT 字幕和 YouTube 上传说明。网站默认英文，语言说明改为 Google Gemini 支持的任何语言。三个域名 285 个资源哈希、API 与视频范围请求验证通过；四个 API 服务及 Apache 的 PID、启动时间保持不变，无停止、重启或 reload。详见 [演示音频记录](../docs/demo-audio.md)。
 

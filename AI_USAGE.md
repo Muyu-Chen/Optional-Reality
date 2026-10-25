@@ -56,6 +56,8 @@ The original instrumental score, “A Little Different World,” is composed in 
 
 The English voiceover is synthesized with Google Gemini `gemini-3.8-flash-tts`, prebuilt `Kore` voice, reading the supplied script. It is an AI-generated narrator, with no impersonation or cloned voice. Music ducks under the narration. [Script and timings](./site/showcase/narration.json), [production metadata](./site/showcase/audio-production.json), and the [mixing source](./scripts/build-demo-audio.py) record the process. Credentials stay on the backend and are not included in these assets.
 
+English narration subtitles are transcribed offline with the user’s existing local MLX Whisper large-v3 model. The confirmed narration script supplies the text; Whisper word timestamps determine cue timing; title capitalization, a brake/break homophone and hyphen spacing were reviewed against the spoken script. Intro-music lead-in was excluded from the first-word cue using the actual narration onset. The [recognition metadata](./site/showcase/narration.whisper.json) preserves the raw recognized text and reviewed cues. A separate MP4 burns the reviewed subtitles into the picture while copying the original audio unchanged. Web players show English captions by default and allow them to be turned off.
+
 ## 中文速览
 
 游戏中的 AI 负责把 Google Gemini 支持的语言理解成受支持的规则；物理、计时和评分由本地引擎执行。Enter 排队，检查解释后按 Send now 执行；Shift + Enter 只应用当前输入，AI 修正后的解释仍需手动确认。开发中使用了 Codex 辅助编码、关卡、文案、测试和文档，标题插画与分层素材使用 ImageGen，来源与提示词见上方链接。演示视频是真实界面录制和自动输入，三关均实际三星通关，使用本地可解析指令。

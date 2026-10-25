@@ -70,6 +70,24 @@
     "youtube-demo.mp4": {
       "bytes": 3909530,
       "sha256": "834012a47b6a9d635703514b57db2930d56010a2c0118031c30641a6acd7a8e1"
+    },
+    "youtube-demo-subtitled.mp4": {
+      "bytes": 4397158,
+      "sha256": "2edb88a8ca179401b9fb950bab5a9ae542cac9edaa3f702141138bc9f5cdded9"
     }
+  },
+  "subtitles": {
+    "engine": "mlx-whisper",
+    "model": "whisper-large-v3",
+    "processing": "offline, local model weights",
+    "language": "English",
+    "cues": 14,
+    "timing": "Whisper word timestamps, with first-word onsets constrained to actual narration windows",
+    "review": "Title capitalization, brake/break homophone and hyphen spacing reviewed against the spoken script",
+    "metadata": "narration.whisper.json",
+    "burnedFile": "youtube-demo-subtitled.mp4",
+    "textSource": "Confirmed narration.json script; Whisper used to align word timestamps",
+    "audioPacketTimestampsUnchanged": true,
+    "videoPresentationTimestampsUnchanged": true
   }
 }

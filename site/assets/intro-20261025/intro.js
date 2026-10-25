@@ -5,7 +5,7 @@ const translations = {
   watchDemo:'看看实际演示',playDesktop:'在电脑上开始游戏 ↗',deviceNote:'手机可以浏览介绍、观看演示和分享；实际游戏请使用电脑的键盘与鼠标。',
   statLevels:'个小小世界',statChapters:'个主题章节',statStars:'颗星等你发现',heroRuleLabel:'一条小小的规则',heroReady:'已就绪 ↗',artCaption:'一点小改变，一条完全不同的通关路线。',
   demoEyebrow:'01 / 先看看它怎么玩',demoTitle:'一句话，改变一个瞬间。',demoDescription:'三个真实关卡，自动逐字输入，三次满星通关。直接看看世界如何回应。',
-  actualGameplay:'真实游戏录像',videoHint:'原创配乐和游戏提示音，点击开启声音即可收听。',narratedDemo:'观看英文旁白版 ↗',downloadNarrated:'下载配音版 MP4 ↓',captions:'中文字幕',fullscreen:'全屏观看 ↗',
+  actualGameplay:'真实游戏录像',videoHint:'原创配乐和游戏提示音，点击开启声音即可收听。',narratedDemo:'观看英文旁白版 ↗',downloadNarrated:'下载字幕版 MP4 ↓',captions:'中文字幕',fullscreen:'全屏观看 ↗',
   motion:'运动',collisions:'碰撞',devices:'机关',demoProof:'真实界面录制与自动输入，使用原本的物理引擎和评分规则。',
   howEyebrow:'02 / 换一种方式操控',howTitleOne:'寥寥几句话，',howTitleTwo:'打开更多可能。',howDescription:'通关不只有一个答案。乐趣就在于找到属于你的那条路。',
   stepOneTitle:'写下一个小改变。',stepOneBody:'可以使用 Google Gemini 支持的任何语言，调整重力、弹性、摩擦，或场景中可修改的机关。准备好的消息会先留在队列里。',
@@ -51,7 +51,7 @@ const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 let language = 'en';
 const requested = new URLSearchParams(location.search).get('lang');
 if(requested==='zh'||requested==='en')language=requested;
-let captionsOn = language==='zh';
+let captionsOn = true;
 function text(key){return language==='zh' ? translations[key]||originals.get(key)||key : originals.get(key)||key}
 function setCaptions(){
   for(const track of video.textTracks)track.mode=captionsOn&&track.language===language?'showing':'disabled';
@@ -66,7 +66,7 @@ function applyLanguage(){
   setCaptions();
   soundState();
 }
-languageButton.addEventListener('click',()=>{language=language==='zh'?'en':'zh';captionsOn=language==='zh';applyLanguage()});
+languageButton.addEventListener('click',()=>{language=language==='zh'?'en':'zh';applyLanguage()});
 applyLanguage();
 video.addEventListener('loadedmetadata',setCaptions);
 captionsButton.addEventListener('click',()=>{captionsOn=!captionsOn;setCaptions()});

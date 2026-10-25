@@ -2,7 +2,7 @@
 
 **47 seconds · 1280 × 720 · 30 fps · music + gameplay cues · English narrated edition**
 
-[Download / watch the sound loop](./gameplay-sound.mp4) · [English narrated MP4](./youtube-demo.mp4) · [Looping player](./index.html) · [English captions](./captions.en.vtt) · [中文字幕](./captions.zh.vtt)
+[Download / watch the sound loop](./gameplay-sound.mp4) · [English narrated MP4 with subtitles](./youtube-demo-subtitled.mp4) · [Looping player](./index.html) · [English captions](./captions.en.vtt) · [中文字幕](./captions.zh.vtt)
 
 ![Looping gameplay preview](./preview.gif)
 
@@ -42,3 +42,15 @@ This editor preserves capture timestamps, adds short crossfades, and exports the
 - [Upload description](./youtube-description.txt), [SRT captions](./narration.en.srt), [script](./narration.txt), and [audio provenance](./audio-production.json) accompany the upload-ready file. The original silent master is retained.
 
 Both sound editions preserve the original H.264 video stream without re-encoding and add 48 kHz stereo AAC at 192 kb/s. Rebuild the audio with `python3 scripts/build-demo-audio.py --voice-clips /path/to/generated/wavs`. The script creates the music and cues locally, aligns five supplied voice clips, lowers music under speech, produces subtitles, normalizes loudness, and muxes both MP4s. Generate voice WAVs with `node scripts/generate-demo-voice.mjs /path/to/generated/wavs`, with `GEMINI_API_KEY` already present in the environment. This uses `narration.json` with the model and voice documented in `audio-production.json`; credentials and raw generation requests are not public assets. See [AI Usage](../../AI_USAGE.md#demo-audio-production) for disclosure.
+
+## Local Whisper subtitles
+
+The English voiceover captions now use offline recognition with the already downloaded MLX Whisper large-v3 model, with word timestamps and reviewed spelling. The confirmed narration script supplies the caption text; Whisper supplies timing. `narration.whisper.json` records the raw recognized text, corrections and final cues. Web players enable English captions by default; the introduction and music/SFX loop use gameplay explanations, while the narrated player uses the recognized voiceover text. Captions remain optional in the web controls.
+
+`youtube-demo-subtitled.mp4` burns those English subtitles into the picture and preserves the original audio stream unchanged. It is the default upload/download edition. The original `youtube-demo.mp4` remains available for separate subtitle-track workflows. After rebuilding audio, regenerate the recognition and final subtitle files with:
+
+```sh
+python3 scripts/subtitle-demo-local.py /path/to/youtube-demo.mp4 --model /path/to/local/whisper-large-v3 --work .localwork/whisper-subtitles
+```
+
+This requires a complete local MLX model and Metal access, Python/Pillow, and FFmpeg. It never downloads model weights or calls a transcription API. Subtitle overlays use Pillow, so FFmpeg does not need libass.
