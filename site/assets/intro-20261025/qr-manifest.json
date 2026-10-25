@@ -1,0 +1,30 @@
+{
+  "url": "https://optionalreality.site/intro",
+  "errorCorrection": "H",
+  "quietZoneModules": 6,
+  "verified": [
+    {
+      "file": "intro-qr.png",
+      "decoded": "https://optionalreality.site/intro",
+      "width": 900,
+      "height": 900
+    },
+    {
+      "file": "scan-card.png",
+      "decoded": "https://optionalreality.site/intro",
+      "width": 1440,
+      "height": 1920
+    },
+    {
+      "file": "social-card.png",
+      "decoded": "https://optionalreality.site/intro",
+      "width": 1200,
+      "height": 630
+    }
+  ],
+  "smallSizesVerified": [
+    180,
+    225,
+    300
+  ]
+}

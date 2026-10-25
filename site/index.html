@@ -1,138 +1,110 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#f4f6f2">
-  <meta name="description" content="Optional Reality is an AI-powered 2D physics sandbox in development. Describe new laws in natural language, explore guided experiments, and build a world of your own.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#edf4ed">
+  <meta name="description" content="Change the rules. Choose the moment. Meet Optional Reality: fifteen natural-language physics puzzles, three chapters, and a real gameplay demo.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'">
   <meta property="og:type" content="website">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:title" content="Optional Reality — The laws of physics are yours to rewrite">
-  <meta property="og:description" content="One sentence. A new law of physics. An AI-powered physics sandbox in development.">
+  <meta property="og:title" content="Optional Reality — Reality is optional.">
+  <meta property="og:description" content="One message. A different world. Watch the demo, discover fifteen physics puzzles, and try it on a computer.">
   <meta property="og:url" content="https://optionalreality.site/intro">
+  <meta property="og:image" content="https://optionalreality.site/assets/intro-20261025/social-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://optionalreality.site/intro">
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="/assets/intro-20261024-ghost.css">
-  <link rel="stylesheet" href="/assets/intro-motion-20261024.css">
-  <script src="/assets/intro-motion-20261024.js" type="module"></script>
-  <title>Optional Reality — The laws of physics are yours to rewrite</title>
+  <link rel="stylesheet" href="/assets/intro-20261025/intro.css">
+  <script src="/assets/intro-20261025/intro.js" defer></script>
+  <title>Optional Reality — Change the rules. Choose the moment.</title>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <div class="page-shell">
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="Optional Reality home"><span class="brand-mark" aria-hidden="true">o<span>r</span></span><span>Optional Reality</span></a>
-      <nav aria-label="Main navigation">
-        <a href="#idea">The idea</a>
-        <a href="#experiments">Experiments</a>
-        <a href="#how">How it works</a>
-        <a href="/">Play now ↗</a>
-        <button class="github-link" type="button" data-github>GitHub <span aria-hidden="true">↗</span></button>
-      </nav>
-    </header>
-    <main id="main">
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> SBUHACKS 2026 <span class="eyebrow-divider">/</span> IN DEVELOPMENT</p>
-          <h1 id="hero-title">Reality is<br> <span class="accent-word">optional.</span></h1>
-          <p class="hero-english">The laws of physics<br> are yours to rewrite.</p>
-          <p class="hero-description">What if gravity were just a suggestion?<br> Describe a new law of physics.<br> See how the world responds.</p>
-          <a class="button" href="/">Play now <span aria-hidden="true">↗</span></a>
-          <p class="availability">Nine physics puzzles. Prepare your rules, then choose when to send.</p>
-        </div>
-        <figure class="experiment">
-          <div class="experiment-bar"><span><span class="tiny-square" aria-hidden="true"></span> TEST CHAMBER 01</span><span>RAMP → EXIT</span></div>
-          <div class="world">
-            <div class="world-label">OPTIONAL REALITY / EXPERIMENTAL PHYSICS DIVISION</div>
-            <svg viewBox="0 0 620 390" role="img" aria-labelledby="world-title world-description">
-              <title id="world-title">A gravity experiment: 9.8 on the ramp, zero in flight</title>
-              <desc id="world-description">A green ball on a ramp is labeled gravity equals 9.8. The user applies a prepared turn off the gravity command when the ball leaves the track. A continuous dashed trajectory passes through a pale preview of the ball, then continues horizontally toward the exit. This is a concept illustration, not a live simulation.</desc>
-              <defs>
-                <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#dbe2da"/></pattern>
-                <pattern id="safety-stripes" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="12" fill="#243731"/></pattern>
-                <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 8 5 L 0 9" fill="none" stroke="#377b51" stroke-width="1.8"/></marker>
-              </defs>
-              <rect width="620" height="390" fill="url(#grid)"/>
-              <rect x="37" y="23" width="43" height="42" fill="#243731"/>
-              <text x="44" y="53" fill="#f9fbf7" font-family="Arial,sans-serif" font-size="27" font-weight="700">01</text>
-              <text x="94" y="39" fill="#243731" font-family="monospace" font-size="10" letter-spacing="1">GRAVITY, STEP BY STEP</text>
-              <text x="94" y="57" fill="#7c897f" font-family="monospace" font-size="9" letter-spacing="1">OBSERVE / REWRITE / REPEAT</text>
-              <path d="M 37 138 L 188 286 Q 236 330 280 257 Q 299 237 322 237" fill="none" stroke="#243731" stroke-width="9" stroke-linecap="square" stroke-linejoin="round"/>
-              <path d="M 55 166 L 55 336 M 175 280 L 175 336 M 296 241 L 296 336" stroke="#c4cec4" stroke-width="2"/>
-              <line x1="28" y1="338" x2="586" y2="338" stroke="#243731" stroke-width="2"/>
-              <rect x="28" y="339" width="558" height="7" fill="url(#safety-stripes)" opacity=".35"/>
-              <path id="ball-trajectory" d="M 108 183 L 188 260 Q 236 304 280 235 Q 299 215 324 215 H 532" fill="none" stroke="#377b51" stroke-opacity=".7" stroke-width="3" stroke-dasharray="9 8" stroke-linecap="round" marker-end="url(#arrow)"/>
-              <circle cx="108" cy="183" r="18" fill="#d5eb8d" stroke="#243731" stroke-width="2.5"/>
-              <circle cx="103" cy="177" r="5" fill="#f1f8d8"/>
-              <circle id="exit-ball" cx="324" cy="215" r="18" fill="#eef3e7" stroke="#a4bba8" stroke-width="2"/>
-              <circle cx="319" cy="209" r="5" fill="#ffffff" fill-opacity=".8"/>
-              <text x="66" y="96" fill="#6c7d72" font-family="monospace" font-size="10" letter-spacing="1">BALL A / RAMP ZONE</text>
-              <text x="66" y="117" fill="#243731" font-family="monospace" font-size="20">gravity = 9.8</text>
-              <path d="M 109 128 V 152" stroke="#8a9b8e" fill="none"/>
-              <text x="376" y="164" fill="#6c7d72" font-family="monospace" font-size="10" letter-spacing="1">FLIGHT ZONE</text>
-              <text x="376" y="186" fill="#377b51" font-family="monospace" font-size="20">gravity = 0</text>
-              <path d="M 426 195 V 210" stroke="#8a9b8e" fill="none"/>
-              <rect x="540" y="188" width="44" height="70" fill="#243731"/>
-              <path d="M 551 223 H 573 M 566 216 L 573 223 L 566 230" stroke="#f9fbf7" stroke-width="3" fill="none"/>
-              <text x="544" y="279" fill="#243731" font-family="monospace" font-size="16" font-weight="700" letter-spacing="2">EXIT</text>
-              <text x="38" y="369" fill="#7c897f" font-family="monospace" font-size="10" letter-spacing="1.5">A SMALL CHANGE. A DIFFERENT WORLD.</text>
-            </svg>
-          </div>
-          <div class="instruction"><span class="instruction-icon" aria-hidden="true">✳</span><div><span class="instruction-label">YOU CONTROL THE TIMING</span><p>Send <strong>“turn off the gravity”</strong> when you see the ball leave the track.</p></div></div>
-          <figcaption><span class="legend-line" aria-hidden="true"></span> Concept illustration · Not a live simulation</figcaption>
-        </figure>
-      </section>
-      <section id="idea" class="idea-section" aria-labelledby="idea-title">
-        <div class="section-intro"><p class="eyebrow">01 / THE IDEA</p><h2 id="idea-title">Start with a challenge.<br> Make a world of your own.</h2></div>
-        <div class="modes">
-          <article><span class="mode-number">A</span><div><h3>A little direction <span>Guided Experiments</span></h3><p>Get the ball to the exit. Begin with a clear goal, change gravity, friction, or elasticity, and discover what your rules actually do.</p></div></article>
-          <article><span class="mode-number">B</span><div><h3>A lot of possibility <span>Free Sandbox</span></h3><p>Create objects and combine new laws. There doesn't have to be a right answer. Sometimes, the whole point is asking: what if?</p></div></article>
-        </div>
-      </section>
-      <section id="experiments" class="experiments-section" aria-labelledby="experiments-title">
-        <div class="section-heading">
-          <div><p class="eyebrow">MORE WAYS TO ASK “WHAT IF?”</p><h2 id="experiments-title">Change a property.<br> Or change an interaction.</h2></div>
-          <button class="motion-toggle" type="button" data-motion-toggle aria-pressed="false" disabled>Pause animations</button>
-        </div>
-        <div class="experiment-gallery">
-          <figure class="motion-card">
-            <div class="media-frame diagram-frame">
-              <canvas class="diagram-canvas" data-diagram="spring" width="640" height="360" role="img" aria-label="Animated illustration: a floating ball falls after add gravity, collects a star, automatically compresses and leaves a spring, then reverses its fall after reverse the gravity."></canvas>
-              <img class="poster" src="/assets/gravity-spring-rules-poster.png" width="640" height="360" loading="lazy" decoding="async" alt="A ball suspended above a star and a vertical spring, waiting for a change to the gravity rule.">
-            </div>
-            <figcaption><span class="eyebrow">GRAVITY &amp; SPRINGS</span><blockquote>“reverse the gravity”</blockquote></figcaption>
-          </figure>
-          <figure class="motion-card">
-            <div class="media-frame diagram-frame">
-              <canvas class="diagram-canvas" data-diagram="orbit" width="640" height="360" role="img" aria-label="Animated concept illustration: object B follows an elliptical orbit around object A, with the force arrow always pointing toward A."></canvas>
-              <img class="poster" src="/assets/orbit-experiment-poster.png" width="640" height="360" loading="lazy" decoding="async" alt="An elliptical orbit around object A and the force acting on object B.">
-            </div>
-            <figcaption><span class="eyebrow">CUSTOM GRAVITY</span><blockquote>“Let A attract B.”</blockquote></figcaption>
-          </figure>
-        </div>
-        <p class="concept-note">Illustrated experiments, not live simulations.</p>
-      </section>
-      <section id="how" class="how-section" aria-labelledby="how-title">
-        <div class="section-heading"><div><p class="eyebrow">02 / HOW IT WILL WORK</p><h2 id="how-title">You write the rules.<br> You choose the moment.</h2></div><p>The command queue we're building toward.</p></div>
-        <ol class="workflow">
-          <li><span class="step-number">01</span><h3>Queue your commands</h3><p>Write simple changes.<br> Arrange them in the order you want.</p></li>
-          <li><span class="step-number">02</span><h3>Prepare them together</h3><p>Submit the queue once.<br> AI prepares checked rules in advance.</p></li>
-          <li><span class="step-number">03</span><h3>Apply the next rule</h3><p>Watch the experiment.<br> Apply each prepared rule when you're ready.</p></li>
-        </ol>
-      </section>
-      <section class="build-section" aria-labelledby="build-title">
-        <div><p class="eyebrow">03 / UNDER CONSTRUCTION</p><h2 id="build-title">A small world to start with.</h2><p>We're starting with a 2D web app and one complete loop: natural language to a working physics rule. Springs, custom gravity fields, and more experiments can follow.</p><button class="text-link" type="button" data-github>View on GitHub <span aria-hidden="true">↗</span></button></div>
-        <dl class="stack"><div><dt>Interface</dt><dd>React · TypeScript · Vite</dd></div><div><dt>Simulation</dt><dd>Matter.js · Canvas 2D</dd></div><div><dt>Rules & AI</dt><dd>Node.js · Zod · OpenAI-compatible API</dd></div></dl>
-      </section>
-    </main>
-    <footer class="site-footer"><span>Optional Reality <span class="footer-divider">/</span> SBUHacks 2026</span><span>A playground for “what if”.</span></footer>
-  </div>
-  <dialog id="github-dialog" aria-labelledby="github-title" aria-describedby="github-description">
-    <button class="dialog-close" type="button" data-close-dialog aria-label="Close">×</button>
-    <p class="eyebrow">STILL IN THE LAB</p>
-    <h2 id="github-title">See you after the hackathon.</h2>
-    <p id="github-description">The GitHub repository will be available after the hackathon ends.</p>
-    <button class="button" type="button" data-close-dialog>Got it <span aria-hidden="true">↗</span></button>
-  </dialog>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/intro" aria-label="Optional Reality introduction"><span class="brand-mark" aria-hidden="true">or</span><span>OPTIONAL REALITY</span></a>
+      <nav class="desktop-nav" aria-label="Introduction navigation"><a href="#how" data-i18n="navHow">How to play</a><a href="#chapters" data-i18n="navChapters">The chapters</a><a href="#share" data-i18n="navShare">Pass it on</a></nav>
+      <div class="header-actions"><a class="github-short" href="https://github.com/Muyu-Chen/Optional-Reality">GitHub ↗</a><button id="language" type="button" aria-label="Switch language to Chinese">中文</button></div>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero section-wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="live-dot" aria-hidden="true"></span> SBUHACKS 2026 <span class="eyebrow-divider">/</span> <span data-i18n="heroTag">A PLAYABLE LITTLE WORLD</span></p>
+        <h1 id="hero-title"><span data-i18n="heroLineOne">Reality is</span><br><span class="hero-accent" data-i18n="heroLineTwo">optional.</span></h1>
+        <p class="hero-kicker" data-i18n="heroKicker">Change the rules. Choose the moment.</p>
+        <p class="hero-description" data-i18n="heroDescription">You don’t move the ball. You change its world. Write a message, rewrite a rule, and see where a little curiosity takes you.</p>
+        <div class="hero-actions"><a class="button button-primary" href="#demo" data-watch><span class="play-triangle" aria-hidden="true">▶</span><span data-i18n="watchDemo">Watch the demo</span><small>47s</small></a><a class="text-link desktop-play" href="/" data-i18n="playDesktop">Play on desktop ↗</a></div>
+        <p class="device-note" data-i18n="deviceNote">Made for a keyboard and mouse. The introduction and demo work beautifully on your phone.</p>
+        <dl class="hero-stats"><div><dt>15</dt><dd data-i18n="statLevels">little worlds</dd></div><div><dt>03</dt><dd data-i18n="statChapters">chapters to explore</dd></div><div><dt>45</dt><dd data-i18n="statStars">stars to discover</dd></div></dl>
+      </div>
+      <div class="hero-art">
+        <svg class="world-illustration" viewBox="0 0 800 680" role="img" aria-label="A green ball, three stars, clockwork islands and a little exit doorway.">
+          <defs><clipPath id="world-clip"><path d="M400 35C550 8 718 111 755 276c41 181-51 326-205 353C368 662 181 655 97 501 21 361 73 184 194 103 264 56 332 48 400 35Z"/></clipPath></defs>
+          <g clip-path="url(#world-clip)">
+            <image href="/assets/intro-20261025/landscape.webp" x="45" y="0" width="725" height="680" preserveAspectRatio="xMidYMid slice"/>
+            <image class="cloud cloud-one" href="/assets/intro-20261025/cloud.webp" x="110" y="138" width="155" height="67"/>
+            <image class="cloud cloud-two" href="/assets/intro-20261025/cloud.webp" x="435" y="100" width="180" height="76"/>
+            <path d="M180 396Q345 130 470 280L602 331" fill="none" stroke="#fff9df" stroke-width="4" stroke-dasharray="2 12" stroke-linecap="round"/>
+            <image href="/assets/intro-20261025/island.webp" x="65" y="414" width="240" height="166" preserveAspectRatio="none"/>
+            <image href="/assets/intro-20261025/island.webp" x="475" y="390" width="220" height="152" preserveAspectRatio="none"/>
+            <image href="/assets/intro-20261025/exit.webp" x="559" y="244" width="87" height="149" preserveAspectRatio="none"/>
+            <image href="/assets/intro-20261025/star.webp" x="264" y="252" width="48" height="48"/>
+            <image href="/assets/intro-20261025/star.webp" x="384" y="219" width="48" height="48"/>
+            <image href="/assets/intro-20261025/star.webp" x="510" y="282" width="48" height="48"/>
+            <image class="hero-ball" href="/assets/intro-20261025/ball.webp" x="185" y="322" width="56" height="56"/>
+          </g>
+        </svg>
+        <div class="rule-note"><span class="rule-note-icon" aria-hidden="true">✳</span><div><span data-i18n="heroRuleLabel">ONE LITTLE RULE</span><code>“stop gravity”</code></div><span class="rule-ready" data-i18n="heroReady">Ready ↗</span></div>
+        <p class="art-caption" data-i18n="artCaption">A small change. A completely different way through.</p>
+      </div>
+    </section>
+
+    <section id="demo" class="demo-section section-wrap" aria-labelledby="demo-title">
+      <div class="section-heading"><div><p class="eyebrow" data-i18n="demoEyebrow">01 / SEE IT FOR YOURSELF</p><h2 id="demo-title" data-i18n="demoTitle">A message becomes a moment.</h2></div><p data-i18n="demoDescription">Three real levels. Visible automatic typing. Three full-score finishes. No imagination required.</p></div>
+      <div class="demo-frame">
+        <div class="demo-bar"><span><span class="record-dot" aria-hidden="true"></span><span data-i18n="actualGameplay">ACTUAL GAMEPLAY</span></span><span>00:47 <span aria-hidden="true">↻</span></span></div>
+        <video id="intro-video" controls loop muted playsinline preload="metadata" poster="/showcase/poster.jpg" aria-label="Optional Reality gameplay demo with level selection, typed rules and three-star completions">
+          <source src="/showcase/gameplay-loop.mp4" type="video/mp4">
+          <track kind="captions" srclang="en" label="English" src="/showcase/captions.en.vtt">
+          <track kind="captions" srclang="zh" label="中文" src="/showcase/captions.zh.vtt">
+          <p><a href="/showcase/gameplay-loop.mp4">Download the gameplay video</a></p>
+        </video>
+        <div class="demo-controls"><p id="video-status" aria-live="polite" data-i18n="videoHint">Silent by design. Loops so you can catch every little change.</p><div><button type="button" id="video-captions" aria-pressed="false" data-i18n="captions">Captions</button><button type="button" id="video-fullscreen" data-i18n="fullscreen">Fullscreen ↗</button></div></div>
+      </div>
+      <div class="demo-chapters" aria-label="Jump to a recorded chapter"><button type="button" data-seek="4.6"><span>01</span><b data-i18n="motion">Motion</b><small>00:05</small></button><button type="button" data-seek="20.833333"><span>02</span><b data-i18n="collisions">Collisions</b><small>00:21</small></button><button type="button" data-seek="32.3"><span>03</span><b data-i18n="devices">Devices</b><small>00:32</small></button></div>
+      <p class="demo-proof" data-i18n="demoProof">Recorded from the real game, with scripted typing and the original physics and scoring.</p>
+    </section>
+
+    <section id="how" class="how-section section-wrap" aria-labelledby="how-title">
+      <div class="section-heading"><div><p class="eyebrow" data-i18n="howEyebrow">02 / A DIFFERENT KIND OF CONTROL</p><h2 id="how-title"><span data-i18n="howTitleOne">A few words.</span><br><span data-i18n="howTitleTwo">A world of possibilities.</span></h2></div><p data-i18n="howDescription">There’s more than one way through. The fun is finding your own.</p></div>
+      <ol class="how-grid">
+        <li><span class="step-number">01</span><div class="message-example"><span aria-hidden="true">↳</span><code>add gravity</code></div><h3 data-i18n="stepOneTitle">Write a little change.</h3><p data-i18n="stepOneBody">Use English or Chinese to change gravity, bounce, friction, or an available device. Your prepared message waits in the queue.</p></li>
+        <li><span class="step-number">02</span><div class="timing-example"><span></span><span></span><b>Send now ↗</b></div><h3 data-i18n="stepTwoTitle">Choose the moment.</h3><p data-i18n="stepTwoBody">Send the rule when it matters. Switching gravity off preserves momentum; braking does not make a moving ball stop instantly.</p></li>
+        <li><span class="step-number">03</span><div class="stars-example" aria-hidden="true">★ <span>★</span> ★</div><h3 data-i18n="stepThreeTitle">Find another way.</h3><p data-i18n="stepThreeBody">Reach the exit to pass. Collect all three stars for full score. Retry, change your timing, and discover a route that feels like yours.</p></li>
+      </ol>
+    </section>
+
+    <section id="chapters" class="chapters-section section-wrap" aria-labelledby="chapters-title">
+      <div class="section-heading"><div><p class="eyebrow" data-i18n="chaptersEyebrow">03 / FIFTEEN LITTLE WORLDS</p><h2 id="chapters-title" data-i18n="chaptersTitle">Same rules. New possibilities.</h2></div><p data-i18n="chaptersDescription">Every level is open from the start. Follow a chapter, or follow your curiosity.</p></div>
+      <div class="chapter-grid">
+        <article class="chapter-card"><div class="chapter-preview preview-motion"><svg viewBox="0 0 320 180" aria-hidden="true"><path d="M54 86H263" stroke="#fff8e2" stroke-width="2" stroke-dasharray="3 7"/><path d="M195 107H118m9-7-9 7 9 7" fill="none" stroke="#58745c" stroke-width="2"/><rect x="22" y="63" width="30" height="44" rx="15" fill="#325a46"/><path d="M42 85H30m5-5-5 5 5 5" stroke="#fff9df" fill="none" stroke-width="2"/><circle cx="105" cy="86" r="13" fill="#cde46d" stroke="#557049" stroke-width="2"/><g fill="#e9b947" stroke="#a9843d"><path d="m166 77 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/><path d="m228 77 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/><path d="m285 77 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/></g></svg><span class="preview-chip" data-i18n="fiveLevels">5 LEVELS</span></div><div class="chapter-copy"><span class="chapter-number">01 / <span data-i18n="motion">Motion</span></span><h3 data-i18n="motionTitle">Let momentum surprise you.</h3><p data-i18n="motionBody">Fall, coast, reverse, and find your way around a wall. A different moment can make the same message a different solution.</p><button type="button" class="text-link" data-seek="4.6" data-i18n="watchMotion">Watch Motion ↗</button></div></article>
+        <article class="chapter-card"><div class="chapter-preview preview-collisions"><svg viewBox="0 0 320 180" aria-hidden="true"><path d="M215 147 275 85" stroke="#507fae" stroke-width="8" stroke-linecap="round"/><path d="M51 123H237V42" fill="none" stroke="#f8fbef" stroke-width="2" stroke-dasharray="3 7"/><circle cx="92" cy="123" r="13" fill="#cde46d" stroke="#557049" stroke-width="2"/><rect x="221" y="19" width="32" height="33" rx="11" fill="#325a46"/><path d="M229 35h15m-5-5 5 5-5 5" stroke="#fff9df" fill="none" stroke-width="2"/><g fill="#e9b947" stroke="#a9843d"><path d="m157 114 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/><path d="m237 87 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/></g></svg><span class="preview-chip" data-i18n="sevenLevels">7 LEVELS</span></div><div class="chapter-copy"><span class="chapter-number">02 / <span data-i18n="collisions">Collisions</span></span><h3 data-i18n="collisionsTitle">Make the landing count.</h3><p data-i18n="collisionsBody">Turn a collision into a new direction. Bounce higher, land softer, or add just enough friction to come home.</p><button type="button" class="text-link" data-seek="20.833333" data-i18n="watchCollisions">Watch Collisions ↗</button></div></article>
+        <article class="chapter-card"><div class="chapter-preview preview-devices"><svg viewBox="0 0 320 180" aria-hidden="true"><rect x="23" y="119" width="88" height="10" rx="5" fill="#6c765d"/><rect x="112" y="101" width="40" height="31" rx="6" fill="#d2e2df" stroke="#527b80" stroke-width="2"/><path d="m119 122 25-6-25-6h25" fill="none" stroke="#3c85c5" stroke-width="2"/><circle cx="130" cy="81" r="11" fill="#e5bc7b" stroke="#967346" stroke-width="2"/><path d="M144 70Q194 16 260 77" fill="none" stroke="#8b9e73" stroke-width="2" stroke-dasharray="3 6"/><rect x="181" y="41" width="70" height="96" rx="5" fill="none" stroke="#c99d57" stroke-dasharray="3 6"/><path d="M199 119V99m20 20V99m20 20V99" stroke="#bd8b49" stroke-width="2"/><path d="M266 80h28l4 48h-36Z" fill="#e3c99b" stroke="#a0885d" stroke-width="2"/><path d="M273 99h14m-5-5 5 5-5 5" fill="none" stroke="#557049" stroke-width="2"/></svg><span class="preview-chip" data-i18n="threeLevels">3 LEVELS</span></div><div class="chapter-copy"><span class="chapter-number">03 / <span data-i18n="devices">Devices</span></span><h3 data-i18n="devicesTitle">One loaf. A little teamwork.</h3><p data-i18n="devicesBody">Power a toaster, tune an updraft, and link a bell to a shutter. Make the bakery’s last delivery your own.</p><button type="button" class="text-link" data-seek="32.3" data-i18n="watchDevices">Watch Devices ↗</button></div></article>
+      </div>
+    </section>
+
+    <section class="why-section section-wrap" aria-labelledby="why-title"><div><p class="eyebrow" data-i18n="whyEyebrow">A WORLD THAT LISTENS</p><h2 id="why-title" data-i18n="whyTitle">Your idea sets the rules.</h2><p data-i18n="whyBody">AI helps turn everyday language into supported changes. The physics engine handles what happens next. You still choose the idea, the moment, and the way through.</p></div><div class="rule-pair"><div><span data-i18n="youWrite">YOU WRITE</span><blockquote data-i18n="exampleIntent">“Give the fan a gentle upward draft.”</blockquote></div><div><span data-i18n="worldResponds">THE WORLD RESPONDS</span><p data-i18n="exampleResult">The loaf falls a little slower inside the airflow. Suddenly, the pickup bag is within reach.</p></div></div></section>
+
+    <section id="share" class="share-section section-wrap" aria-labelledby="share-title"><div class="share-copy"><p class="eyebrow" data-i18n="shareEyebrow">04 / PASS THE POSSIBILITY ON</p><h2 id="share-title" data-i18n="shareTitle">A little world worth sharing.</h2><p data-i18n="shareBody">Scan to open this introduction on any phone. Keep the link, show a friend, or put the card beside your demo.</p><p class="share-url">optionalreality.site/intro</p><div class="share-actions"><button class="button button-primary" id="copy-link" type="button" data-i18n="copyLink">Copy introduction link</button><a class="button button-secondary" href="/assets/intro-20261025/scan-card.png" download="optional-reality-scan-card.png" data-i18n="downloadCard">Download share card ↓</a></div><p id="share-status" class="small-note" aria-live="polite" data-i18n="shareNote">The QR opens the introduction, not the desktop-only game.</p></div><figure class="qr-card"><span class="qr-card-top" data-i18n="scanToExplore">SCAN TO EXPLORE</span><img src="/assets/intro-20261025/intro-qr.png" width="900" height="900" alt="QR code for https://optionalreality.site/intro" loading="lazy"><figcaption><strong>Optional Reality</strong><span>optionalreality.site/intro</span></figcaption><a href="/assets/intro-20261025/intro-qr.png" download="optional-reality-intro-qr.png" data-i18n="downloadQr">Download QR code ↓</a></figure></section>
+
+    <section class="faq-section section-wrap" aria-labelledby="faq-title"><div><p class="eyebrow" data-i18n="faqEyebrow">A FEW GOOD QUESTIONS</p><h2 id="faq-title" data-i18n="faqTitle">Before you say “what if?”</h2></div><div class="faq-list"><details><summary data-i18n="faqPhoneTitle">Can I play on my phone?</summary><p data-i18n="faqPhoneBody">Your phone is perfect for this introduction, the looping demo, and sharing. The playable game currently needs a computer with a keyboard and mouse.</p></details><details><summary data-i18n="faqRulesTitle">Can I write anything?</summary><p data-i18n="faqRulesBody">Write in English or Chinese to change the environment’s supported rules. The ball, exit, and fixed layout stay in place. Each level shows what you can change.</p></details><details><summary data-i18n="faqScoreTitle">Do I need all three stars to finish?</summary><p data-i18n="faqScoreBody">No. Reaching the exit passes the level. All three stars earn full score. Every level is open, and you can retry whenever you like.</p></details><details><summary data-i18n="faqAiTitle">Where does AI fit in?</summary><p><span data-i18n="faqAiBody">AI interprets language; the engine runs the physics. The video records actual gameplay with scripted input. Development assistance and art credits are explained in the repository.</span> <a href="https://github.com/Muyu-Chen/Optional-Reality/blob/main/AI_USAGE.md" data-i18n="aiUsage">Read the AI usage notes ↗</a></p></details></div></section>
+
+    <section class="final-cta section-wrap"><div><p class="eyebrow" data-i18n="finalEyebrow">THERE’S MORE THAN ONE WAY THROUGH.</p><h2 data-i18n="finalTitle">Try a different rule.</h2></div><div><a class="button button-primary desktop-play" href="/" data-i18n="playDesktop">Play on desktop ↗</a><a class="button button-secondary" href="#demo" data-watch data-i18n="watchAgain">Watch it again ↻</a></div></section>
+  </main>
+  <footer class="site-footer section-wrap"><a class="brand" href="/intro"><span class="brand-mark" aria-hidden="true">or</span><span>OPTIONAL REALITY</span></a><p>SBUHacks 2026 <span aria-hidden="true">·</span> <span data-i18n="footerLine">A playground for “what if”.</span></p><div><a href="https://github.com/Muyu-Chen/Optional-Reality">GitHub ↗</a><a href="https://github.com/Muyu-Chen/Optional-Reality/blob/main/AI_USAGE.md" data-i18n="aiUsageShort">AI usage & credits</a><a href="/showcase/" data-i18n="standaloneDemo">Looping player ↗</a></div></footer>
+  <aside class="mobile-dock" aria-label="Watch the gameplay demo"><div><strong data-i18n="dockTitle">A little world, in 47 seconds.</strong><span data-i18n="dockSubtitle">Watch here. Play later on a computer.</span></div><a href="#demo" class="button button-primary" data-watch><span aria-hidden="true">▶</span><span data-i18n="dockWatch">Watch</span></a></aside>
 </body>
 </html>
