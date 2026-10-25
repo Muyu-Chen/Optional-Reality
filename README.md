@@ -40,9 +40,9 @@ Chapters organize the teaching sequence. Basic physical properties remain consis
 - **Shift+Tab** pauses the simulation and opens settings. Opening settings while waiting for AI cancels the intent to send immediately; valid results remain queued for later sending.
 - Captions on the left show the actual changes and fade after a few seconds. Rule parameters, hints, batch sending, and history are available in the menu.
 - Each level has three stars. Reaching the exit completes the level; collecting all stars before reaching the exit earns full score. Retrying restores every star.
-- The first successful send starts a 30-second simulation countdown. Ordinary pauses, API waits, and tutorial pauses do not consume simulation time.
+- The first successful send starts a 30-second simulation countdown. One 30-second rescue overtime then adds translucent collision walls; clearing in overtime costs one earned star (minimum zero). Ordinary pauses, API waits, and tutorial pauses consume neither period.
 - While waiting for AI, you can **Cancel** or send another Ready message. A canceled response cannot pause the game again. Unfinished messages can be prepared individually with **Prepare**; the complete network request has a maximum wait of 35 seconds.
-- All four edges of every level are open. A ball or block that fully leaves the fixed play area triggers **Out of bounds** and can be reset with **Try again**. Objects still partly inside can be recovered; cup walls and tracks retain real collisions.
+- During normal time, all four edges of every level are open. A ball or block that fully leaves the fixed play area triggers **Out of bounds** and can be reset with **Try again**. Objects still partly inside can be recovered; cup walls and tracks retain real collisions.
 - **Try again** restores the initial world and command budget, makes messages pending again, and retains parsed operations so you can compare different execution timings.
 - On contact, the toaster charges for approximately 0.6 seconds. Its first activation pauses for a teaching moment; **Continue** resumes the simulation. Retrying does not repeat the interruption, and the menu can replay the teaching sequence.
 - Switch levels from the pause menu, or proceed to the next level after completion. Results use large, separate stars to distinguish collected and missed stars, with different feedback for ordinary completion and full score.
@@ -130,3 +130,5 @@ Integrated release `75af06a` deployed scene rendering, continuous passive spring
 The bird, acceleration-feedback, and impact-feel release `5e73f8a` is live. Its independent build passed 666 tests. Gemini support shipped in the same release; production switched to `gemini-3.1-flash-lite` and passed real compilation checks, while retaining the original DeepSeek key. Backups, asset checks, and paired rollback instructions are in the [Deployment Notes](./deploy/live-game.md).
 
 The entry-screen and scenery release `9f4c2e8` is live: the Steel and Steam title screen, a three-chapter/nine-level gallery, best star counts, nine backgrounds, particle waterfalls, and upbeat music. Its independent build passed 741 tests, with public-site three-star routes, progress persistence, and Gemini verified. The previous release and backups are retained.
+
+Rule-change trajectory comparisons, intuitive language presets, and overtime scoring are specified in [World rewrite feedback](./docs/world-rewrite-feedback.md).
