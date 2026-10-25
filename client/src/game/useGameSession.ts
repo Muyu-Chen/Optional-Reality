@@ -115,7 +115,7 @@ export function useGameSession(level: LevelDefinition) {
   function continueTutorial() {
     labRef.current?.world.continueTutorial();
     labRef.current?.report();
-    setNotice('The toaster is charging. Your timing changes what happens next.');
+    setNotice('Time resumes. A powered toaster charges on contact, then launches the loaf.');
   }
 
   function replayTeaching() {

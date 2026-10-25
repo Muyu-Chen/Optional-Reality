@@ -80,7 +80,7 @@ describe('toaster and gate state transitions', () => {
 
   it('uses the power active at release, fires once, then rearms only after leaving', () => {
     const world = touchingToaster();
-    expect(world.devices.takeEvents()).toEqual([{ type: 'spring_charging', deviceId: 'spring-main' }]);
+    expect(world.devices.takeEvents()).toEqual([{ type: 'spring_contact', deviceId: 'spring-main' }, { type: 'spring_charging', deviceId: 'spring-main' }]);
     set(world, 'spring-main', 'spring_power', 3);
     for (let i = 0; i < 72; i++) world.devices.beforeStep(world.rules, 1 / 120);
     expect(world.engine.world.constraints).toHaveLength(0);
@@ -92,7 +92,7 @@ describe('toaster and gate state transitions', () => {
     world.devices.beforeStep(world.rules, 1 / 120);
     Matter.Body.setPosition(world.ball, { x: 467, y: 400 });
     world.devices.beforeStep(world.rules, 1 / 120);
-    expect(world.devices.takeEvents()).toEqual([{ type: 'spring_charging', deviceId: 'spring-main' }]);
+    expect(world.devices.takeEvents()).toEqual([{ type: 'spring_contact', deviceId: 'spring-main' }, { type: 'spring_charging', deviceId: 'spring-main' }]);
   });
 
   it('opens a gate once on contact and closes it again when its rule is undone', () => {

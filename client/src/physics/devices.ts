@@ -5,7 +5,7 @@ import { ElasticSpring } from './elastic-spring';
 
 const { Bodies, Body, Composite, Constraint } = Matter;
 export interface SpringState { phase: 'idle' | 'charging' | 'launched'; elapsed: number; top?:number; anchor?: Matter.Constraint; origin?: {x:number;y:number} }
-export interface DeviceEvent { type: 'spring_charging' | 'spring_released'; deviceId: string }
+export interface DeviceEvent { type: 'spring_contact' | 'spring_charging' | 'spring_released'; deviceId: string }
 const overlaps = (ball: Matter.Body, radius: number, area: Rect) => {
   const x = Math.max(area.x, Math.min(ball.position.x, area.x + area.width));
   const y = Math.max(area.y, Math.min(ball.position.y, area.y + area.height));
@@ -22,6 +22,7 @@ export class DeviceRuntime {
   private elasticSprings=new Map<string,ElasticSpring>();
   private events: DeviceEvent[] = [];
   private touchingRotors = new Set<string>();
+  private touchingSprings = new Set<string>();
 
   constructor(private level: LevelDefinition, private engine: Matter.Engine, private ball: Matter.Body) {
     for (const device of level.devices || []) {
@@ -77,6 +78,9 @@ export class DeviceRuntime {
           }
           const state = this.springs.get(device.id)!;
           const touching = overlaps(ball,radius,device.area);
+          // An unpowered toaster still needs its first-contact explanation.
+          if (touching && !this.touchingSprings.has(device.id)) this.events.push({type:'spring_contact',deviceId:device.id});
+          if (touching) this.touchingSprings.add(device.id); else this.touchingSprings.delete(device.id);
           if (state.phase === 'launched' && !touching) state.phase='idle';
           if (state.phase === 'charging' && power <= 0) {
             if(state.anchor) Composite.remove(this.engine.world,state.anchor);

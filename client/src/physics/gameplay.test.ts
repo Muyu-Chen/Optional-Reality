@@ -57,7 +57,7 @@ describe('three playable chapters',()=>{
     }finally{world.destroy();}
   });
   it('does not accidentally complete any chapter using the default world',()=>{
-    for(const level of levels){const world=new PhysicsWorld(level);try{advance(world);expect(world.won).toBe(false);expect(world.timedOut).toBe(true);}finally{world.destroy();}}
+    for(const level of levels){const world=new PhysicsWorld(level);try{world.start();for(let i=0;i<7200 && !world.won && !world.timedOut;i++){if(world.tutorialId)world.continueTutorial();world.step();}expect(world.won,level.id).toBe(false);expect(world.timedOut,level.id).toBe(true);}finally{world.destroy();}}
   });
   it('retries the initial scene, time, budget and compiled queue without a model request',()=>{
     for(const level of levels){

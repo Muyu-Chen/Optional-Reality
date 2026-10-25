@@ -30,5 +30,5 @@ export const realityBreakdown: LevelDefinition = {
     { kind: 'sensor', id: 'sensor-gate', position: [698, 255], radius: 56 },
     { kind: 'gate', id: 'gate-final', area: { x: 833, y: 147, width: 22, height: 273 } },
   ],
-  tutorials: [{ id: 'toaster-charge', deviceId: 'spring-main', title: 'A little stored energy.', diagram: 'bakery-charge', body: 'The loaf is held while the toaster charges. Continue resumes the 0.6-second charge, then it launches up and right. Toaster power changes this launch strength; it does not change the floor’s bounce. You can prepare or change your next rule while time is paused.' }],
+  tutorials: [{ id: 'toaster-charge', deviceId: 'spring-main', title: 'A little stored energy.', diagram: 'bakery-charge', body: 'First contact pauses time. If the toaster is off, send “Set toaster power to 2” now. With power, it holds the loaf for a 0.6-second charge, then launches up and right. You can change rules while paused; choose Continue to resume. Toaster power controls the launch, separately from the floor’s bounce.' }],
 };

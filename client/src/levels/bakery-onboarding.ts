@@ -34,7 +34,7 @@ export const bakeryLessons: Readonly<Record<string, LevelOnboarding>> = {
   },
   breeze: {
     theme: 'bakery', title: 'Keep the loaf in the air.',
-    intro: 'The conveyor and toaster are preset. Your fan adds an upward push inside the orange dashed field, helping the launched loaf reach pickup.',
+    intro: 'The conveyor and toaster are preset. First toaster contact pauses for an explanation; Continue resumes the charge. Your fan adds an upward push inside the orange dashed field, helping the launched loaf reach pickup.',
     machines: machineSetup(breeze), starterLabel: 'Load fan setup',
     steps: [
       { title: 'Find the airflow field', diagram: 'bakery-field',

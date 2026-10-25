@@ -3,11 +3,40 @@ import { fireEvent, screen, within } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { onboardingFor, onboardingStorageKey } from '../levels/onboarding';
 import { findLevel } from '../levels/catalog';
-import { advance, click, ControlledApi, lab, manage, rows, startGame } from '../test/game-harness';
+import { advance, click, ControlledApi, lab, manage, queue, rows, startGame } from '../test/game-harness';
 
 const ids = ['toaster', 'breeze', 'reality-breakdown'] as const;
 
 describe('bakery chapter illustrated guides', () => {
+  it.each(ids)('pauses at the first %s toaster contact even when its power starts off', async id => {
+    await startGame(id, new ControlledApi(), [], true);
+    await click("Let's play");
+    expect(screen.queryByRole('dialog')).toBeNull();
+    if (id === 'reality-breakdown') {
+      await queue('Set conveyor speed to 1.5');await click('Send now');
+    } else await click('Start game');
+    await advance(30);
+    expect(lab().world.tutorialId).toBeNull();
+    await advance(600);
+    const teaching = screen.getByRole('dialog', { name: 'A little stored energy.' });
+    expect(teaching.querySelector('.bakery-lesson-diagram')).toBeTruthy();
+    expect(lab().world.devices.springs.get('spring-main')!.phase).toBe(id === 'breeze' ? 'charging' : 'idle');
+    expect(lab().world.devices.firedSprings.size).toBe(0);
+    const tick = lab().world.tick, position = {...lab().world.ball.position};
+    await advance(600);
+    expect(lab().world.tick).toBe(tick);expect(lab().world.ball.position).toEqual(position);
+    if (id !== 'breeze') {
+      expect(teaching.textContent).toContain('If the toaster is off');
+      await queue('Set toaster power to 2');await click('Send now');
+      await advance(120);
+      expect(lab().world.tick).toBe(tick);expect(lab().world.running).toBe(false);
+    } else expect(teaching.textContent).toContain('preset to power 2');
+    await click('Continue →');await advance(84);
+    expect(lab().world.devices.firedSprings.has('spring-main')).toBe(true);
+    expect(lab().world.tutorialId).toBeNull();
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
   it.each(ids)('explains the actual %s setup and preserves drafts while time is paused', async id => {
     const drafts = ['Set surface friction to 0'];
     const { api } = await startGame(id, new ControlledApi(), drafts, true);
@@ -44,15 +73,13 @@ describe('bakery chapter illustrated guides', () => {
     expect(lab().world.started).toBe(false);
     await manage();await click('Select ready');await click('Send all selected');
     await advance(3600);
-    if (id !== 'breeze') {
-      expect(lab().world.tutorialId).toBe('toaster-charge');
-      const teaching = screen.getByRole('dialog', { name: 'A little stored energy.' });
-      expect(teaching.querySelector('.bakery-lesson-diagram')).toBeTruthy();
-      expect(teaching.textContent).toContain('0.6-second charge');
-      const tick = lab().world.tick;
-      await advance(3600);expect(lab().world.tick).toBe(tick);
-      await click('Continue →');await advance(3600);
-    }
+    expect(lab().world.tutorialId).toBe('toaster-charge');
+    const teaching = screen.getByRole('dialog', { name: 'A little stored energy.' });
+    expect(teaching.querySelector('.bakery-lesson-diagram')).toBeTruthy();
+    expect(teaching.textContent).toContain('0.6-second charge');
+    const tick = lab().world.tick;
+    await advance(3600);expect(lab().world.tick).toBe(tick);
+    await click('Continue →');await advance(3600);
     expect(lab().world.won).toBe(true);expect(lab().world.stars.fullScore).toBe(true);
     if (id === 'reality-breakdown') {
       expect(lab().world.rules.triggers).toEqual([{ sensor: 'sensor-gate', gate: 'gate-final' }]);

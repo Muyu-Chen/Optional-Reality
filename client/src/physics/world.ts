@@ -122,7 +122,7 @@ export class PhysicsWorld {
     this.devices.beforeStep(this.rules, STEP_MS / 1000);
     for(const event of this.devices.takeEvents()) {
       const tutorial=this.level.tutorials?.find(item => item.deviceId === event.deviceId);
-      if(event.type === 'spring_charging' && tutorial && !this.seenTutorials.has(tutorial.id)) {
+      if((event.type === 'spring_contact' || event.type === 'spring_charging') && tutorial && !this.seenTutorials.has(tutorial.id)) {
         this.seenTutorials.add(tutorial.id);this.tutorialId=tutorial.id;this.pause();return;
       }
     }
