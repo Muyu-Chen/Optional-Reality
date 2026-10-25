@@ -21,6 +21,10 @@
 
 `styles.css` 只保留有序导入。`styles/` 中按 HUD、队列、输入、反馈、菜单和教学拆分样式；`responsive.css` 保存主要断点。调整导入顺序前检查覆盖关系，Canvas 使用的 `--scene-*` 留白必须与 HUD 一致。
 
+## 音乐
+
+`audio/MusicProvider.tsx` 位于 App 的 keyed Game 外，关卡切换不会重建音乐会话。`MusicControl.tsx` 只显示和切换状态，`use-background-music.ts` 订阅 Context。`music-controller.ts` 管理可信手势、偏好存储、页面可见性与错误反馈；`music-engine.ts` 管理单个 Web Audio 图、短期调度、音量和资源清理；`music-score.ts` 保存原创音符数据。音乐不依赖物理时钟或 API。
+
 ## 场景与物理
 
 | 位置 | 职责 |
@@ -31,7 +35,9 @@
 | `physics/goal.ts` | 独立的形状接触、完整进入、速度和连续停留判定；暂停时不推进 |
 | `physics/stars.ts` | 独立配置校验、真实形状与扫过路径拾取、计数与满分判定；不锁出口 |
 | `physics/star-renderer.ts`、`spring-renderer.ts` | 独立绘制未收集星星与几何弹簧状态，不推进模拟 |
-| `components/StarProgress.tsx` | HUD 与过关菜单共用的星星计数 |
+| `components/StarProgress.tsx` | HUD 星星进度 |
+| `components/CompletionResult.tsx`、`ResultStars.tsx` | 独立的结算信息、真实分数与大号 SVG 星形 |
+| `physics/drawing-theme.ts` | Canvas 主题颜色与可读字号，与界面保留一致的物理颜色语义 |
 | `physics/devices.ts` | 接触判断、风场、传送带、蓄力、转轮和感应开门 |
 | `physics/canvas-lab.ts` | 浏览器动画循环、Canvas 缩放、轨迹与生命周期 |
 | `physics/geometry-renderer.ts` | 前两级几何场景绘图 |
