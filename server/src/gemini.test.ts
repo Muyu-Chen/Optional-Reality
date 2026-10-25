@@ -74,7 +74,7 @@ describe('independent Gemini configuration and compatible requests', () => {
       messages: [{ id: 'm1', text: 'Pull upward at one metre per second squared.' }], rules: initialRules(bounce) };
     await expect(compileRules(input, gemini(), undefined, reply())).resolves.toMatchObject({ requestId: input.requestId, messages: [{ operations }] });
     const forbidden = { messages: [{ id: 'm1', operations: [{ type: 'set_property', target: bounce.ball.id, property: 'restitution', value: 1 }], error: null }] };
-    await expect(compileRules(input, gemini(), undefined, reply(forbidden))).rejects.toThrow();
+    await expect(compileRules(input, gemini(), undefined, reply(forbidden))).resolves.toMatchObject({ messages: [{ operations: [], error: expect.any(String) }] });
     expect(input.rules).toEqual(initialRules(bounce));
   });
 

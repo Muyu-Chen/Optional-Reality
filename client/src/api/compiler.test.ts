@@ -25,4 +25,32 @@ describe('client compiler identity checks', () => {
     expect(fetcher.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
     expect(fetcher.mock.calls[0][1].signal.aborted).toBe(false);
   });
+  it('accepts mixed and all-error results while keeping every requested identity', async () => {
+    const request = {...input,messages:[{id:'m1',text:'Valid.'},{id:'m2',text:'Unsupported.'}]};
+    for(const messages of [
+      [output.messages[0],{id:'m2',operations:[],error:'Unsupported message.'}],
+      [{id:'m1',operations:[],error:'Unsupported message.'},{id:'m2',operations:[],error:'Unsupported message.'}],
+    ]) {
+      vi.stubGlobal('fetch',vi.fn().mockResolvedValue(Response.json({...output,messages})));
+      expect((await prepareWithAI(request,new AbortController().signal)).messages).toEqual(messages);
+    }
+  });
+  it.each([
+    [{id:'m1',operations:[],error:''}],
+    [{id:'m1',operations:output.messages[0].operations,error:'Cannot execute.'}],
+    [{id:'m1',operations:[]}],
+    [{id:'wrong',operations:[],error:'Unsupported message.'}],
+  ])('rejects corrupted result structure or identity rather than assigning it to a row: %#', messages => {
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue(Response.json({...output,messages})));
+    return expect(prepareWithAI(input,new AbortController().signal)).rejects.toThrow();
+  });
+  it.each(['missing', 'duplicate', 'reordered'])('rejects a %s identity in an otherwise valid mixed batch', kind => {
+    const request={...input,messages:['a','b','c'].map(id=>({id,text:'Message '+id}))};
+    const messages=[{id:'a',operations:output.messages[0].operations},{id:'b',operations:[],error:'Unsupported.'},{id:'c',operations:output.messages[0].operations}];
+    if(kind==='missing')messages.pop();
+    else if(kind==='duplicate')messages[1]={...messages[1],id:'a'};
+    else [messages[0],messages[1]]=[messages[1],messages[0]];
+    vi.stubGlobal('fetch',vi.fn().mockResolvedValue(Response.json({...output,messages})));
+    return expect(prepareWithAI(request,new AbortController().signal)).rejects.toThrow('message IDs');
+  });
 });

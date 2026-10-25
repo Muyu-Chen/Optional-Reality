@@ -65,13 +65,14 @@ async function check(levelId: string, tests: { text: string; operations: Operati
   let passed = false, error: string | undefined;
   try {
     const output = endpoint ? await throughRelay(input) : await compileRules(input, config, undefined, capture);
-    passed = !rejection && output.messages.every((message, index) => JSON.stringify(canonical(message.operations)) === JSON.stringify(canonical(tests[index].operations)));
+    passed = output.messages.every((message, index) => rejection ? 'error' in message && !message.operations.length
+      : !('error' in message) && JSON.stringify(canonical(message.operations)) === JSON.stringify(canonical(tests[index].operations)));
     details.push({ levelId, tests, output });
     if (!passed) error = rejection ? 'Expected rejection, received valid operations.' : 'Operations did not match expected meaning.';
   } catch (caught) {
     error = caught instanceof Error ? caught.message : 'Compilation failed.';
     // A provider/network/config failure is not a successful semantic rejection.
-    passed = rejection && /^Message \d+:/.test(error);
+    passed = false;
     details.push({ levelId, tests, error });
   }
   const report = { level: levelId, kind, passed, milliseconds: Math.round(performance.now() - start), cases: tests.length,

@@ -36,7 +36,7 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
     const prompt=JSON.parse(String(fetcher.mock.calls[0][1]?.body)).messages[1].content;
     expect(prompt).toContain('Launch pad');expect(prompt).toContain('Cup base');expect(prompt).toContain('杯底');
     for(const target of ['cup-left','ball-A']) {
-      await expect(compileRules(input,config,undefined,provider(answer([{type:'set_property',target,property:'restitution',value:0}])))).rejects.toThrow();
+      await expect(compileRules(input,config,undefined,provider(answer([{type:'set_property',target,property:'restitution',value:0}])))).resolves.toMatchObject({messages:[{operations:[],error:expect.any(String)}]});
     }
     await expect(compileRules(input,config,undefined,provider(answer([{type:'set_property',target:'world',property:'restitution',value:0}])))).resolves.toMatchObject({messages:[{operations:[{target:'world',value:0}]}]});
     expect(input.rules).toEqual(initialRules(catchCup));
@@ -76,13 +76,28 @@ describe('AI compiler with a mocked provider (no live credentials)', () => {
     answer([{ type: 'set_gravity', acceleration: Infinity }]),
     answer([{ type: 'add_sensor_trigger', sensor: 'imaginary', gate: 'gate-final' }]),
     answer([{ type: 'eval', code: 'arbitrary code' }]),
-    answer([{ type: 'set_gravity', acceleration: 1 }], 'wrong-id'),
     answer([]),
     answer([], 'm1', 'Automatic conditions are not supported.'),
-  ])('rejects invalid schema, targets, ranges, IDs, or unsupported commands: %#', async output => {
+  ])('returns a row error for invalid operations, targets, or unsupported commands: %#', async output => {
     const input = request(), previous = structuredClone(input);
-    await expect(compileRules(input, config, undefined, provider(output))).rejects.toThrow();
+    await expect(compileRules(input, config, undefined, provider(output))).resolves.toMatchObject({messages:[{id:'m1',operations:[],error:expect.any(String)}]});
     expect(input).toEqual(previous);
+  });
+  it('rejects the entire response for mismatched message identity', async () => {
+    await expect(compileRules(request(), config, undefined, provider(answer([{type:'set_gravity',acceleration:1}], 'wrong-id')))).rejects.toThrow('message IDs');
+  });
+  it.each([false, true])('returns HTTP 200 for independent outcomes, including all-error batches: %s', async allErrors => {
+    const input = {...request(), messages:['a','b','c'].map(id=>({id,text:'Prepare '+id}))};
+    const output = {messages:input.messages.map(({id},index)=>allErrors || index===1
+      ? {id,operations:[],error:'This message is unsupported.'}
+      : {id,operations:[{type:'set_gravity',acceleration:index+1}],error:null})};
+    const {base}=await endpoint(config.apiKey,provider(output));
+    const response=await fetch(`${base}/api/compile`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(input)});
+    expect(response.status).toBe(200);
+    const body=await response.json();
+    expect(body.messages.map((message:{error?:string})=>!!message.error)).toEqual(allErrors?[true,true,true]:[false,true,false]);
+    expect(body.messages[1]).toEqual({id:'b',operations:[],error:'This message is unsupported.'});
+    expect(input.rules).toEqual(request().rules);
   });
   it('rejects truncated, non-JSON, and refused model responses', async () => {
     await expect(compileRules(request(), config, undefined, provider(valid(), 'length'))).rejects.toThrow('complete');

@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { applyRules } from '../../../shared/rules';
-import { limitAbsoluteOperations } from '../../../shared/rule-limits';
 import { compilerStatus, prepareWithAI } from '../api/compiler';
 import { CompilationSession } from '../api/compilation-session';
 import { loadMessages, messageStorageKey } from '../domain/message-storage';
 import { prepareMessage, type Message } from '../domain/queue';
+import { mergeCompilationResults } from '../domain/compilation-results';
 import { initialRules, ruleContext } from '../levels/rules';
 import type { LevelDefinition } from '../levels/types';
 import type { CanvasLab } from '../physics/canvas-lab';
@@ -80,22 +79,11 @@ export function usePreparedMessages(level: LevelDefinition, labRef: RefObject<Ca
     try {
       const result = await prepareWithAI(request, ticket.signal);
       if (!compilation.isCurrent(ticket)) return;
-      let preview = lab.world.rules;
-      const bounded = result.messages.map(message => {
-        const limited = limitAbsoluteOperations(message.operations,context);
-        preview = applyRules(preview,limited.operations,context);
-        const adjustments = [...new Map([...(message.adjustments || []),...limited.adjustments]
-          .map(item => [JSON.stringify(item),item])).values()];
-        return {...message,operations:limited.operations,adjustments};
-      });
-      const compiled = new Map(bounded.map(message => [message.id, message]));
+      const merged = mergeCompilationResults(messageRef.current, result.messages, lab.world.rules, context);
       const applyImmediately=options.onReady && immediateRef.current===ticket;
-      updateMessages(messageRef.current.map(message => compiled.has(message.id) ? {
-        id: message.id, text: message.text, status: 'ready', operations: compiled.get(message.id)!.operations,
-        understoodAs: compiled.get(message.id)!.understoodAs, adjustments: compiled.get(message.id)!.adjustments, source: 'ai',
-      } : message),{autoPrepare:false});
-      if(applyImmediately && options.messageId)options.onReady!([options.messageId]);
-      else onNotice('Ready when you are.');
+      updateMessages(merged.messages,{autoPrepare:false});
+      if(applyImmediately && options.messageId && merged.readyIds.includes(options.messageId))options.onReady!([options.messageId]);
+      else onNotice(merged.notice);
     } catch (error) {
       if (!compilation.isCurrent(ticket)) return;
       const reason = error instanceof Error ? error.message : 'Could not read this rule. Edit it and try again.';

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { OperationSchema, Property, RuleStateSchema, applyRules, type RuleContext } from './rules';
-import { limitAbsoluteOperations } from './rule-limits';
+import { RuleStateSchema, type RuleContext } from './rules';
+import { ModelMessageSchema, CompilationMessageSchema, compileModelMessage } from './compilation-message';
 
 export const CompileRequestSchema = z.object({
   requestId: z.string().min(1).max(80), levelId: z.string().min(1).max(80),
@@ -9,31 +9,24 @@ export const CompileRequestSchema = z.object({
   rules: RuleStateSchema,
 }).strict().refine(value => new Set(value.messages.map(message => message.id)).size === value.messages.length, 'Duplicate message IDs.');
 export type CompileRequest = z.infer<typeof CompileRequestSchema>;
-const AdjustmentSchema = z.object({ target:z.string(),property:Property,requested:z.number().finite(),applied:z.number().finite(),minimum:z.number().finite(),maximum:z.number().finite() }).strict();
 export const ModelOutputSchema = z.object({
-  messages: z.array(z.object({
-    id: z.string().min(1).max(80), operations: z.array(OperationSchema).max(16), error: z.string().max(300).nullable(),
-    understoodAs: z.string().trim().min(1).max(240).nullish(),
-  }).strict()).min(1).max(24),
+  messages: z.array(ModelMessageSchema).min(1).max(24),
 }).strict();
 export const CompileResponseSchema = z.object({
   requestId: z.string(), levelId: z.string(), sceneVersion: z.number().int(), queueRevision: z.number().int(),
-  messages: z.array(z.object({ id: z.string(), operations: z.array(OperationSchema).min(1).max(16), understoodAs: z.string().trim().min(1).max(240).optional(), adjustments:z.array(AdjustmentSchema).max(16).optional() }).strict()).min(1).max(24),
+  messages: z.array(CompilationMessageSchema).min(1).max(24),
 }).strict();
+// Validate the trustworthy mapping first; operation/schema errors belong to individual rows.
+const ModelEnvelopeSchema = z.object({ messages: z.array(ModelMessageSchema.pick({ id: true }).passthrough()).min(1).max(24) }).strict();
 export function validateCompilation(request: CompileRequest, output: unknown, context: RuleContext) {
-  const compiled = ModelOutputSchema.parse(output);
+  const compiled = ModelEnvelopeSchema.parse(output);
   if (compiled.messages.length !== request.messages.length || compiled.messages.some((message, index) => message.id !== request.messages[index].id)) throw new Error('The compiler returned missing, duplicate, or reordered message IDs.');
   let state = request.rules;
   const messages = [];
-  for (const message of compiled.messages) {
-    if (message.error) throw new Error(`Message ${request.messages.findIndex(item => item.id === message.id) + 1}: ${message.error}`);
-    if (!message.operations.length) throw new Error('The compiler returned an empty operation list.');
-    const {operations,adjustments} = limitAbsoluteOperations(message.operations,context);
-    state = applyRules(state, operations, context);
-    messages.push({id:message.id,operations,
-      ...(message.understoodAs && message.understoodAs !== request.messages[messages.length].text.trim() ? {understoodAs:message.understoodAs} : {}),
-      ...(adjustments.length ? {adjustments} : {}),
-    });
+  for (const [index, candidate] of compiled.messages.entries()) {
+    const result = compileModelMessage(candidate, request.messages[index], state, context);
+    state = result.state;
+    messages.push(result.message);
   }
   const { rules: _rules, messages: _messages, ...identity } = request;
   return CompileResponseSchema.parse({ ...identity, messages });
