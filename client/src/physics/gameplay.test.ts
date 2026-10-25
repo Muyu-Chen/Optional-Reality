@@ -23,7 +23,9 @@ describe('three playable chapters',()=>{
   it('has ordered stable IDs, with valid initial states independent from editing permissions',()=>{
     expect(levels.map(level=>level.id)).toEqual([
       'gravity-lab','one-more-turn','bring-it-back','over-the-wall','side-door',
+      'thread-the-gap','down-the-chimney','hook-turn',
       'bank-shot','bounce','multi-bounce','friction-runway','catch-cup','return-to-dock','one-last-bounce',
+      'double-bank','low-roof','mind-the-gap',
       'toaster','breeze','reality-breakdown',
     ]);
     expect(levels.at(-1)?.id).toBe('reality-breakdown');

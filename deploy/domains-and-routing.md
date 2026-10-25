@@ -14,7 +14,7 @@
 | `/intro`、`/intro/` | 介绍页；canonical 为 `https://optionalreality.site/intro` |
 | `/demo/` | 保留原游戏入口与旧链接 |
 | `/demo/assets/`、`/assets/` | 原游戏和介绍资源 |
-| `/api/` | 本站同源代理至 `127.0.0.1:3003`；原 3001 服务保留运行，见 [十五关发布](./motion-collision-levels.md) |
+| `/api/` | 本站同源代理至 `127.0.0.1:3005`；原 3001–3004 实例保留运行，见 [最新物理 UI 发布](./physics-ui.md) |
 
 HTTP 跳转到同一域名的 HTTPS，保留路径与查询；ACME HTTP-01 例外保留。未知路径继续 404，无全路径 SPA 回退。根页面通过内部 rewrite 读取现有 `/demo/index.html`，Vite 资源 base 继续使用 `/demo/`。介绍页仍存于 `site/index.html`，由 Apache Alias 映射到 `/intro`；它的 Play now 指向根目录。
 

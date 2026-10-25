@@ -2,7 +2,7 @@
 
 The public introduction is **https://optionalreality.site/intro**. The game remains at `/`, and the standalone looping player remains at `/showcase/`. All three existing domains use the same introduction, but the QR always points to the canonical `optionalreality.site/intro` URL.
 
-The page is a complete presentation of the current fifteen-level game: branded hero illustration, real looping gameplay video, three-step explanation, five Motion / seven Collisions / three Devices levels, language-to-physics explanation, sharing, FAQ, GitHub and AI-usage links. It replaces the early nine-level / planned-sandbox copy and the obsolete GitHub-unavailable dialog.
+The page is a complete presentation of the current twenty-one-level game: branded hero illustration, real looping gameplay video, three-step explanation, eight Motion / ten Collisions / three Devices levels, language-to-physics explanation, sharing, FAQ, GitHub and AI-usage links. It replaces the early nine-level / planned-sandbox copy and the obsolete GitHub-unavailable dialog.
 
 English is the default for every browser, including returning visitors with an old Chinese preference. Chinese is available only through the manual language button or an explicit `?lang=zh` link; the button does not persist a language override across visits. Its code and styles are self-hosted, with no framework or runtime API call needed. The existing ImageGen title sprites are reused byte-for-byte from `client/src/assets/title-scene`; their original prompts and provenance remain there. Chapter diagrams, layout, QR, and share-card artwork are implemented in code.
 

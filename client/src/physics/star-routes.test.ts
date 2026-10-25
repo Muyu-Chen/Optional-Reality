@@ -22,13 +22,14 @@ function play(world:PhysicsWorld,update:(world:PhysicsWorld)=>void=()=>{}) {
 }
 describe('ordinary and full-score routes',()=>{
   it.each(levels)('$id has at least three valid stars and a reproducible full-score route',level=>{
-    const world=new PhysicsWorld(level);let sent=false;
+    const world=new PhysicsWorld(level);let next=0;
     try{
       expect(world.stars.total).toBeGreaterThanOrEqual(3);
       const route=fullScoreSolution(level);
+      const transitions=route.transitions || (route.transition ? [route.transition] : []);
       for(const text of route.initial)apply(world,text);
       play(world,w=>{
-        if(!sent&&route.transition?.when(w)){apply(w,route.transition.message);sent=true;}
+        if(transitions[next]?.when(w))apply(w,transitions[next++].message);
       });
       expect(world.won,JSON.stringify(world.snapshot())).toBe(true);
       expect(world.stars.fullScore,JSON.stringify([...world.stars.collected])).toBe(true);

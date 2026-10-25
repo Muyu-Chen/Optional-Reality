@@ -47,7 +47,7 @@ def main():
     d.text((144, 440), 'optional.', font=font(116, True), fill=BLUE)
     d.text((149, 597), 'One message. A different world.', font=font(40, True), fill=INK)
     d.text((149, 668), 'Scan to watch the demo', font=font(32), fill='#587366')
-    d.text((149, 713), 'and meet all 15 levels.', font=font(32), fill='#587366')
+    d.text((149, 713), 'and meet all 21 levels.', font=font(32), fill='#587366')
     poster.paste(qr, (270, 800))
     d.text((720, 1723), 'optionalreality.site/intro', anchor='mt', font=font(35, True), fill=INK)
     d.text((720, 1780), 'Mobile introduction  /  Desktop gameplay', anchor='mt', font=font(25), fill='#587366')
@@ -59,7 +59,7 @@ def main():
 <rect x="144" y="154" width="80" height="80" rx="23"/><text x="157" y="215" fill="#fffdf3" font-size="48">or</text><text x="252" y="205" font-size="34">OPTIONAL REALITY</text>
 <text x="144" y="420" font-size="116">Reality is</text><text x="144" y="550" fill="{BLUE}" font-size="116">optional.</text>
 <text x="149" y="635" font-size="40">One message. A different world.</text></g>
-<g font-family="Arial,sans-serif" fill="#587366" font-size="32"><text x="149" y="700">Scan to watch the demo</text><text x="149" y="745">and meet all 15 levels.</text></g>
+<g font-family="Arial,sans-serif" fill="#587366" font-size="32"><text x="149" y="700">Scan to watch the demo</text><text x="149" y="745">and meet all 21 levels.</text></g>
 <g transform="translate(270 800) scale(20)"><rect width="{count}" height="{count}" fill="white"/><path d="{modules}" fill="{INK}" shape-rendering="crispEdges"/></g>
 <text x="720" y="1760" text-anchor="middle" font-family="Arial,sans-serif" fill="{INK}" font-size="35" font-weight="700">optionalreality.site/intro</text><text x="720" y="1808" text-anchor="middle" font-family="Arial,sans-serif" fill="#587366" font-size="25">Mobile introduction / Desktop gameplay</text></svg>\n'''
     (OUT / 'scan-card.svg').write_text(poster_svg)
@@ -70,7 +70,7 @@ def main():
     s.text((68, 152), 'Reality is', font=font(83, True), fill=INK)
     s.text((68, 246), 'optional.', font=font(83, True), fill=BLUE)
     s.text((73, 385), 'Scan to watch the demo.', font=font(30, True), fill=INK)
-    s.text((73, 443), '15 levels. A world of possibility.', font=font(24), fill='#587366')
+    s.text((73, 443), '21 levels. A world of possibility.', font=font(24), fill='#587366')
     s.text((73, 526), 'optionalreality.site/intro', font=font(23), fill=INK)
     social.paste(qr.resize((360, 360), Image.Resampling.NEAREST), (770, 132))
     s.text((950, 521), 'SCAN TO EXPLORE', font=font(16, True), fill=INK, anchor='mt')

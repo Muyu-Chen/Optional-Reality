@@ -9,20 +9,27 @@ describe('expanded motion and collision journey', () => {
   it.each([
     ['bring-it-back', 'over-the-wall'],
     ['over-the-wall', 'side-door'],
-    ['side-door', 'bank-shot'],
+    ['side-door', 'thread-the-gap'],
+    ['thread-the-gap', 'down-the-chimney'],
+    ['down-the-chimney', 'hook-turn'],
+    ['hook-turn', 'bank-shot'],
     ['bank-shot', 'bounce'],
     ['return-to-dock', 'one-last-bounce'],
-    ['one-last-bounce', 'toaster'],
+    ['one-last-bounce', 'double-bank'],
+    ['double-bank', 'low-roof'],
+    ['low-roof', 'mind-the-gap'],
+    ['mind-the-gap', 'toaster'],
   ])('plays %s through the real queue, retains retry drafts, and advances to %s', async (id, next) => {
     const { api } = await startGame(id);
     const route = fullScoreSolution(lab().world.level);
+    const transitions = route.transitions || (route.transition ? [route.transition] : []);
     await click('Load starter messages ↳');
     const draftCount = rows().length;
     for (const _message of route.initial) await click('Send now');
     if (!route.initial.length) await click('Start game');
-    if (route.transition) {
+    for (const transition of transitions) {
       await act(async () => {
-        while (lab().world.running && !route.transition!.when(lab().world)) lab().world.step();
+        while (lab().world.running && !transition.when(lab().world)) lab().world.step();
         lab().report();
       });
       expect(lab().world.won).toBe(false);
@@ -41,9 +48,9 @@ describe('expanded motion and collision journey', () => {
     // Replay the retained queue, including the separate Start action for the drift puzzle.
     for (const _message of route.initial) await click('Send now');
     if (!route.initial.length) await click('Start game');
-    if (route.transition) {
+    for (const transition of transitions) {
       await act(async () => {
-        while (lab().world.running && !route.transition!.when(lab().world)) lab().world.step();
+        while (lab().world.running && !transition.when(lab().world)) lab().world.step();
         lab().report();
       });
       await click('Send now');
